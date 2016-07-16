@@ -127,6 +127,13 @@ class MyTest(unittest.TestCase):
         make_ProcessDeps( "copy https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target.txt download/dl-test-target2.txt" )
         self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target2.txt' ) )
 
+        make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\ncopy dl-test-target-other.txt download/" )
+        self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target.txt' ) )   # Check file of different name doesn't overwrite existing one
+        self.assertTrue( filecmp.cmp( 'dl-test-target-other.txt', 'download/dl-test-target-other.txt' ) )
+
+        make_ProcessDeps( "copy https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target-other.txt download/dl-test-target2.txt" )
+        self.assertTrue( filecmp.cmp( 'dl-test-target-other.txt', 'download/dl-test-target2.txt' ) )    # Check download of different file updates an existing one
+
 def make_ProcessDeps( s ):
     return exodep.ProcessDeps( io.StringIO( s ) )
 
