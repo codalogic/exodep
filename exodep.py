@@ -132,12 +132,28 @@ class ProcessDeps:
         if m != None:
             self.retrieve_text_file( m.group(1), m.group(2) )
             return True
+        m = re.match( 'copy\s+(\S+)', line )
+        if m != None:
+            src_and_dst = m.group(1)
+            if re.match( 'http:s?//', src_and_dst ):
+                print( "Error: Explicit uri not supported with commands of the form 'copy src_and_dst'" )
+                return True    # Even though we haven't executed the command, we do know what it is
+            self.retrieve_text_file( src_and_dst, src_and_dst )
+            return True
         return False
 
     def consider_bcopy( self, line ):
         m = re.match( 'bcopy\s+(\S+)\s+(\S+)', line )
         if m != None:
             self.retrieve_binary_file( m.group(1), m.group(2) )
+            return True
+        m = re.match( 'bcopy\s+(\S+)', line )
+        if m != None:
+            src_and_dst = m.group(1)
+            if re.match( 'http:s?//', src_and_dst ):
+                print( "Error: Explicit uri not supported with commands of the form 'bcopy src_and_dst'" )
+                return True    # Even though we haven't executed the command, we do know what it is
+            self.retrieve_binary_file( src_and_dst, src_and_dst )
             return True
         return False
 
