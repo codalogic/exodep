@@ -152,6 +152,37 @@ class MyTest(unittest.TestCase):
         make_ProcessDeps( "uritemplate ./${file}\ncopy dl-test-target.txt download/dl-test-target4.txt" )
         self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target4.txt' ) )
 
+    def test_versions(self):
+        pd = make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/${strand}/${file}\nversions versions.exodep" )
+        self.assertTrue( 'apple alto' in pd.versions )
+        self.assertTrue( pd.versions['apple alto'] == 'master'  )
+        self.assertTrue( 'apple alto' in pd.versions )
+        self.assertTrue( pd.versions['first'] == 'd57a45c6737'  )
+
+        pd = make_ProcessDeps( "uritemplate ./${file}\nversions versions-for-local-test.exodep" )
+        self.assertTrue( 'apple alto' in pd.versions )
+        self.assertTrue( pd.versions['apple alto'] == 'apple'  )
+        self.assertTrue( 'apple alto' in pd.versions )
+        self.assertTrue( pd.versions['banana'] == 'master'  )
+
+        make_ProcessDeps( "$strand alto\n" +
+                            "uritemplate https://raw.githubusercontent.com/codalogic/exodep/${strand}/${file}\n" +
+                            "versions versions.exodep\n" +
+                            "copy test/dl-test-target.txt download/dl-test-target11.txt" )
+        self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target11.txt' ) )
+
+        make_ProcessDeps( "$strand alto\n" +
+                            "uritemplate https://raw.githubusercontent.com/codalogic/exodep/${strand}/${file}\n" +
+                            "versions\n" +  # Specify default versions
+                            "copy test/dl-test-target.txt download/dl-test-target12.txt" )
+        self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target12.txt' ) )
+
+        make_ProcessDeps( "versions https://raw.githubusercontent.com/codalogic/exodep/master/versions.exodep\n" +
+                            "$strand alto\n" +
+                            "uritemplate https://raw.githubusercontent.com/codalogic/exodep/${strand}/${file}\n" +
+                            "copy test/dl-test-target.txt download/dl-test-target14.txt" )
+        self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target14.txt' ) )
+
 def make_ProcessDeps( s ):
     return exodep.ProcessDeps( io.StringIO( s ) )
 

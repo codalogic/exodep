@@ -106,11 +106,32 @@ class ProcessDeps:
         return False
 
     def consider_versions( self, line ):
-        m = re.match( 'versions\s+(.*)', line )
+        m = re.match( 'versions(?:\s+(.*))?', line )    # If no arguments to 'versions' command, it should use 'versions.exodep'
         if m != None:
-            # TODO
+            file_name = m.group(1) if m.group(1) else 'versions.exodep'
+            uri = self.make_master_strand_uri( file_name )
+            try:
+                if re.match( 'https?://', uri ):
+                    with urllib.request.urlopen( uri ) as fin:
+                        self.parse_versions_info( fin )
+                else:
+                    with open( uri, "rt" ) as fin:
+                        self.parse_versions_info( fin )
+            except:
+                print( "Error: Unable to retrieve:", uri )
             return True
         return False
+
+    def parse_versions_info( self, fin ):
+        for line in fin:
+            if isinstance( line, bytes ):
+                line = line.decode( 'utf-8' )
+            line = line.rstrip()
+            line = remove_comments( line )
+            if not is_blank_line( line ):
+                m = re.match( '^(\S+)\s+(.*)', line )
+                if m != None:
+                    self.versions[m.group(2)] = m.group(1)
 
     def consider_variable( self, line ):
         m = re.match( '\$(\w+)\s+(.*)', line )
@@ -175,6 +196,9 @@ class ProcessDeps:
             tmp_name = handler.download_to_temp_file( from_uri )
         else:
             tmp_name = self.local_copy_to_temp_file( from_uri )     # Taking a local copy is not optimal, but keeps the subsequent update logic the same
+        if not tmp_name:
+            print( "Error: Unable to retrieve:", from_uri )
+            return
         self.conditionally_update_dst_file( tmp_name, to_file )
 
     def conditionally_update_dst_file( self, tmp_name, to_file ):
