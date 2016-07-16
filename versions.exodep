@@ -1,0 +1,7 @@
+# Format is, the leftmost name is used as the strand if the queried strand
+# name appears on its right
+# It is recommended that the latest versions.exodep file is always on the
+# master branch
+
+master apple alto
+d57a45c6737 first
