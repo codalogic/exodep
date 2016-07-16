@@ -135,7 +135,7 @@ class ProcessDeps:
         m = re.match( 'copy\s+(\S+)', line )
         if m != None:
             src_and_dst = m.group(1)
-            if re.match( 'http:s?//', src_and_dst ):
+            if re.match( 'https?://', src_and_dst ):
                 print( "Error: Explicit uri not supported with commands of the form 'copy src_and_dst'" )
                 return True    # Even though we haven't executed the command, we do know what it is
             self.retrieve_text_file( src_and_dst, src_and_dst )
@@ -150,7 +150,7 @@ class ProcessDeps:
         m = re.match( 'bcopy\s+(\S+)', line )
         if m != None:
             src_and_dst = m.group(1)
-            if re.match( 'http:s?//', src_and_dst ):
+            if re.match( 'https?://', src_and_dst ):
                 print( "Error: Explicit uri not supported with commands of the form 'bcopy src_and_dst'" )
                 return True    # Even though we haven't executed the command, we do know what it is
             self.retrieve_binary_file( src_and_dst, src_and_dst )
@@ -171,7 +171,10 @@ class ProcessDeps:
         to_file = self.make_destination_file_name( src, dst )
         if from_uri == '' or to_file == '':
             return
-        tmp_name = handler.download_to_temp_file( from_uri )
+        if re.match( 'https?://', from_uri ):
+            tmp_name = handler.download_to_temp_file( from_uri )
+        else:
+            tmp_name = self.local_copy_to_temp_file( from_uri )     # Taking a local copy is not optimal, but keeps the subsequent update logic the same
         self.conditionally_update_dst_file( tmp_name, to_file )
 
     def conditionally_update_dst_file( self, tmp_name, to_file ):
@@ -192,8 +195,7 @@ class ProcessDeps:
         return self.make_uri( file_name, uri )
 
     def make_uri( self, file_name, uri = None ):
-        m = re.match( 'https?://', file_name )
-        if m != None:
+        if re.match( 'https?://', file_name ):
             return self.expand_variables( file_name )
         if uri == None:
             uri = self.uritemplate
@@ -233,6 +235,21 @@ class ProcessDeps:
                 return self.versions[supported_strands]
         return self.vars['strand']
 
+    def local_copy_to_temp_file( self, file ):
+        try:
+            fout = None
+            with open( file, 'rb' ) as fin:
+                fout = tempfile.NamedTemporaryFile( mode='wb', delete=False)
+                while True:
+                    data = fin.read( 1000 )
+                    if not data:
+                        break
+                    fout.write( data )
+            fout.close()
+            return fout.name
+        except FileNotFoundError:
+            return ''
+
 def remove_comments( line ):
     return re.compile( '\s*#.*' ).sub( '', line )
 
@@ -259,7 +276,7 @@ class BinaryDownloadHandler:
             with urllib.request.urlopen( uri ) as fin:
                 fout = tempfile.NamedTemporaryFile( mode='wb', delete=False)
                 while True:
-                    data = fin.read( 10 )
+                    data = fin.read( 1000 )
                     if not data:
                         break
                     fout.write( data )

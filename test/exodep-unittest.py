@@ -27,6 +27,17 @@ import filecmp
 sys.path.append("..")
 import exodep
 
+def main():
+    pre_clean()
+    unittest.main()
+
+def pre_clean():
+    if os.path.isdir( 'download' ):
+        shutil.rmtree( 'download' )
+    if os.path.isdir( 'dir1' ):
+        shutil.rmtree( 'dir1' )
+    os.remove( 'file1.txt' )
+
 class MyTest(unittest.TestCase):
     def test_default_setup(self):
         pd = make_ProcessDeps( "" )
@@ -118,8 +129,6 @@ class MyTest(unittest.TestCase):
         os.rmdir( fake_dir )
 
     def test_download(self):
-        if os.path.isdir( 'download' ):
-            shutil.rmtree( 'download' )
         make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\ncopy dl-test-target.txt download/" )
         self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target.txt' ) )
         make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\ncopy dl-test-target.txt download/dl-test-target1.txt" )
@@ -131,19 +140,20 @@ class MyTest(unittest.TestCase):
         self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target.txt' ) )   # Check file of different name doesn't overwrite existing one
         self.assertTrue( filecmp.cmp( 'dl-test-target-other.txt', 'download/dl-test-target-other.txt' ) )
 
-        make_ProcessDeps( "copy https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target-other.txt download/dl-test-target2.txt" )
-        self.assertTrue( filecmp.cmp( 'dl-test-target-other.txt', 'download/dl-test-target2.txt' ) )    # Check download of different file updates an existing one
+        make_ProcessDeps( "copy https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target-other.txt download/dl-test-target3.txt" )
+        self.assertTrue( filecmp.cmp( 'dl-test-target-other.txt', 'download/dl-test-target3.txt' ) )    # Check download of different file updates an existing one
 
-        if os.path.isdir( 'dir1' ):
-            shutil.rmtree( 'dir1' )
-        os.remove( 'file1.txt' )
         make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\ncopy file1.txt" )
         self.assertTrue( filecmp.cmp( 'exodep-test-data-file1-reference.txt', 'file1.txt' ) )
         make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\ncopy dir1/file2.txt" )
-        self.assertTrue( filecmp.cmp( 'exodep-test-data-file1-reference.txt', 'file1.txt' ) )
+        self.assertTrue( filecmp.cmp( 'exodep-test-data-dir1-file2-reference.txt', 'dir1/file2.txt' ) )
+
+    def test_local_file_copying(self):
+        make_ProcessDeps( "uritemplate ./${file}\ncopy dl-test-target.txt download/dl-test-target4.txt" )
+        self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target4.txt' ) )
 
 def make_ProcessDeps( s ):
     return exodep.ProcessDeps( io.StringIO( s ) )
 
 if __name__ == '__main__':
-    unittest.main()
+    main()
