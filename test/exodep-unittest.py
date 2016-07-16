@@ -88,6 +88,22 @@ class MyTest(unittest.TestCase):
         self.assertTrue( 'plant' in pd.vars )
         self.assertEqual( pd.vars['plant'], 'rose' )
 
+    def test_set_empty_vars_1(self):
+        pd = make_ProcessDeps( "$path\n$animal sheep" )
+        self.assertEqual( len( pd.vars ), 3 )
+        self.assertTrue( 'path' in pd.vars )
+        self.assertEqual( pd.vars['path'], '' )
+        self.assertTrue( 'animal' in pd.vars )
+        self.assertEqual( pd.vars['animal'], 'sheep' )
+
+    def test_set_empty_vars_2(self):
+        pd = make_ProcessDeps( "$path \n$animal sheep" )
+        self.assertEqual( len( pd.vars ), 3 )
+        self.assertTrue( 'path' in pd.vars )
+        self.assertEqual( pd.vars['path'], '' )
+        self.assertTrue( 'animal' in pd.vars )
+        self.assertEqual( pd.vars['animal'], 'sheep' )
+
     def test_uri_formation(self):
         pd = make_ProcessDeps( "$user marvin\n$strand apple\n$project exodep" )
 
