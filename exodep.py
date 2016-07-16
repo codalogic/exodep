@@ -176,7 +176,8 @@ class ProcessDeps:
 
     def conditionally_update_dst_file( self, tmp_name, to_file ):
         if not os.path.isfile( to_file ):
-            os.makedirs( os.path.dirname( to_file ), exist_ok=True )
+            if os.path.dirname( to_file ):
+                os.makedirs( os.path.dirname( to_file ), exist_ok=True )
             shutil.move( tmp_name, to_file )
             print( 'Created...', to_file )
         elif not filecmp.cmp( tmp_name, to_file ):

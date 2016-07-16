@@ -134,6 +134,14 @@ class MyTest(unittest.TestCase):
         make_ProcessDeps( "copy https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target-other.txt download/dl-test-target2.txt" )
         self.assertTrue( filecmp.cmp( 'dl-test-target-other.txt', 'download/dl-test-target2.txt' ) )    # Check download of different file updates an existing one
 
+        if os.path.isdir( 'dir1' ):
+            shutil.rmtree( 'dir1' )
+        os.remove( 'file1.txt' )
+        make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\ncopy file1.txt" )
+        self.assertTrue( filecmp.cmp( 'exodep-test-data-file1-reference.txt', 'file1.txt' ) )
+        make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\ncopy dir1/file2.txt" )
+        self.assertTrue( filecmp.cmp( 'exodep-test-data-file1-reference.txt', 'file1.txt' ) )
+
 def make_ProcessDeps( s ):
     return exodep.ProcessDeps( io.StringIO( s ) )
 
