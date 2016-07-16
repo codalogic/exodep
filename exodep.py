@@ -175,6 +175,9 @@ class ProcessDeps:
         return self.make_uri( file_name, uri )
 
     def make_uri( self, file_name, uri = None ):
+        m = re.match( 'https?://', file_name )
+        if m != None:
+            return self.expand_variables( file_name )
         if uri == None:
             uri = self.uritemplate
         uri = re.compile( '\$\{file\}' ).sub( file_name, uri )

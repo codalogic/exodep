@@ -22,6 +22,7 @@ import io
 import os
 import unittest
 import shutil
+import filecmp
 
 sys.path.append("..")
 import exodep
@@ -117,7 +118,14 @@ class MyTest(unittest.TestCase):
         os.rmdir( fake_dir )
 
     def test_download(self):
-        pd = make_ProcessDeps( "uritemplate http://codalogic.com/${file}\ncopy announce.html dled/announce.html" )
+        if os.path.isdir( 'download' ):
+            shutil.rmtree( 'download' )
+        make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\ncopy dl-test-target.txt download/" )
+        self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target.txt' ) )
+        make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\ncopy dl-test-target.txt download/dl-test-target1.txt" )
+        self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target1.txt' ) )
+        make_ProcessDeps( "copy https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target.txt download/dl-test-target2.txt" )
+        self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target2.txt' ) )
 
 def make_ProcessDeps( s ):
     return exodep.ProcessDeps( io.StringIO( s ) )
