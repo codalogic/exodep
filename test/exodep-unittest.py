@@ -47,7 +47,7 @@ class MyTest(unittest.TestCase):
         self.assertEqual( pd.vars['strand'], 'master' )
         self.assertTrue( 'path' in pd.vars )
         self.assertEqual( pd.vars['path'], '' )
-        self.assertEqual( pd.uritemplate, 'https://raw.githubusercontent.com/${user}/${project}/${strand}/${path}${file}' )
+        self.assertEqual( pd.uritemplate, 'https://raw.githubusercontent.com/${owner}/${project}/${strand}/${path}${file}' )
 
     def test_set_uritemplate(self):
         pd = make_ProcessDeps( "uritemplate htpp://fiddle.com/${file}" )
@@ -55,11 +55,11 @@ class MyTest(unittest.TestCase):
 
     def test_set_hosting_bitbucket(self):
         pd = make_ProcessDeps( "hosting bitbucket" )
-        self.assertEqual( pd.uritemplate, 'https://bitbucket.org/${user}/${project}/raw/${strand}/${path}${file}' )
+        self.assertEqual( pd.uritemplate, 'https://bitbucket.org/${owner}/${project}/raw/${strand}/${path}${file}' )
 
     def test_set_hosting_github(self):
         pd = make_ProcessDeps( "uritemplate htpp://fiddle.com/${file}\nhosting github" )
-        self.assertEqual( pd.uritemplate, 'https://raw.githubusercontent.com/${user}/${project}/${strand}/${path}${file}' )
+        self.assertEqual( pd.uritemplate, 'https://raw.githubusercontent.com/${owner}/${project}/${strand}/${path}${file}' )
 
     def test_set_single_var(self):
         pd = make_ProcessDeps( "$space Mumble" )
@@ -112,7 +112,7 @@ class MyTest(unittest.TestCase):
         self.assertEqual( pd.vars['animal'], 'sheep' )
 
     def test_uri_formation(self):
-        pd = make_ProcessDeps( "$user marvin\n$strand apple\n$project exodep\n$path bin/" )
+        pd = make_ProcessDeps( "$owner marvin\n$strand apple\n$project exodep\n$path bin/" )
 
         formed_uri = pd.make_uri( 'data.dat' )
         self.assertEqual( formed_uri, 'https://raw.githubusercontent.com/marvin/exodep/apple/bin/data.dat' )

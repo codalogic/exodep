@@ -36,8 +36,8 @@ import shutil
 import filecmp
 
 host_templates = {
-        'github': 'https://raw.githubusercontent.com/${user}/${project}/${strand}/${path}${file}',
-        'bitbucket': 'https://bitbucket.org/${user}/${project}/raw/${strand}/${path}${file}' }
+        'github': 'https://raw.githubusercontent.com/${owner}/${project}/${strand}/${path}${file}',
+        'bitbucket': 'https://bitbucket.org/${owner}/${project}/raw/${strand}/${path}${file}' }
 
 def main() :
     ProcessDeps( sys.argv[1] if len( sys.argv ) >= 2 else "mydeps.exodep" )
