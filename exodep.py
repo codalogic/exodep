@@ -36,14 +36,14 @@ import shutil
 import filecmp
 
 host_templates = {
-        'github': 'https://raw.githubusercontent.com/${user}/${project}/${strand}/${file}',
-        'bitbucket': 'https://bitbucket.org/${user}/${project}/raw/${strand}/${file}' }
+        'github': 'https://raw.githubusercontent.com/${user}/${project}/${strand}/${path}${file}',
+        'bitbucket': 'https://bitbucket.org/${user}/${project}/raw/${strand}/${path}${file}' }
 
 def main() :
     ProcessDeps( sys.argv[1] if len( sys.argv ) >= 2 else "mydeps.exodep" )
 
 class ProcessDeps:
-    def __init__( self, dependencies_src, vars = { 'strand': 'master' } ):
+    def __init__( self, dependencies_src, vars = { 'strand': 'master', 'path': '' } ):
         self.uritemplate = host_templates['github']
         self.vars = vars.copy()
         self.versions = {}  # Each entry is <string of space separated strand names> : <string to use as strand in uri template>
@@ -217,7 +217,9 @@ class ProcessDeps:
             print( 'Same......', to_file )
 
     def make_master_strand_uri( self, file_name ):
+        # Override ${master} and ${path} variable
         uri = re.compile( '\$\{strand\}' ).sub( 'master', self.uritemplate )
+        uri = re.compile( '\$\{path\}' ).sub( '', uri )
         return self.make_uri( file_name, uri )
 
     def make_uri( self, file_name, uri = None ):
