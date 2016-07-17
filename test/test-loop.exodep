@@ -1,0 +1,2 @@
+# This exodep points to itself to check that a dependency file is only processed once
+include test-loop.exodep

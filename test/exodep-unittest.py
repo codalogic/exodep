@@ -222,6 +222,14 @@ class MyTest(unittest.TestCase):
                             "copy test/dl-test-target.txt download/dl-test-target14.txt" )
         self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target14.txt' ) )
 
+    def test_include(self):
+        pd = exodep.ProcessDeps( 'test-include.exodep' )
+        self.assertTrue( 'name' in pd.vars )
+        self.assertEqual( pd.vars['name'], 'done' )
+
+        pd = exodep.ProcessDeps( 'test-loop.exodep' )
+        # If this test doesn't result in an infinite loop, then it's passed!
+
 def make_ProcessDeps( s ):
     return exodep.ProcessDeps( io.StringIO( s ) )
 

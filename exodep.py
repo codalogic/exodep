@@ -48,6 +48,8 @@ class ProcessDeps:
         self.vars = vars.copy()
         self.versions = {}  # Each entry is <string of space separated strand names> : <string to use as strand in uri template>
         if isinstance( dependencies_src, str ):
+            if self.is_already_processed( dependencies_src ):
+                return
             self.file = dependencies_src
             self.process_dependency_file()
         elif isinstance( dependencies_src, io.StringIO ):    # Primarily for testing
@@ -55,6 +57,15 @@ class ProcessDeps:
             self.process_dependency_stream( dependencies_src )
         else:
             print( "Error: Unrecognised dependencies_src type format" )
+
+    processed_dependencies = {}
+
+    def is_already_processed( self, dependencies_src ):
+        abs_dependencies_src = os.path.abspath( dependencies_src )
+        if abs_dependencies_src in ProcessDeps.processed_dependencies:
+            return True
+        ProcessDeps.processed_dependencies[abs_dependencies_src] = True
+        return False
 
     def process_dependency_file( self ):
         try:
