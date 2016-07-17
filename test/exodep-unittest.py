@@ -36,7 +36,8 @@ def pre_clean():
         shutil.rmtree( 'download' )
     if os.path.isdir( 'dir1' ):
         shutil.rmtree( 'dir1' )
-    os.remove( 'file1.txt' )
+    if os.path.isfile( 'file1.txt' ):
+        os.remove( 'file1.txt' )
 
 class MyTest(unittest.TestCase):
     def test_default_setup(self):
@@ -165,9 +166,25 @@ class MyTest(unittest.TestCase):
         make_ProcessDeps( "copy https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target-other.txt download/dl-test-target3.txt" )
         self.assertTrue( filecmp.cmp( 'dl-test-target-other.txt', 'download/dl-test-target3.txt' ) )    # Check download of different file updates an existing one
 
-        make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\ncopy file1.txt" )
+    def test_download_copy_with_only_one_arg(self):
+        make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\n" +
+                            "copy file1.txt" )
         self.assertTrue( filecmp.cmp( 'exodep-test-data-file1-reference.txt', 'file1.txt' ) )
-        make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\ncopy dir1/file2.txt" )
+
+        make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\n" +
+                            "copy dir1/file2.txt" )
+        self.assertTrue( filecmp.cmp( 'exodep-test-data-dir1-file2-reference.txt', 'dir1/file2.txt' ) )
+
+        os.remove( 'dir1/file2.txt' )
+        make_ProcessDeps( "$path nothing\n" +       # $path should be ignored because it's not in the uritemplate
+                            "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\n" +
+                            "copy dir1/file2.txt" )
+        self.assertTrue( filecmp.cmp( 'exodep-test-data-dir1-file2-reference.txt', 'dir1/file2.txt' ) )
+
+        os.remove( 'dir1/file2.txt' )
+        make_ProcessDeps( "$path dir1/\n" +
+                            "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${path}${file}\n" +
+                            "copy file2.txt" )
         self.assertTrue( filecmp.cmp( 'exodep-test-data-dir1-file2-reference.txt', 'dir1/file2.txt' ) )
 
     def test_local_file_copying(self):

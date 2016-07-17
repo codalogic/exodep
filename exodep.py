@@ -151,32 +151,16 @@ class ProcessDeps:
         return False
 
     def consider_copy( self, line ):
-        m = re.match( 'copy\s+(\S+)\s+(\S+)', line )
+        m = re.match( 'copy\s+(\S+)(?:\s+(\S+))?', line )
         if m != None:
             self.retrieve_text_file( m.group(1), m.group(2) )
-            return True
-        m = re.match( 'copy\s+(\S+)', line )
-        if m != None:
-            src_and_dst = m.group(1)
-            if re.match( 'https?://', src_and_dst ):
-                print( "Error: Explicit uri not supported with commands of the form 'copy src_and_dst'" )
-                return True    # Even though we haven't executed the command, we do know what it is
-            self.retrieve_text_file( src_and_dst, src_and_dst )
             return True
         return False
 
     def consider_bcopy( self, line ):
-        m = re.match( 'bcopy\s+(\S+)\s+(\S+)', line )
+        m = re.match( 'bcopy\s+(\S+)(?:\s+(\S+))?', line )
         if m != None:
             self.retrieve_binary_file( m.group(1), m.group(2) )
-            return True
-        m = re.match( 'bcopy\s+(\S+)', line )
-        if m != None:
-            src_and_dst = m.group(1)
-            if re.match( 'https?://', src_and_dst ):
-                print( "Error: Explicit uri not supported with commands of the form 'bcopy src_and_dst'" )
-                return True    # Even though we haven't executed the command, we do know what it is
-            self.retrieve_binary_file( src_and_dst, src_and_dst )
             return True
         return False
 
@@ -190,9 +174,20 @@ class ProcessDeps:
         self.retrieve_file( src, dst, BinaryDownloadHandler() )
 
     def retrieve_file( self, src, dst, handler ):
+        if dst == None:
+            if re.match( 'https?://', src ):
+                print( "Error: Explicit uri not supported with commands of the form 'bcopy src_and_dst'" )
+                return
+            dst = src
+            if re.search( '\$\{path\}', self.uritemplate ):
+                dst = self.vars['path'] + dst
         from_uri = self.make_uri( src )
         to_file = self.make_destination_file_name( src, dst )
-        if from_uri == '' or to_file == '':
+        if from_uri == '':
+            print( "Error: Unable to evaluate source of:", src )
+            return
+        if to_file == '':
+            print( "Error: Unable to evaluate destination of:", dst )
             return
         if re.match( 'https?://', from_uri ):
             tmp_name = handler.download_to_temp_file( from_uri )
