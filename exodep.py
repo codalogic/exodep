@@ -35,12 +35,16 @@ import tempfile
 import shutil
 import filecmp
 
+host_templates = {
+        'github': 'https://raw.githubusercontent.com/${user}/${project}/${strand}/${file}',
+        'bitbucket': 'https://bitbucket.org/${user}/${project}/raw/${strand}/${file}' }
+
 def main() :
     ProcessDeps( sys.argv[1] if len( sys.argv ) >= 2 else "mydeps.exodep" )
 
 class ProcessDeps:
-    def __init__( self, dependencies_src, vars = { 'strand' : 'master' } ):
-        self.uritemplate = 'https://raw.githubusercontent.com/${user}/${project}/${strand}/${file}'
+    def __init__( self, dependencies_src, vars = { 'strand': 'master' } ):
+        self.uritemplate = host_templates['github']
         self.vars = vars.copy()
         self.versions = {}  # Each entry is <string of space separated strand names> : <string to use as strand in uri template>
         if isinstance( dependencies_src, str ):
@@ -88,13 +92,11 @@ class ProcessDeps:
     def consider_hosting( self, line ):
         m = re.match( 'hosting\s+(.*)', line )
         if m != None and m.group(1) != '':
-            remote = m.group(1)
-            if remote == 'github':
-                self.uritemplate = 'https://raw.githubusercontent.com/${user}/${project}/${strand}/${file}'
-            elif remote == 'bitbucket':
-                self.uritemplate = 'https://bitbucket.org/${user}/${project}/raw/${strand}/${file}'
+            host = m.group(1)
+            if host in host_templates:
+                self.uritemplate = host_templates[host]
             else:
-                print( "Error: Unrecognised remote server provider:", remote )
+                print( "Error: Unrecognised hosting server provider:", host )
             return True
         return False
 
