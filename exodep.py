@@ -96,9 +96,12 @@ class ProcessDeps:
     def consider_include( self, line ):
         m = re.match( 'include\s+(.*)', line )
         if m != None and m.group(1) != '':
-            ProcessDeps( m.group(1), self.vars )
+            ProcessDeps( self.script_relative_path( m.group(1) ), self.vars )
             return True
         return False
+
+    def script_relative_path( self, src ):
+        return os.path.normpath( os.path.join( os.path.dirname( self.file ), src ) ).replace( '\\', '/' )
 
     def consider_hosting( self, line ):
         m = re.match( 'hosting\s+(.*)', line )

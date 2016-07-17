@@ -230,6 +230,31 @@ class MyTest(unittest.TestCase):
         pd = exodep.ProcessDeps( 'test-loop.exodep' )
         # If this test doesn't result in an infinite loop, then it's passed!
 
+    def test_include_path_computation(self):
+        pd = make_ProcessDeps( "" )
+        pd.file = ''
+        pd.file = pd.script_relative_path( 'exodep.exodep' )
+        self.assertEqual( pd.file, 'exodep.exodep' )
+
+        pd.file = pd.script_relative_path( 'exodep2.exodep' )
+        self.assertEqual( pd.file, 'exodep2.exodep' )
+
+        pd.file = pd.script_relative_path( 'dir1/exodep3.exodep' )
+        self.assertEqual( pd.file, 'dir1/exodep3.exodep' )
+
+        # A config in 'dir1' calling 'exodep4.exodep' still needs to look in 'dir1'
+        pd.file = pd.script_relative_path( 'exodep4.exodep' )
+        self.assertEqual( pd.file, 'dir1/exodep4.exodep' )
+
+        pd.file = pd.script_relative_path( '../exodep5.exodep' )
+        self.assertEqual( pd.file, 'exodep5.exodep' )
+
+        pd.file = pd.script_relative_path( 'dir2/exodep6.exodep' )
+        self.assertEqual( pd.file, 'dir2/exodep6.exodep' )
+
+        pd.file = pd.script_relative_path( '../dir3/exodep7.exodep' )
+        self.assertEqual( pd.file, 'dir3/exodep7.exodep' )
+
 def make_ProcessDeps( s ):
     return exodep.ProcessDeps( io.StringIO( s ) )
 
