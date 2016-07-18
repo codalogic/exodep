@@ -138,7 +138,7 @@ Examples:
     $project exodep
     $strand apple
 
-### default (variables)
+### default
 
 The `default` command allows a configuration called by another script to
 specify default values.  The format is:
