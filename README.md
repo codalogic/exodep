@@ -64,17 +64,175 @@ Example:
 
 ## include
 
+A dependency may be dependent on other files specified in other exodep
+configuarion files.  These dependencies can be specified using the `include`
+command.  The same exodep configuration file can be `include`d in multiple
+configuration files.  Its contents are only processed the first time it is
+`include`d.
+
+Example:
+
+    include other-library.exodep
+
 ## uritemplate
+
+The URI template is used to map the files mentioned in the `copy` commands
+into a URL that can be used to download a file.
+
+When you want to download files from Github or BitBucket, rather than using
+the `uritemplate` command, it is recommended that the `hosting` command is
+used.
+
+By default the URI template is configured for Github and looks like:
+
+    https://raw.githubusercontent.com/${owner}/${project}/${strand}/${path}${file}
+
+As part of downloading a file the variables such as `$owner` and `$project` are
+substituted into the template to form a valid URL.  See the sections below for
+further details on the 'magical' `$strand`, `$path` and `$file` variables.
+
+Example:
+
+    uritemplate https://raw.githubusercontent.com/myacct/myproj/master/${file}
 
 ## hosting
 
+The `hosting` command provides an easier and less error prone way of setting
+a URI template for common hosting providers.  Currently Github and Bitbucket
+are supported.  In effect, the default is `github`.
+
+Examples:
+
+    hosting bitbucket
+    hosting github
+
 ## variables
 
-### Magical Variables
+Variables can be set to values that can be substituted into the URI template
+and the destination file specification of the copy command.  Variables are
+set using the form:
 
-### Strands and Versions
+    $variable_name  variable_value
+
+The `variable_value` may contain spaces.  The `variable_name` can not.
+
+Certain variables, such as `$owner` and `$project` have standardised meanings
+by convention.
+
+Other variables like `$strand` and `$path` have special 'magical' behaviour.
+See the section 'versions' command below for more on the `$strand` variable.
+
+The `$file` variable is automatically set by the `copy` command and should
+not be set manual in a configuration.
+
+When performing variable expansion, the sequence `${variable_name}` is
+replaced by the value of the variable `$variable_name`.
+
+Before invoking a `copy` (or `versions`) command using the default URI
+templates the variables `$owner`, `$project` and `$strand` must be set.
+The `$path` variable is automatically set to the empty string at start-up.
+
+Examples:
+
+    $owner codalogic
+    $project exodep
+    $strand apple
+
+### default (variables)
+
+The `default` command allows a configuration called by another script to
+specify default values.  The format is:
+
+    default $variable_name  variable_value
+
+In this case, if the `$variable_name` variable already as a value it is not
+overwritten.  This allows, for example, a configuration to specify a default
+location for header files, which can be overridden by a configuration file
+that includes it.
+
+For example, part of a configuration for a library, called my-lib.exodep,
+might include:
+
+    default $h_files include/my-lib/
+    copy my-lib.h ${h_files}
+
+A configuration file that includes the above project can enforce it's
+value for `$h_files` by doing:
+
+    $h_files include/
+    include my-lib.exodep
+
+As a result of this, the `copy` command would be expanded to:
+
+    copy my-lib.h include/
+
+## versions
+
+The `versions` command downloads a file called `versions.exodep` from the
+top-level directory of the remote server's master branch.  If this command is
+invoked and is successful the value stored in the `$strand` variable
+is looked up in this file and converted to a suitable Git branch name
+before doing URI template expansion.
+
+The active lines in the `versions.exodep` file consist of a Git branch
+name (or similar VCS concept) followed by a list of space separated
+strand names that can be mapped to it.
+
+The file may also include comments and blank lines for clarity.
+
+For example, with a `versions.exodep` file containing:
+
+    # These are my mappings
+
+    master banana
+    defunct1 apple alpha
+
+if the `$strand` variable is set to `apple`, the look-up operation would
+yield `defunct1` and this value would be used in place of the `${strand}`
+field when forming the URL for file downloading.  The resulting URL might
+look like:
+
+    https://raw.githubusercontent.com/codalogic/exodep/defunct1/exodep.py
+
+This mechanims allows for separation of a version name and the repository
+branch on which it is stored.
 
 ## copy and bcopy
+
+The `copy` command downloads a text file and the `bcopy` command downloads
+a binary file.  Other than that they have the same functionality.
+
+The commands have the format:
+
+    copy  <src-file-name>  <destination>
+    bcopy  <src-file-name>  <destination>
+
+If `destination` resolves to an existing directory, or the name ends in a
+`/` then the file identified by <src-file-name> is conditionally
+downloaded to that directory.  Otherwise `<destination>` is considered to
+be the name of the file to be downloaded to.
+
+The download process initially downloads the file to a temporary location.
+It is then compared with any possibly previously downloaded file, and only
+moved to the target destination if the files are different.
+
+`<src-file-name>` can be a locally defined URI template.  This is only
+recommended for 'quick and dirty' setups.
+
+When `<src-file-name>` is not a URI template, then `src-file-name` is
+used as the value of the `${file}` field in URI template expansion.
+
+A single argument form of `copy` and `bcopy` are also supported.  In this
+case, the following:
+
+    copy <src-file-name>
+
+is effectively treated as:
+
+    copy <src-file-name>  ${path}<src-file-name>
+
+(As `$path` is included as part of the default URI template expansion,
+this has the effect of the two files having the same name.)
 
 # Best Practices
 
