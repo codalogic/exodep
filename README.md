@@ -234,6 +234,41 @@ is effectively treated as:
 (As `$path` is included as part of the default URI template expansion,
 this has the effect of the two files having the same name.)
 
+# Example
+
+This is an example configuration for including the `dsl-pa` project at
+[https://github.com/codalogic/dsl-pa](https://github.com/codalogic/dsl-pa)
+into another project.
+
+    default $dsl_pa_h_dst   include/dsl-pa/
+    default $dsl_pa_cpp_dst src/dsl-pa/
+
+    default $h_dst   ${dsl_pa_h_dst}
+    default $cpp_dst ${dsl_pa_cpp_dst}
+
+    $owner   codalogic
+    $project dsl-pa
+    $strand  angst
+
+    hosting github
+    versions    # Invoking 'versions' must happen after setting $owner/$project variables
+
+    $path include/dsl-pa/
+    copy dsl-pa.h          ${h_dst}
+    copy dsl-pa-dsl-pa.h   ${h_dst}
+    copy dsl-pa-alphabet.h ${h_dst}
+    copy dsl-pa-reader.h   ${h_dst}
+
+    $path src/
+    copy dsl-pa-dsl-pa.cpp   ${cpp_dst}
+    copy dsl-pa-alphabet.cpp ${cpp_dst}
+    copy dsl-pa-reader.cpp   ${cpp_dst}
+
+Setting `$dsl_pa_h_dst` and `$h_dst`, and `$dsl_pa_cpp_dst` and `$cpp_dst` 
+as default values allows for the configuration to be used stand-alone, while
+also offering a configuration that includes it the option to modify its 
+behaviour.
+
 # Best Practices
 
 It's a bit early to talk about Best Practices at this stage.  However, the
