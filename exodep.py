@@ -90,7 +90,8 @@ class ProcessDeps:
                 self.consider_variable( line ) or
                 self.consider_default_variable( line ) or
                 self.consider_copy( line ) or
-                self.consider_bcopy( line ) ):
+                self.consider_bcopy( line ) or
+                self.consider_conditional( line ) ):
             self.report_unrecognised_command( line )
 
     def consider_include( self, line ):
@@ -287,6 +288,18 @@ class ProcessDeps:
         except FileNotFoundError:
             return ''
 
+    os_names = { 'windows': 'win32', 'linux': 'linux', 'osx': 'darwin' }
+
+    def consider_conditional( self, line ):
+        m = re.match( '(windows|linux|osx)\s+(.+)', line )
+        if m != None:
+            os_key = m.group(1)
+            command = m.group(2)
+            if sys.platform.startswith( ProcessDeps.os_names[os_key] ):
+                self.process_line( command )
+            return True
+        return False
+        
 def remove_comments( line ):
     return re.compile( '\s*#.*' ).sub( '', line )
 

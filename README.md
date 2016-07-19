@@ -234,6 +234,15 @@ is effectively treated as:
 (As `$path` is included as part of the default URI template expansion,
 this has the effect of the two files having the same name.)
 
+## windows, linux, osx
+
+`windows`, `linux` and `osx` are command pre-fixes that allow conditional
+executation of a command based on the platform the configuration is running
+on.  For example, if you only wanted to download a makefile when on Linux, 
+you could do:
+
+    linux copy makefile ./
+
 # Example
 
 This is an example configuration for including the `dsl-pa` project at
