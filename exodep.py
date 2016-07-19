@@ -44,6 +44,7 @@ def main() :
 
 class ProcessDeps:
     def __init__( self, dependencies_src, vars = { 'strand': 'master', 'path': '' } ):
+        self.line_num = 0
         self.uritemplate = host_templates['github']
         self.vars = vars.copy()
         self.versions = {}  # Each entry is <string of space separated strand names> : <string to use as strand in uri template>
@@ -56,7 +57,7 @@ class ProcessDeps:
             self.file = "<StringIO>"
             self.process_dependency_stream( dependencies_src )
         else:
-            print( "Error: Unrecognised dependencies_src type format" )
+            self.error( "Unrecognised dependencies_src type format" )
 
     processed_dependencies = {}
 
@@ -72,10 +73,11 @@ class ProcessDeps:
             with open(self.file) as f:
                 self.process_dependency_stream( f )
         except FileNotFoundError:
-            print( "Error: Unable to open exodep file:", self.file )
+            self.error( "Unable to open exodep file: " + self.file )
 
     def process_dependency_stream( self, f ):
         for line in f:
+            self.line_num += 1
             self.process_line( line )
 
     def process_line( self, line ):
@@ -98,7 +100,11 @@ class ProcessDeps:
     def consider_include( self, line ):
         m = re.match( 'include\s+(.*)', line )
         if m != None and m.group(1) != '':
-            ProcessDeps( self.script_relative_path( m.group(1) ), self.vars )
+            file_name = self.script_relative_path( m.group(1) )
+            if not os.path.isfile( file_name ):
+                self.error( "'include' file not found: " + file_name )
+                return True     # It was an 'include' command, even though it was a bad one
+            ProcessDeps( file_name, self.vars )
             return True
         return False
 
@@ -112,7 +118,7 @@ class ProcessDeps:
             if host in host_templates:
                 self.uritemplate = host_templates[host]
             else:
-                print( "Error: Unrecognised hosting server provider:", host )
+                self.error( "Unrecognised hosting server provider: " + host )
             return True
         return False
 
@@ -136,7 +142,7 @@ class ProcessDeps:
                     with open( uri, "rt" ) as fin:
                         self.parse_versions_info( fin )
             except:
-                print( "Error: Unable to retrieve:", uri )
+                self.error( "Unable to retrieve: " + uri )
             return True
         return False
 
@@ -181,7 +187,7 @@ class ProcessDeps:
         return False
 
     def report_unrecognised_command( self, line ):
-        print( "Error: Unrecognised command:", line )
+        self.error( "Unrecognised command: " + line )
 
     def retrieve_text_file( self, src, dst ):
         self.retrieve_file( src, dst, TextDownloadHandler() )
@@ -192,7 +198,7 @@ class ProcessDeps:
     def retrieve_file( self, src, dst, handler ):
         if dst == None:
             if re.match( 'https?://', src ):
-                print( "Error: Explicit uri not supported with commands of the form 'bcopy src_and_dst'" )
+                self.error( "Explicit uri not supported with commands of the form 'bcopy src_and_dst'" )
                 return
             dst = src
             if re.search( '\$\{path\}', self.uritemplate ):
@@ -200,17 +206,17 @@ class ProcessDeps:
         from_uri = self.make_uri( src )
         to_file = self.make_destination_file_name( src, dst )
         if from_uri == '':
-            print( "Error: Unable to evaluate source of:", src )
+            self.error( "Unable to evaluate source of: " + src )
             return
         if to_file == '':
-            print( "Error: Unable to evaluate destination of:", dst )
+            self.error( "Unable to evaluate destination of: " + dst )
             return
         if re.match( 'https?://', from_uri ):
             tmp_name = handler.download_to_temp_file( from_uri )
         else:
             tmp_name = self.local_copy_to_temp_file( from_uri )     # Taking a local copy is not optimal, but keeps the subsequent update logic the same
         if not tmp_name:
-            print( "Error: Unable to retrieve:", from_uri )
+            self.error( "Unable to retrieve: " + from_uri )
             return
         self.conditionally_update_dst_file( tmp_name, to_file )
 
@@ -261,12 +267,12 @@ class ProcessDeps:
             elif var_name in self.vars:
                 uri = re.compile( '\$\{' + var_name + '\}' ).sub( self.vars[var_name], uri )
             else:
-                print( "Error: Unrecognised substitution variable:", var_name )
+                self.error( "Unrecognised substitution variable: " + var_name )
                 return ''
 
     def select_strand( self ):
         if 'strand' not in self.vars:
-            print( "Error: No suitable 'strand' variable available for substitution" )
+            self.error( "No suitable 'strand' variable available for substitution" )
             return ''
         strand = self.vars['strand']
         for supported_strands in self.versions:
@@ -308,6 +314,10 @@ class ProcessDeps:
                 self.process_line( command )
             return True
         return False
+    
+    def error( self, what ):
+        print( "Error:", self.file + ", line " + str(self.line_num) + ":" )
+        print( "      ", what )
         
 def remove_comments( line ):
     return re.compile( '\s*#.*' ).sub( '', line )
