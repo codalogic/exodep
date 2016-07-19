@@ -1,0 +1,3 @@
+My name is ${exodep:val} or ${exodep:param}
+Or you could say, ${exodep:param} and
+${exodep:val}
