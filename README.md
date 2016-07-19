@@ -197,6 +197,10 @@ look like:
 This mechanims allows for separation of a version name and the repository
 branch on which it is stored.
 
+Example:
+
+    versions
+
 ## copy and bcopy
 
 The `copy` command downloads a text file and the `bcopy` command downloads
