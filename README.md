@@ -234,6 +234,15 @@ is effectively treated as:
 (As `$path` is included as part of the default URI template expansion,
 this has the effect of the two files having the same name.)
 
+## exec
+
+Causes a shell command to be executed.  It's probably a good idea to use
+this command with the `windows`, `linux` or `osx` conditional commands.
+
+Example:
+
+    linux exec make
+
 ## windows, linux, osx
 
 `windows`, `linux` and `osx` are command pre-fixes that allow conditional

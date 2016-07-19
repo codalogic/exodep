@@ -263,6 +263,9 @@ class MyTest(unittest.TestCase):
         elif sys.platform.startswith( 'linux' ):
             self.assertEqual( pd.vars['v'], 'l3' )
 
+    def test_exec(self):
+        make_ProcessDeps( 'windows exec dir' )
+
 def make_ProcessDeps( s ):
     return exodep.ProcessDeps( io.StringIO( s ) )
 

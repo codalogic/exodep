@@ -91,6 +91,7 @@ class ProcessDeps:
                 self.consider_default_variable( line ) or
                 self.consider_copy( line ) or
                 self.consider_bcopy( line ) or
+                self.consider_exec( line ) or
                 self.consider_conditional( line ) ):
             self.report_unrecognised_command( line )
 
@@ -287,6 +288,14 @@ class ProcessDeps:
             return fout.name
         except FileNotFoundError:
             return ''
+
+    def consider_exec( self, line ):
+        m = re.match( 'exec\s+(.+)', line )
+        if m != None:
+            command = m.group(1)
+            os.system( command )
+            return True
+        return False
 
     os_names = { 'windows': 'win32', 'linux': 'linux', 'osx': 'darwin' }
 
