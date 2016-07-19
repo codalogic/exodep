@@ -255,6 +255,15 @@ class MyTest(unittest.TestCase):
         pd.file = pd.script_relative_path( '../dir3/exodep7.exodep' )
         self.assertEqual( pd.file, 'dir3/exodep7.exodep' )
 
+    def test_subst(self):
+        pd = make_ProcessDeps( '$val v1\n$param p2\nsubst subst-input.txt download/subst-output.txt' )
+        self.assertTrue( filecmp.cmp( 'subst-expected-result.txt', 'download/subst-output.txt' ) )
+
+        # Single arg form
+        shutil.copy( 'subst-input.txt', 'download/subst-copy.txt' )
+        pd = make_ProcessDeps( '$val v1\n$param p2\nsubst subst-input.txt download/subst-copy.txt' )
+        self.assertTrue( filecmp.cmp( 'subst-expected-result.txt', 'download/subst-copy.txt' ) )
+
     def test_on_conditional(self):
         pd = make_ProcessDeps( '$v v1\n$dll true\non $dll $v p2\non $other $v l3' )
         self.assertTrue( 'v' in pd.vars )

@@ -238,6 +238,33 @@ is effectively treated as:
 (As `$path` is included as part of the default URI template expansion,
 this has the effect of the two files having the same name.)
 
+## subst
+
+The `subst` command substitutes exodep variables into a named file.
+
+The format of the command is:
+
+    subst <src-file-name> <dst-file-name>
+
+`<dst-file-name>` may be absent, in which case the command is effectively
+`subst <src-file-name> <src-file-name>`.
+
+The src file is processed line by line.  Each instance of strings of the
+form `${exodep:<var-name>}` is replaced by the `$<var-name>` exodep variable.
+
+For example, given exodep variables of the form:
+
+    $h_path   include/
+    $cpp_path src/
+
+and an input file of the form:
+
+    g++ -I ${exodep:h_path} ${exodep:src}file1.cpp
+
+the output file would be:
+
+    g++ -I include/ src/file1.cpp
+
 ## exec
 
 Causes a shell command to be executed.  It's probably a good idea to use

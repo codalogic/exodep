@@ -94,6 +94,7 @@ class ProcessDeps:
                 self.consider_copy( line ) or
                 self.consider_bcopy( line ) or
                 self.consider_exec( line ) or
+                self.consider_subst( line ) or
                 self.consider_on_conditional( line ) or
                 self.consider_os_conditional( line ) ):
             self.report_unrecognised_command( line )
@@ -285,7 +286,7 @@ class ProcessDeps:
         try:
             fout = None
             with open( file, 'rb' ) as fin:
-                fout = tempfile.NamedTemporaryFile( mode='wb', delete=False)
+                fout = tempfile.NamedTemporaryFile( mode='wb', delete=False )
                 while True:
                     data = fin.read( 1000 )
                     if not data:
@@ -295,6 +296,40 @@ class ProcessDeps:
             return fout.name
         except FileNotFoundError:
             return ''
+
+    def consider_subst( self, line ):
+        m = re.match( 'subst\s+(\S+)(?:\s+(\S+))?', line )
+        if m != None:
+            src = m.group(1)
+            dst = m.group(2)
+            if dst == None:
+                dst = src
+            try:
+                fout = None
+                with open( src, 'rt' ) as fin:
+                    fout = tempfile.NamedTemporaryFile( mode='wt', delete=False )
+                    for line in fin:
+                        fout.write( self.subst_expand_variables( line ) )
+                fout.close()
+                self.conditionally_update_dst_file( fout.name, dst )
+            except FileNotFoundError:
+                error( "Unable to open file for 'subst' command: " + src )
+            return True
+        return False
+
+    def subst_expand_variables( self, line ):
+        while( True ):
+            m = re.search( '\$\{exodep:(\w+)\}', line )
+            if m == None:
+                return line
+            var_name = m.group(1)
+            if var_name == 'strand':        # The strand variable has 'magic' properties (it can be mutated by a versions file) so we need to do something special with it
+                line = re.compile( '\$\{strand\}' ).sub( self.select_strand(), line )
+            elif var_name in self.vars:
+                line = re.compile( '\$\{exodep:' + var_name + '\}' ).sub( self.vars[var_name], line )
+            else:
+                self.error( "Unrecognised variable in 'subst' command: " + var_name )
+                return line
 
     def consider_exec( self, line ):
         m = re.match( 'exec\s+(.+)', line )
@@ -346,7 +381,7 @@ class TextDownloadHandler:
         try:
             fout = None
             with urllib.request.urlopen( uri ) as fin:
-                fout = tempfile.NamedTemporaryFile( mode='wt', delete=False)
+                fout = tempfile.NamedTemporaryFile( mode='wt', delete=False )
                 for line in fin:
                     fout.write( self.normalise_line_ending( line.decode('utf-8') ) )
             fout.close()
@@ -366,7 +401,7 @@ class BinaryDownloadHandler:
         try:
             fout = None
             with urllib.request.urlopen( uri ) as fin:
-                fout = tempfile.NamedTemporaryFile( mode='wb', delete=False)
+                fout = tempfile.NamedTemporaryFile( mode='wb', delete=False )
                 while True:
                     data = fin.read( 1000 )
                     if not data:
