@@ -263,10 +263,10 @@ class MyTest(unittest.TestCase):
         elif sys.platform.startswith( 'linux' ):
             self.assertEqual( pd.vars['v'], 'l3' )
 
-    # def test_exec(self):
-    #     make_ProcessDeps( 'windows exec dir' )
+    # def test_exec_visually(self):
+    #     make_ProcessDeps( 'windows exec dir\nwindows exec dir' )
     #
-    # def test_error(self):
+    # def test_error_visually(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )
 
 def make_ProcessDeps( s ):

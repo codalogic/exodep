@@ -299,7 +299,12 @@ class ProcessDeps:
         m = re.match( 'exec\s+(.+)', line )
         if m != None:
             command = m.group(1)
+            org_cwd = os.getcwd()
+            file_dirname = os.path.dirname( self.file )
+            if file_dirname:
+                os.chdir( file_dirname )
             os.system( command )
+            os.chdir( org_cwd )
             return True
         return False
 
