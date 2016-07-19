@@ -106,8 +106,8 @@ class ProcessDeps:
             self.report_unrecognised_command( line )
 
     def consider_include( self, line ):
-        m = re.match( 'include\s+(.*)', line )
-        if m != None and m.group(1) != '':
+        m = re.match( 'include\s+(.+)', line )
+        if m != None:
             file_name = self.script_relative_path( m.group(1) )
             if not os.path.isfile( file_name ):
                 self.error( "'include' file not found: " + file_name )
@@ -128,8 +128,8 @@ class ProcessDeps:
         return os.path.normpath( os.path.join( os.path.dirname( self.file ), src ) ).replace( '\\', '/' )
 
     def consider_hosting( self, line ):
-        m = re.match( 'hosting\s+(.*)', line )
-        if m != None and m.group(1) != '':
+        m = re.match( 'hosting\s+(.+)', line )
+        if m != None:
             host = m.group(1)
             if host in host_templates:
                 self.uritemplate = host_templates[host]
@@ -139,7 +139,7 @@ class ProcessDeps:
         return False
 
     def consider_uri_template( self, line ):
-        m = re.match( 'uritemplate\s+(.*)', line )
+        m = re.match( 'uritemplate\s+(.+)', line )
         if m != None:
             self.uritemplate = m.group(1)
             return True
