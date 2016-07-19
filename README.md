@@ -247,7 +247,7 @@ Example:
 
 `windows`, `linux` and `osx` are command pre-fixes that allow conditional
 executation of a command based on the platform the configuration is running
-on.  For example, if you only wanted to download a makefile when on Linux, 
+on.  For example, if you only wanted to download a makefile when on Linux,
 you could do:
 
     linux copy makefile ./
@@ -282,9 +282,9 @@ into another project.
     copy dsl-pa-alphabet.cpp ${cpp_dst}
     copy dsl-pa-reader.cpp   ${cpp_dst}
 
-Setting `$dsl_pa_h_dst` and `$h_dst`, and `$dsl_pa_cpp_dst` and `$cpp_dst` 
+Setting `$dsl_pa_h_dst` and `$h_dst`, and `$dsl_pa_cpp_dst` and `$cpp_dst`
 as default values allows for the configuration to be used stand-alone, while
-also offering a configuration that includes it the option to modify its 
+also offering a configuration that includes it the option to modify its
 behaviour.
 
 # Best Practices

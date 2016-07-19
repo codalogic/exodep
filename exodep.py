@@ -314,11 +314,11 @@ class ProcessDeps:
                 self.process_line( command )
             return True
         return False
-    
+
     def error( self, what ):
         print( "Error:", self.file + ", line " + str(self.line_num) + ":" )
         print( "      ", what )
-        
+
 def remove_comments( line ):
     return re.compile( '\s*#.*' ).sub( '', line )
 

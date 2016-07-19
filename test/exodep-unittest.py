@@ -265,7 +265,7 @@ class MyTest(unittest.TestCase):
 
     # def test_exec(self):
     #     make_ProcessDeps( 'windows exec dir' )
-    # 
+    #
     # def test_error(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )
 
