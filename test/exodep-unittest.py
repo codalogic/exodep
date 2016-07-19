@@ -264,6 +264,20 @@ class MyTest(unittest.TestCase):
         pd = make_ProcessDeps( '$val v1\n$param p2\nsubst subst-input.txt download/subst-copy.txt' )
         self.assertTrue( filecmp.cmp( 'subst-expected-result.txt', 'download/subst-copy.txt' ) )
 
+    def test_onchanged_conditional(self):
+        pd = make_ProcessDeps( "sinclude " +
+                                        "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\t" +
+                                        "onchanged copy dl-test-target.txt download/onchanged_not_should_be_written.txt\t" +
+                                        "copy dl-test-target.txt download/onchanged_file.txt\t" +
+                                        "onchanged copy dl-test-target.txt download/onchanged_should_be_written.txt\t" +
+                                        "\n" +
+                                "onchanged $onchanged_should_not_store 1\n" +
+                                "onanychanged $onanychanged_should_store 1\n" )
+        self.assertTrue( not os.path.isfile( 'download/onchanged_not_should_be_written.txt' ) )
+        self.assertTrue( os.path.isfile( 'download/onchanged_should_be_written.txt' ) )
+        self.assertTrue( 'onchanged_should_not_store' not in pd.vars )
+        self.assertTrue( 'onanychanged_should_store' in pd.vars )
+
     def test_on_conditional(self):
         pd = make_ProcessDeps( '$v v1\n$dll true\non $dll $v p2\non $other $v l3' )
         self.assertTrue( 'v' in pd.vars )

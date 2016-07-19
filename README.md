@@ -297,6 +297,34 @@ you could do:
 
     linux copy makefile ./
 
+## onchanged
+
+The `onchanged` command allows conditional execution of exodep commands based
+on whether any files have been created or modied by the current outer or
+`include`d config script.
+
+It has the form:
+
+    onchanged <command>
+
+See also `onanychanged`.
+
+Example:
+
+    onchanged exec build
+
+## onanychanged
+
+`onanychanged` is similar to `onchanged`.  The difference is that the
+sub-command associated with this command will executed if a file has been
+created or modified as any point during the running of the `exodep.py`
+script, irrespective of whether it was in the out configuration file or
+an `include`d configuration file.
+
+Example:
+
+    onanychanged exec commit
+
 # Example
 
 This is an example configuration for including the `dsl-pa` project at

@@ -43,7 +43,10 @@ def main() :
     ProcessDeps( sys.argv[1] if len( sys.argv ) >= 2 else "mydeps.exodep" )
 
 class ProcessDeps:
+    are_any_files_changed = False
+
     def __init__( self, dependencies_src, vars = { 'strand': 'master', 'path': '' } ):
+        self.are_files_changed = False
         self.line_num = 0
         self.uritemplate = host_templates['github']
         self.vars = vars.copy()
@@ -86,6 +89,7 @@ class ProcessDeps:
         if is_blank_line( line ):
             return
         if not (self.consider_include( line ) or
+                self.consider_sinclude( line ) or
                 self.consider_hosting( line ) or
                 self.consider_uri_template( line ) or
                 self.consider_versions( line ) or
@@ -96,6 +100,8 @@ class ProcessDeps:
                 self.consider_exec( line ) or
                 self.consider_subst( line ) or
                 self.consider_on_conditional( line ) or
+                self.consider_onchanged( line ) or
+                self.consider_onanychanged( line ) or
                 self.consider_os_conditional( line ) ):
             self.report_unrecognised_command( line )
 
@@ -107,6 +113,14 @@ class ProcessDeps:
                 self.error( "'include' file not found: " + file_name )
                 return True     # It was an 'include' command, even though it was a bad one
             ProcessDeps( file_name, self.vars )
+            return True
+        return False
+
+    def consider_sinclude( self, line ):        # This method is used to support testing
+        m = re.match( 'sinclude\s+(.+)', line )
+        if m != None:
+            args = m.group(1)
+            ProcessDeps( io.StringIO( args.replace( '\t', '\n' ) ), self.vars )
             return True
         return False
 
@@ -227,9 +241,11 @@ class ProcessDeps:
             if os.path.dirname( to_file ):
                 os.makedirs( os.path.dirname( to_file ), exist_ok=True )
             shutil.move( tmp_name, to_file )
+            self.are_files_changed = ProcessDeps.are_any_files_changed = True
             print( 'Created...', to_file )
         elif not filecmp.cmp( tmp_name, to_file ):
             shutil.move( tmp_name, to_file )
+            self.are_files_changed = ProcessDeps.are_any_files_changed = True
             print( 'Updated...', to_file )
         else:
             os.unlink( tmp_name )
@@ -350,6 +366,24 @@ class ProcessDeps:
             var_name = m.group(1)
             command = m.group(2)
             if var_name in self.vars and self.vars[var_name] != '':
+                self.process_line( command )
+            return True
+        return False
+
+    def consider_onchanged( self, line ):
+        m = re.match( 'onchanged\s+(.+)', line )
+        if m != None:
+            command = m.group(1)
+            if self.are_files_changed:
+                self.process_line( command )
+            return True
+        return False
+
+    def consider_onanychanged( self, line ):
+        m = re.match( 'onanychanged\s+(.+)', line )
+        if m != None:
+            command = m.group(1)
+            if ProcessDeps.are_any_files_changed:
                 self.process_line( command )
             return True
         return False
