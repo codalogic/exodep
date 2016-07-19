@@ -255,7 +255,12 @@ class MyTest(unittest.TestCase):
         pd.file = pd.script_relative_path( '../dir3/exodep7.exodep' )
         self.assertEqual( pd.file, 'dir3/exodep7.exodep' )
 
-    def test_conditional(self):
+    def test_on_conditional(self):
+        pd = make_ProcessDeps( '$v v1\n$dll true\non $dll $v p2\non $other $v l3' )
+        self.assertTrue( 'v' in pd.vars )
+        self.assertEqual( pd.vars['v'], 'p2' )
+
+    def test_os_conditional(self):
         pd = make_ProcessDeps( '$v v1\nwindows $v p2\nlinux $v l3' )
         self.assertTrue( 'v' in pd.vars )
         if sys.platform.startswith( 'win32' ):

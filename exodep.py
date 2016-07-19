@@ -94,7 +94,8 @@ class ProcessDeps:
                 self.consider_copy( line ) or
                 self.consider_bcopy( line ) or
                 self.consider_exec( line ) or
-                self.consider_conditional( line ) ):
+                self.consider_on_conditional( line ) or
+                self.consider_os_conditional( line ) ):
             self.report_unrecognised_command( line )
 
     def consider_include( self, line ):
@@ -308,9 +309,19 @@ class ProcessDeps:
             return True
         return False
 
+    def consider_on_conditional( self, line ):
+        m = re.match( 'on\s+\$(\w+)\s+(.+)', line )
+        if m != None:
+            var_name = m.group(1)
+            command = m.group(2)
+            if var_name in self.vars and self.vars[var_name] != '':
+                self.process_line( command )
+            return True
+        return False
+
     os_names = { 'windows': 'win32', 'linux': 'linux', 'osx': 'darwin' }
 
-    def consider_conditional( self, line ):
+    def consider_os_conditional( self, line ):
         m = re.match( '(windows|linux|osx)\s+(.+)', line )
         if m != None:
             os_key = m.group(1)

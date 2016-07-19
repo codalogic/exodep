@@ -247,6 +247,20 @@ Example:
 
     linux exec make
 
+## on
+
+The `on` command allows conditional execution of exodep ommands. It has
+the form:
+
+    on $<var_name> <command>
+
+If the variable $<var_name> is present and is not the empty string then the
+exodep command is run.
+
+Example:
+
+    on $want_so exec make libso
+
 ## windows, linux, osx
 
 `windows`, `linux` and `osx` are command pre-fixes that allow conditional
