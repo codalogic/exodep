@@ -265,6 +265,42 @@ the output file would be:
 
     g++ -I include/ src/file1.cpp
 
+## cp, mv
+
+`cp` and `mv` allow copying and moving files on the host file system.
+
+They have the form:
+
+    cp <src> <dst>
+    mv <src> <dst>
+
+Exodep variables are expanded in the `src` and `dst` names.
+
+Example:
+
+    cp results.log ${log_path}final-results.log
+
+## mkdir, rmdir
+
+`mkdir` and `rmdir` allow making and removing directories / folders on
+the host file system.
+
+They have the form:
+
+    mkdir <dir>
+    rmdir <dir>
+
+Exodep variables are expanded in the `dir` name.
+
+`mkdir` will not complain if the directory is already present.
+
+`rmdir` does not require the directory to be empty to remove it.
+
+Example:
+
+    mkdir ${logs}
+    rmdir ${tmp}
+
 ## exec
 
 Causes a shell command to be executed.  It's probably a good idea to use

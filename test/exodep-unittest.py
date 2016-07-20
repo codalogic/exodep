@@ -34,6 +34,8 @@ def main():
 def pre_clean():
     if os.path.isdir( 'download' ):
         shutil.rmtree( 'download' )
+    if os.path.isdir( 'file-ops-test-dir' ):
+        shutil.rmtree( 'file-ops-test-dir' )
     if os.path.isdir( 'dir1' ):
         shutil.rmtree( 'dir1' )
     if os.path.isfile( 'file1.txt' ):
@@ -290,6 +292,26 @@ class MyTest(unittest.TestCase):
             self.assertEqual( pd.vars['v'], 'p2' )
         elif sys.platform.startswith( 'linux' ):
             self.assertEqual( pd.vars['v'], 'l3' )
+
+    def test_file_ops(self):
+        make_ProcessDeps( '$dir file-ops-test-dir\n' +
+                            'mkdir ${dir}\n' )
+        self.assertTrue( os.path.isdir( 'file-ops-test-dir' ) )
+
+        make_ProcessDeps( '$src subst-input.txt\n' +
+                            '$path file-ops-test-dir/\n' +
+                            'cp ${src} ${path}cp-file.txt' )
+        self.assertTrue( os.path.isfile( 'file-ops-test-dir/cp-file.txt' ) )
+
+        make_ProcessDeps( '$src subst-input.txt\n' +
+                            '$path file-ops-test-dir/\n' +
+                            'cp ${src} ${path}cp-file.txt\n' +
+                            'mv ${path}cp-file.txt ${path}cp-file2.txt' )
+        self.assertTrue( os.path.isfile( 'file-ops-test-dir/cp-file2.txt' ) )
+
+        make_ProcessDeps( '$dir file-ops-test-dir\n' +
+                            'rmdir ${dir}\n' )
+        self.assertTrue( not os.path.isdir( 'file-ops-test-dir' ) )
 
     def test_exec(self):
         # Avoid using DOS 'copy' in the test in case exodep copy gets invoked instead

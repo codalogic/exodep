@@ -97,6 +97,7 @@ class ProcessDeps:
                 self.consider_default_variable( line ) or
                 self.consider_copy( line ) or
                 self.consider_bcopy( line ) or
+                self.consider_file_ops( line ) or
                 self.consider_exec( line ) or
                 self.consider_subst( line ) or
                 self.consider_on_conditional( line ) or
@@ -346,6 +347,40 @@ class ProcessDeps:
             else:
                 self.error( "Unrecognised variable in 'subst' command: " + var_name )
                 return line
+
+    def consider_file_ops( self, line ):
+        m = re.match( '(cp|mv)\s+(\S+)\s+(\S+)', line )
+        if m != None:
+            op = m.group(1)
+            src = self.expand_variables( m.group(2) )
+            dst = self.expand_variables( m.group(3) )
+            if op == 'cp':
+                try:
+                    shutil.copy( src, dst )
+                except:
+                    self.error( "Unable to 'cp' file '" + src + "' to '" + dst + "'" )
+            elif op == 'mv':
+                try:
+                    shutil.move( src, dst )
+                except:
+                    self.error( "Unable to 'mv' file '" + src + "' to '" + dst + "'" )
+            return True
+        m = re.match( '(mkdir|rmdir)\s+(\S+)', line )
+        if m != None:
+            op = m.group(1)
+            dir = self.expand_variables( m.group(2) )
+            if op == 'mkdir':
+                try:
+                    os.makedirs( dir, exist_ok=True )
+                except:
+                    self.error( "Unable to 'mkdir' for '" + dir + "'" )
+            elif op == 'rmdir':
+                try:
+                    shutil.rmtree( dir )
+                except:
+                    self.error( "Unable to 'rmdir' on '" + dir + "'" )
+            return True
+        return False
 
     def consider_exec( self, line ):
         m = re.match( 'exec\s+(.+)', line )
