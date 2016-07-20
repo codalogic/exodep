@@ -355,7 +355,7 @@ class ProcessDeps:
             file_dirname = os.path.dirname( self.file )
             if file_dirname:
                 os.chdir( file_dirname )
-            os.system( command )
+            os.system( self.expand_variables( command ) )
             os.chdir( org_cwd )
             return True
         return False

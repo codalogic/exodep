@@ -265,14 +265,14 @@ class MyTest(unittest.TestCase):
         self.assertTrue( filecmp.cmp( 'subst-expected-result.txt', 'download/subst-copy.txt' ) )
 
     def test_onchanged_conditional(self):
-        pd = make_ProcessDeps( "sinclude " +
-                                        "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\t" +
-                                        "onchanged copy dl-test-target.txt download/onchanged_not_should_be_written.txt\t" +
-                                        "copy dl-test-target.txt download/onchanged_file.txt\t" +
-                                        "onchanged copy dl-test-target.txt download/onchanged_should_be_written.txt\t" +
-                                        "\n" +
-                                "onchanged $onchanged_should_not_store 1\n" +
-                                "onanychanged $onanychanged_should_store 1\n" )
+        pd = make_ProcessDeps( 'sinclude ' +
+                                        'uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\t' +
+                                        'onchanged copy dl-test-target.txt download/onchanged_not_should_be_written.txt\t' +
+                                        'copy dl-test-target.txt download/onchanged_file.txt\t' +
+                                        'onchanged copy dl-test-target.txt download/onchanged_should_be_written.txt\t' +
+                                        '\n' +
+                                'onchanged $onchanged_should_not_store 1\n' +
+                                'onanychanged $onanychanged_should_store 1\n' )
         self.assertTrue( not os.path.isfile( 'download/onchanged_not_should_be_written.txt' ) )
         self.assertTrue( os.path.isfile( 'download/onchanged_should_be_written.txt' ) )
         self.assertTrue( 'onchanged_should_not_store' not in pd.vars )
@@ -291,9 +291,19 @@ class MyTest(unittest.TestCase):
         elif sys.platform.startswith( 'linux' ):
             self.assertEqual( pd.vars['v'], 'l3' )
 
-    # def test_exec_visually(self):
-    #     make_ProcessDeps( 'windows exec dir\nwindows exec dir' )
-    #
+    def test_exec(self):
+        # Avoid using DOS 'copy' in the test in case exodep copy gets invoked instead
+        make_ProcessDeps( 'uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n' +
+                            'copy dl-test-target.txt download/exec_file.txt\n' +
+                            'windows exec rename download\exec_file.txt exec_renamed_file.txt' )
+        self.assertTrue( os.path.isfile( 'download/exec_renamed_file.txt' ) )
+
+        make_ProcessDeps( '$path download\n' +
+                            'uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n' +
+                            'copy dl-test-target.txt download/exec_file2.txt\n' +
+                            'windows exec rename ${path}\exec_file2.txt exec_renamed_file2.txt' )
+        self.assertTrue( os.path.isfile( 'download/exec_renamed_file2.txt' ) )
+
     # def test_error_visually(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )
 
