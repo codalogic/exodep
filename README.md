@@ -238,6 +238,8 @@ is effectively treated as:
 (As `$path` is included as part of the default URI template expansion,
 this has the effect of the two files having the same name.)
 
+`get` is an alias of `copy` and `bget` is an alias of `bcopy`.
+
 ## subst
 
 The `subst` command substitutes exodep variables into a named file.
