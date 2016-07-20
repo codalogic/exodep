@@ -345,13 +345,15 @@ class MyTest(unittest.TestCase):
         # Avoid using DOS 'copy' in the test in case exodep copy gets invoked instead
         make_ProcessDeps( 'uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n' +
                             'copy dl-test-target.txt download/exec_file.txt\n' +
-                            'windows exec rename download\exec_file.txt exec_renamed_file.txt' )
+                            'windows exec rename download\exec_file.txt exec_renamed_file.txt\n' +
+                            'linux exec mv download/exec_file.txt exec_renamed_file.txt' )
         self.assertTrue( os.path.isfile( 'download/exec_renamed_file.txt' ) )
 
         make_ProcessDeps( '$path download\n' +
                             'uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n' +
                             'copy dl-test-target.txt download/exec_file2.txt\n' +
-                            'windows exec rename ${path}\exec_file2.txt exec_renamed_file2.txt' )
+                            'windows exec rename ${path}\exec_file2.txt exec_renamed_file2.txt\n' +
+                            'linux exec mv ${path}/exec_file2.txt exec_renamed_file2.txt' )
         self.assertTrue( os.path.isfile( 'download/exec_renamed_file2.txt' ) )
 
     # def test_error_visually(self):
