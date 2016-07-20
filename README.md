@@ -280,6 +280,20 @@ Example:
 
     cp results.log ${log_path}final-results.log
 
+## rm
+
+`rm` allows removing a file from the host file system.
+
+The form is:
+
+    rm <file>
+
+Exodep variables are expanded in the `file` name.
+
+Example:
+
+    rm ${tmp}build.log
+
 ## mkdir, rmdir
 
 `mkdir` and `rmdir` allow making and removing directories / folders on

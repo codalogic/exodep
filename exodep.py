@@ -365,20 +365,25 @@ class ProcessDeps:
                 except:
                     self.error( "Unable to 'mv' file '" + src + "' to '" + dst + "'" )
             return True
-        m = re.match( '(mkdir|rmdir)\s+(\S+)', line )
+        m = re.match( '(mkdir|rmdir|rm)\s+(\S+)', line )
         if m != None:
             op = m.group(1)
-            dir = self.expand_variables( m.group(2) )
+            path = self.expand_variables( m.group(2) )
             if op == 'mkdir':
                 try:
-                    os.makedirs( dir, exist_ok=True )
+                    os.makedirs( path, exist_ok=True )
                 except:
-                    self.error( "Unable to 'mkdir' for '" + dir + "'" )
+                    self.error( "Unable to 'mkdir' for '" + path + "'" )
             elif op == 'rmdir':
                 try:
-                    shutil.rmtree( dir )
+                    shutil.rmtree( path )
                 except:
-                    self.error( "Unable to 'rmdir' on '" + dir + "'" )
+                    self.error( "Unable to 'rmdir' on '" + path + "'" )
+            elif op == 'rm':
+                try:
+                    os.unlink( path )
+                except:
+                    self.error( "Unable to 'rm' file '" + path + "'" )
             return True
         return False
 
