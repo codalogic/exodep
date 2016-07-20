@@ -270,6 +270,8 @@ the output file would be:
 Causes a shell command to be executed.  It's probably a good idea to use
 this command with the `windows`, `linux` or `osx` conditional commands.
 
+Exodep variables in the command are expanded before the command is executed.
+
 Example:
 
     linux exec make
