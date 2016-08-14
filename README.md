@@ -414,10 +414,33 @@ as default values allows for the configuration to be used stand-alone, while
 also offering a configuration that includes it the option to modify its
 behaviour.
 
-# Best Practices
+# Best Current Practices
 
 It's a bit early to talk about Best Practices at this stage.  However, the
 intent is to document here strategies that work well with Exodep.
+
+Projects will typically want to both import files using `exodep` and export
+them.  To support this it is suggested that a project include two
+sub-directories called `exodep-imports` and `exodep-exports` for imports
+and exports respectively.
+
+If an `exodep` config file is both imported and exported
+it can be included only in the `exodep-exports` sub-directory and the main
+import `exodep` configuration can include statements to the effect of
+`include ../exodep-exports/my-import.exodep`.  This permits only having a
+single copy of each `exodep` config file, but makes it easier for
+someone who wants to use the exported `exodep` files.
+
+If a project exports multiple `exodep` configuration files, it maybe
+appropriate to put all those files within a sub-directory of the
+`exodep-imports` sub-directory in the importing project.
+
+It's suggested that a version controlled project is self-contained such that it
+contains all of it external dependencies as part of the repo, rather than
+having to run exodep to load them as part of setting up a project.  This makes
+it easier to use the repo, makes sure that multiple distributed
+snapshots are consistent between developers and permits investigating older
+repo versions.
 
 # Bugs and Issues
 
@@ -428,6 +451,7 @@ Larger bugs / issues include:
 - The `copy` command does not allow specifying file names that contain spaces
 
 # Testing
+
 Open a shell and cd to the `test` directory.  Then run `exodep-unittest.py`.
 
 # License
