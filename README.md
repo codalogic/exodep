@@ -48,7 +48,10 @@ supported using the `include` command.
 The operation of `exodep.py` is configured using configuration files.  The
 configuration file to use can be specified on the command line.  If no
 configuration file is specified, the default usage scenario, `exodep.py` will
-interpret the contents of the file named `mydeps.exodep`.
+interpret the contents of the file named `mydeps.exodep`.  If that is not
+present it will look for a file called `exodep-imports/mydeps.exodep`.  If
+that is also not present it will interpret all the config files it finds by
+globbing `exodep-imports/*.exodep`.
 
 Exodep configuration files are line oriented.  Each command must be on its
 own line.  The various commands are documented below.
