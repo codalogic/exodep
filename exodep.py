@@ -34,13 +34,23 @@ import urllib.request
 import tempfile
 import shutil
 import filecmp
+import glob
 
 host_templates = {
         'github': 'https://raw.githubusercontent.com/${owner}/${project}/${strand}/${path}${file}',
         'bitbucket': 'https://bitbucket.org/${owner}/${project}/raw/${strand}/${path}${file}' }
 
 def main() :
-    ProcessDeps( sys.argv[1] if len( sys.argv ) >= 2 else "mydeps.exodep" )
+    if len( sys.argv ) >= 2:
+        ProcessDeps( sys.argv[1] )
+    elif os.path.isfile( 'mydeps.exodep' ):
+        ProcessDeps( 'mydeps.exodep' )
+    elif os.path.isfile( 'exodep-imports/mydeps.exodep' ):
+        ProcessDeps( 'exodep-imports/mydeps.exodep' )
+    else:
+        for file in glob.glob( 'exodep-imports/*.exodep' ):
+            ProcessDeps( file )
+
 
 class ProcessDeps:
     are_any_files_changed = False
