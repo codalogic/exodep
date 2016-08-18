@@ -380,7 +380,8 @@ class ProcessDeps:
             dst = self.expand_variables( m.group(3) )
             if op == 'cp':
                 try:
-                    shutil.copy( src, dst )
+                    if not os.path.isfile( dst ) or not filecmp.cmp( src, dst ):
+                        shutil.copy( src, dst )
                 except:
                     self.error( "Unable to 'cp' file '" + src + "' to '" + dst + "'" )
             elif op == 'mv':
