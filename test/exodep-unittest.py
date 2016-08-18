@@ -338,8 +338,13 @@ class MyTest(unittest.TestCase):
 
         make_ProcessDeps( '$src subst-input.txt\n' +
                             '$path file-ops-test-dir/\n' +
-                            'cp ${src} ${path}cp-file.txt' )
-        self.assertTrue( os.path.isfile( 'file-ops-test-dir/cp-file.txt' ) )
+                            'cp ${src} ${path}' )
+        self.assertTrue( os.path.isfile( 'file-ops-test-dir/subst-input.txt' ) )
+
+        make_ProcessDeps( '$src subst-input.txt\n' +
+                            '$path file-ops-test-dir/\n' +
+                            'cp ${src} ${path}cp-file2.txt' )
+        self.assertTrue( os.path.isfile( 'file-ops-test-dir/cp-file2.txt' ) )
 
         make_ProcessDeps( '$src subst-input.txt\n' +
                             '$path file-ops-test-dir/\n' +

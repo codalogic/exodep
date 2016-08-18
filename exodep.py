@@ -377,16 +377,18 @@ class ProcessDeps:
         if m != None:
             op = m.group(1)
             src = self.expand_variables( m.group(2) )
-            dst = self.expand_variables( m.group(3) )
+            dst = self.make_destination_file_name( src, m.group(3) )
             if op == 'cp':
                 try:
-                    if not os.path.isfile( dst ) or not filecmp.cmp( src, dst ):
+                    if self.is_copy_needed( src, dst ):
                         shutil.copy( src, dst )
+                        print( 'cp........', src, dst )
                 except:
                     self.error( "Unable to 'cp' file '" + src + "' to '" + dst + "'" )
             elif op == 'mv':
                 try:
                     shutil.move( src, dst )
+                    print( 'mv........', src, dst )
                 except:
                     self.error( "Unable to 'mv' file '" + src + "' to '" + dst + "'" )
             return True
@@ -397,20 +399,26 @@ class ProcessDeps:
             if op == 'mkdir':
                 try:
                     os.makedirs( path, exist_ok=True )
+                    print( 'mkdir.....', path )
                 except:
                     self.error( "Unable to 'mkdir' for '" + path + "'" )
             elif op == 'rmdir':
                 try:
                     shutil.rmtree( path )
+                    print( 'rmdir.....', path )
                 except:
                     self.error( "Unable to 'rmdir' on '" + path + "'" )
             elif op == 'rm':
                 try:
                     os.unlink( path )
+                    print( 'rm........', path )
                 except:
                     self.error( "Unable to 'rm' file '" + path + "'" )
             return True
         return False
+
+    def is_copy_needed( self, src, dst ):
+        return not os.path.isfile( dst ) or not filecmp.cmp( src, dst )
 
     def consider_exec( self, line ):
         m = re.match( 'exec\s+(.+)', line )
