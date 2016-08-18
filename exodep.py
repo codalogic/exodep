@@ -111,6 +111,8 @@ class ProcessDeps:
                 self.consider_exec( line ) or
                 self.consider_subst( line ) or
                 self.consider_on_conditional( line ) or
+                self.consider_ondir( line ) or
+                self.consider_onfile( line ) or
                 self.consider_onchanged( line ) or
                 self.consider_onanychanged( line ) or
                 self.consider_os_conditional( line ) ):
@@ -428,6 +430,26 @@ class ProcessDeps:
             var_name = m.group(1)
             command = m.group(2)
             if var_name in self.vars and self.vars[var_name] != '':
+                self.process_line( command )
+            return True
+        return False
+
+    def consider_ondir( self, line ):
+        m = re.match( 'ondir\s+(\S+)\s+(.+)', line )
+        if m != None:
+            dir = m.group(1)
+            command = m.group(2)
+            if os.path.isdir( dir ):
+                self.process_line( command )
+            return True
+        return False
+
+    def consider_onfile( self, line ):
+        m = re.match( 'onfile\s+(\S+)\s+(.+)', line )
+        if m != None:
+            file = m.group(1)
+            command = m.group(2)
+            if os.path.isfile( file ):
                 self.process_line( command )
             return True
         return False

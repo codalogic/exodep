@@ -345,14 +345,22 @@ Example:
 
     on $want_so exec make libso
 
-## windows, linux, osx
+## ondir, onfile
 
-`windows`, `linux` and `osx` are command pre-fixes that allow conditional
-executation of a command based on the platform the configuration is running
-on.  For example, if you only wanted to download a makefile when on Linux,
-you could do:
+The `ondir` and `onfile` commands allow conditional execution of exodep
+commands based on whether a named directory or named file exists
+(respectively).
 
-    linux copy makefile ./
+They have the form:
+
+    ondir <directory name> <command>
+    onfile <file name> <command>
+
+Example:
+
+    ondir htdocs default $php_dst htdocs/
+    ondir httpdocs default $php_dst httpdocs/
+    default $php_dst ./
 
 ## onchanged
 
@@ -381,6 +389,15 @@ an `include`d configuration file.
 Example:
 
     onanychanged exec commit
+
+## windows, linux, osx
+
+`windows`, `linux` and `osx` are command pre-fixes that allow conditional
+executation of a command based on the platform the configuration is running
+on.  For example, if you only wanted to download a makefile when on Linux,
+you could do:
+
+    linux copy makefile ./
 
 # Example
 
