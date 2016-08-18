@@ -405,11 +405,11 @@ This is an example configuration for including the `dsl-pa` project at
 [https://github.com/codalogic/dsl-pa](https://github.com/codalogic/dsl-pa)
 into another project.
 
-    default $dsl_pa_h_dst   include/dsl-pa/
-    default $dsl_pa_cpp_dst src/dsl-pa/
+    default $h_dst   include/dsl-pa/
+    default $cpp_dst src/dsl-pa/
 
-    default $h_dst   ${dsl_pa_h_dst}
-    default $cpp_dst ${dsl_pa_cpp_dst}
+    default $dsl_pa_h_dst   ${h_dst}
+    default $dsl_pa_cpp_dst ${cpp_dst}
 
     $owner   codalogic
     $project dsl-pa
