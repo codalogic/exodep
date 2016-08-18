@@ -382,13 +382,13 @@ class ProcessDeps:
                 try:
                     if self.is_copy_needed( src, dst ):
                         shutil.copy( src, dst )
-                        print( 'cp........', src, dst )
+                        print( 'cp........', dst )
                 except:
                     self.error( "Unable to 'cp' file '" + src + "' to '" + dst + "'" )
             elif op == 'mv':
                 try:
                     shutil.move( src, dst )
-                    print( 'mv........', src, dst )
+                    print( 'mv........', dst )
                 except:
                     self.error( "Unable to 'mv' file '" + src + "' to '" + dst + "'" )
             return True
