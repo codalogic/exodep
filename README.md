@@ -281,6 +281,10 @@ They have the form:
 
 Exodep variables are expanded in the `src` and `dst` names.
 
+To avoid needlessly changing file timestamps, the `cp` command
+will only copy a file if the destination doesn't exist or the source and
+destination are different.
+
 Example:
 
     cp results.log ${log_path}final-results.log
@@ -444,16 +448,24 @@ them.  To support this it is suggested that a project include two
 sub-directories called `exodep-imports` and `exodep-exports` for imports
 and exports respectively.
 
-If an `exodep` config file is both imported and exported
-it can be included only in the `exodep-exports` sub-directory and the main
-import `exodep` configuration can include statements to the effect of
-`include ../exodep-exports/my-import.exodep`.  This permits only having a
-single copy of each `exodep` config file, but makes it easier for
-someone who wants to use the exported `exodep` files.
+If `exodep` config files are both imported and exported
+they can be editted in the `exodep-imports` sub-directory and an `exodep`
+configuration file (e.g. `mod-exports.exodep`) can be used to copy them to the
+`exodep-exports` sub-directory.
 
 If a project exports multiple `exodep` configuration files, it maybe
 appropriate to put all those files within a sub-directory of the
 `exodep-imports` sub-directory in the importing project.
+
+Some projects, such as utility libraries may have multiple parts that can be
+separately exported.  It's suggested that the `exodep` files for such projects
+be named according to the format `project-name.sub-feature.exodep`, e.g.
+`myutils.string-ops.exodep`.
+
+If when including an `exodep` configuration file into your project, modify the
+name by prefixing it with your project name.  For example, if you edit the
+`mylib.exodep` file from the `mylib` project, and place it in your `myproj`
+project, call it `myproj.mylib.exodep`.
 
 It's suggested that a version controlled project is self-contained such that it
 contains all of it external dependencies as part of the repo, rather than
