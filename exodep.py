@@ -62,7 +62,7 @@ class ProcessDeps:
         self.vars = vars.copy()
         self.versions = {}  # Each entry is <string of space separated strand names> : <string to use as strand in uri template>
         if isinstance( dependencies_src, str ):
-            if self.is_already_processed( dependencies_src ):
+            if self.is_config_already_processed( dependencies_src ):
                 return
             self.file = dependencies_src
             self.process_dependency_file()
@@ -72,13 +72,13 @@ class ProcessDeps:
         else:
             self.error( "Unrecognised dependencies_src type format" )
 
-    processed_dependencies = {}
+    processed_configs = {}
 
-    def is_already_processed( self, dependencies_src ):
+    def is_config_already_processed( self, dependencies_src ):
         abs_dependencies_src = os.path.abspath( dependencies_src )
-        if abs_dependencies_src in ProcessDeps.processed_dependencies:
+        if abs_dependencies_src in ProcessDeps.processed_configs:
             return True
-        ProcessDeps.processed_dependencies[abs_dependencies_src] = True
+        ProcessDeps.processed_configs[abs_dependencies_src] = True
         return False
 
     def process_dependency_file( self ):
@@ -238,6 +238,9 @@ class ProcessDeps:
         if to_file == '':
             self.error( "Unable to evaluate destination of: " + dst )
             return
+        if self.is_file_already_downloaded( from_uri, to_file ):
+            print( 'Repeat....', to_file )
+            return
         if re.match( 'https?://', from_uri ):
             tmp_name = handler.download_to_temp_file( from_uri )
         else:
@@ -246,6 +249,15 @@ class ProcessDeps:
             self.error( "Unable to retrieve: " + from_uri )
             return
         self.conditionally_update_dst_file( tmp_name, to_file )
+
+    processed_downloads = {}
+
+    def is_file_already_downloaded( self, src, dst ):
+        key = src + "\n" + dst
+        if os.path.isfile( dst ) and key in ProcessDeps.processed_downloads:    # Allow for file being deleted between downloads for some reason
+            return True
+        ProcessDeps.processed_downloads[key] = True
+        return False
 
     def conditionally_update_dst_file( self, tmp_name, to_file ):
         if not os.path.isfile( to_file ):

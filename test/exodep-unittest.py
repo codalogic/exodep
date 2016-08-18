@@ -201,6 +201,15 @@ class MyTest(unittest.TestCase):
                             "copy file2.txt" )
         self.assertTrue( filecmp.cmp( 'exodep-test-data-dir1-file2-reference.txt', 'dir1/file2.txt' ) )
 
+    def test_download_repeat(self):
+        make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n" +
+                            "copy dl-test-target.txt download/dl-test-target-repeat.txt" )
+        self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target-repeat.txt' ) )
+        shutil.copy( 'dl-test-target-other.txt', 'download/dl-test-target-repeat.txt' )    # Change the file so we can detect whether it has been re-downloaded
+        make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n" +
+                            "copy dl-test-target.txt download/dl-test-target-repeat.txt" )
+        self.assertTrue( not filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target-repeat.txt' ) )
+
     def test_bcopy(self):
         make_ProcessDeps( "bcopy https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target.txt download/bcopy-file.txt" )
         self.assertTrue( os.path.isfile( 'download/bcopy-file.txt' ) )
