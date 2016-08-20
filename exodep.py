@@ -47,6 +47,8 @@ def main() :
         ProcessDeps( 'mydeps.exodep' )
     elif os.path.isfile( 'exodep-imports/mydeps.exodep' ):
         ProcessDeps( 'exodep-imports/mydeps.exodep' )
+    elif os.path.isfile( 'exodep-imports/__init.exodep' ):
+        ProcessDeps( 'exodep-imports/__init.exodep' )
     else:
         for file in glob.glob( 'exodep-imports/*.exodep' ):
             ProcessDeps( file )
@@ -87,11 +89,18 @@ class ProcessDeps:
                 self.process_dependency_stream( f )
         except FileNotFoundError:
             self.error( "Unable to open exodep file: " + self.file )
+        if self.file == 'exodep-imports/__init.exodep':
+            self.process_globbed_config_files()
 
     def process_dependency_stream( self, f ):
         for line in f:
             self.line_num += 1
             self.process_line( line )
+
+    def process_globbed_config_files( self ):
+        for file in glob.glob( 'exodep-imports/*.exodep' ):
+            if file != 'exodep-imports/__init.exodep':
+                ProcessDeps( file, self.vars )
 
     def process_line( self, line ):
         line = line.rstrip()

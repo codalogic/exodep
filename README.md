@@ -22,8 +22,8 @@ Downloader, or Dependency Refresher.
 
 You'll need Python 3 on your system.  Once you've got that installed,
 simply copy `exodep.py` to your repo, most likely placing it in its
-top-level directory.  You can then create a `mydeps.exodep` file, as
-described below, that tells exodep what to do.
+top-level directory.  You can then configure `exodep` using `exodep`
+configuration files as described below.
 
 # Principles of Operation
 
@@ -46,12 +46,26 @@ supported using the `include` command.
 # Configuration
 
 The operation of `exodep.py` is configured using configuration files.  The
-configuration file to use can be specified on the command line.  If no
-configuration file is specified, the default usage scenario, `exodep.py` will
-interpret the contents of the file named `mydeps.exodep`.  If that is not
-present it will look for a file called `exodep-imports/mydeps.exodep`.  If
-that is also not present it will interpret all the config files it finds by
-globbing `exodep-imports/*.exodep`.
+configuration file to use can be specified on the command line.
+
+If no configuration file is specified, the default usage scenario, `exodep.py`
+will interpret the contents of the file named `mydeps.exodep`.
+
+If `mydeps.exodep` is not present it will look for a file called
+`exodep-imports/mydeps.exodep`.
+
+If that is also not present it will look for a file called
+`exodep-imports/__init.exodep`.  If the init file is found it will process it
+and then interpret all the `exodep` config files it finds by globbing
+`exodep-imports/*.exodep` using the context created by processing
+`exodep-imports/__init.exodep`.  This allows simple customisation of the
+behaviour of imported `exodep` files without having to edit them.
+
+If `exodep-imports/__init.exodep` is not
+found then it will interpret all the config files it finds by globbing
+`exodep-imports/*.exodep`.
+
+# Configuration file format
 
 Exodep configuration files are line oriented.  Each command must be on its
 own line.  The various commands are documented below.
@@ -449,9 +463,9 @@ sub-directories called `exodep-imports` and `exodep-exports` for imports
 and exports respectively.
 
 If `exodep` config files are both imported and exported
-they can be editted in the `exodep-imports` sub-directory and an `exodep`
-configuration file (e.g. `mod-exports.exodep`) can be used to copy them to the
-`exodep-exports` sub-directory.
+they can be placed and editted in the `exodep-imports` sub-directory and an
+`exodep` configuration file (e.g. `__copy-exports.exodep`) can be used to
+copy them to the `exodep-exports` sub-directory.
 
 If a project exports multiple `exodep` configuration files, it maybe
 appropriate to put all those files within a sub-directory of the
