@@ -313,6 +313,30 @@ class MyTest(unittest.TestCase):
         self.assertTrue( 'v' in pd.vars )
         self.assertEqual( pd.vars['v'], 'p2' )
 
+        pd = make_ProcessDeps( '$v v1\n$dll\non $dll $v p2' )
+        self.assertTrue( 'v' in pd.vars )
+        self.assertEqual( pd.vars['v'], 'v1' )
+
+        pd = make_ProcessDeps( '$v v1\n$dll \non $dll $v p2' )
+        self.assertTrue( 'v' in pd.vars )
+        self.assertEqual( pd.vars['v'], 'v1' )
+
+        pd = make_ProcessDeps( '$v v1\n$dll 0\non $dll $v p2' )
+        self.assertTrue( 'v' in pd.vars )
+        self.assertEqual( pd.vars['v'], 'v1' )
+
+        pd = make_ProcessDeps( '$v v1\n$dll false\non $dll $v p2' )
+        self.assertTrue( 'v' in pd.vars )
+        self.assertEqual( pd.vars['v'], 'v1' )
+
+        pd = make_ProcessDeps( '$v v1\n$dll False\non $dll $v p2' )
+        self.assertTrue( 'v' in pd.vars )
+        self.assertEqual( pd.vars['v'], 'v1' )
+
+        pd = make_ProcessDeps( '$v v1\n$dll FALSE\non $dll $v p2' )
+        self.assertTrue( 'v' in pd.vars )
+        self.assertEqual( pd.vars['v'], 'v1' )
+
     def test_ondir(self):
         pd = make_ProcessDeps( '$v v1\nondir .. $v p2\nondir non-a-dir $v l3' )
         self.assertTrue( 'v' in pd.vars )

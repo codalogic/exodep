@@ -447,7 +447,10 @@ class ProcessDeps:
         if m != None:
             var_name = m.group(1)
             command = m.group(2)
-            if var_name in self.vars and self.vars[var_name] != '':
+            if var_name in self.vars and \
+                    self.vars[var_name] != '' and \
+                    self.vars[var_name] != '0' and \
+                    self.vars[var_name].lower() != 'false':
                 self.process_line( command )
             return True
         return False

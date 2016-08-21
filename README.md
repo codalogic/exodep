@@ -351,13 +351,14 @@ Example:
 
 ## on
 
-The `on` command allows conditional execution of exodep ommands. It has
-the form:
+The `on` command allows conditional execution of exodep commands based on the
+value of variables. It has the form:
 
     on $<var_name> <command>
 
-If the variable $<var_name> is present and is not the empty string then the
-exodep command is run.
+If the variable $<var_name> is present and is not the empty string, is not
+`0` and is not, ignoring case, equal to `false` then the exodep command is
+run.
 
 Example:
 
