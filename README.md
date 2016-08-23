@@ -115,13 +115,14 @@ Example:
 ## hosting
 
 The `hosting` command provides an easier and less error prone way of setting
-a URI template for common hosting providers.  Currently Github and Bitbucket
-are supported.  In effect, the default is `github`.
+a URI template for common hosting providers.  Currently Github, Bitbucket and
+Gitlab are supported.  In effect, the default is `github`.
 
 Examples:
 
     hosting bitbucket
     hosting github
+    hosting gitlab
 
 ## variables
 

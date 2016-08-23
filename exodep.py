@@ -38,6 +38,7 @@ import glob
 
 host_templates = {
         'github': 'https://raw.githubusercontent.com/${owner}/${project}/${strand}/${path}${file}',
+        'gitlab': 'https://gitlab.com/${owner}/${project}/raw/${strand}/${path}${file}',
         'bitbucket': 'https://bitbucket.org/${owner}/${project}/raw/${strand}/${path}${file}' }
 
 def main() :
