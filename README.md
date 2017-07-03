@@ -32,9 +32,9 @@ over HTTP.  It can also copy from files that are on a central file server
 that is mounted into your directory structure.  For convenience we assume that
 the former scenario is in effect.
 
-The basic command for downloading a file is the `copy` command.  So that this
+The basic command for downloading a file is the `get` command.  So that this
 command can be compact, exodep has a `uritemplate` that says how to convert the
-file named in the `copy` command into a URL that can be used to download the
+file named in the `get` command into a URL that can be used to download the
 desired file.  As part of this, exodep allows the user to specify variables.
 These can be used to expand the `uritemplate` and specify where the downloaded
 files should be copied to.  The `default` command allows setting default values
@@ -93,7 +93,7 @@ Example:
 
 ## uritemplate
 
-The URI template is used to map the files mentioned in the `copy` commands
+The URI template is used to map the files mentioned in the `get` commands
 into a URL that can be used to download a file.
 
 When you want to download files from Github or BitBucket, rather than using
@@ -127,7 +127,7 @@ Examples:
 ## variables
 
 Variables can be set to values that can be substituted into the URI template
-and the destination file specification of the copy command.  Variables are
+and the destination file specification of the get command.  Variables are
 set using the form:
 
     $variable_name  variable_value
@@ -140,13 +140,13 @@ by convention.
 Other variables like `$strand` and `$path` have special 'magical' behaviour.
 See the section 'versions' command below for more on the `$strand` variable.
 
-The `$file` variable is automatically set by the `copy` command and should
+The `$file` variable is automatically set by the `get` command and should
 not be set manual in a configuration.
 
 When performing variable expansion, the sequence `${variable_name}` is
 replaced by the value of the variable `$variable_name`.
 
-Before invoking a `copy` (or `versions`) command using the default URI
+Before invoking a `get` (or `versions`) command using the default URI
 templates the variables `$owner`, `$project` and `$strand` must be set.
 The `$path` variable is automatically set to the empty string at start-up.
 
@@ -172,7 +172,7 @@ For example, part of a configuration for a library, called my-lib.exodep,
 might include:
 
     default $h_files include/my-lib/
-    copy my-lib.h ${h_files}
+    get my-lib.h ${h_files}
 
 A configuration file that includes the above project can enforce it's
 value for `$h_files` by doing:
@@ -180,9 +180,9 @@ value for `$h_files` by doing:
     $h_files include/
     include my-lib.exodep
 
-As a result of this, the `copy` command would be expanded to:
+As a result of this, the `get` command would be expanded to:
 
-    copy my-lib.h include/
+    get my-lib.h include/
 
 ## versions
 
@@ -219,15 +219,15 @@ Example:
 
     versions
 
-## copy and bcopy
+## get and bget
 
-The `copy` command downloads a text file and the `bcopy` command downloads
+The `get` command downloads a text file and the `bget` command downloads
 a binary file.  Other than that they have the same functionality.
 
 The commands have the format:
 
-    copy  <src-file-name>  <destination>
-    bcopy  <src-file-name>  <destination>
+    get   <src-file-name>  <destination>
+    bget  <src-file-name>  <destination>
 
 If `destination` resolves to an existing directory, or the name ends in a
 `/` then the file identified by <src-file-name> is conditionally
@@ -244,19 +244,19 @@ recommended for 'quick and dirty' setups.
 When `<src-file-name>` is not a URI template, then `src-file-name` is
 used as the value of the `${file}` field in URI template expansion.
 
-A single argument form of `copy` and `bcopy` are also supported.  In this
+A single argument form of `get` and `bget` are also supported.  In this
 case, the following:
 
-    copy <src-file-name>
+    get <src-file-name>
 
 is effectively treated as:
 
-    copy <src-file-name>  ${path}<src-file-name>
+    get <src-file-name>  ${path}<src-file-name>
 
 (As `$path` is included as part of the default URI template expansion,
 this has the effect of the two files having the same name.)
 
-`get` is an alias of `copy` and `bget` is an alias of `bcopy`.
+`copy` is a legacy alias of `get` and `bcopy` is an alias of `bget`.
 
 ## subst
 
@@ -418,7 +418,7 @@ executation of a command based on the platform the configuration is running
 on.  For example, if you only wanted to download a makefile when on Linux,
 you could do:
 
-    linux copy makefile ./
+    linux get makefile ./
 
 # Example
 
@@ -440,15 +440,15 @@ into another project.
     versions    # Invoking 'versions' must happen after setting $owner/$project variables
 
     $path include/dsl-pa/
-    copy dsl-pa.h          ${h_dst}
-    copy dsl-pa-dsl-pa.h   ${h_dst}
-    copy dsl-pa-alphabet.h ${h_dst}
-    copy dsl-pa-reader.h   ${h_dst}
+    get dsl-pa.h          ${h_dst}
+    get dsl-pa-dsl-pa.h   ${h_dst}
+    get dsl-pa-alphabet.h ${h_dst}
+    get dsl-pa-reader.h   ${h_dst}
 
     $path src/
-    copy dsl-pa-dsl-pa.cpp   ${cpp_dst}
-    copy dsl-pa-alphabet.cpp ${cpp_dst}
-    copy dsl-pa-reader.cpp   ${cpp_dst}
+    get dsl-pa-dsl-pa.cpp   ${cpp_dst}
+    get dsl-pa-alphabet.cpp ${cpp_dst}
+    get dsl-pa-reader.cpp   ${cpp_dst}
 
 Setting `$dsl_pa_h_dst` and `$h_dst`, and `$dsl_pa_cpp_dst` and `$cpp_dst`
 as default values allows for the configuration to be used stand-alone, while
@@ -497,7 +497,7 @@ You can see and submit issues here: [https://github.com/codalogic/exodep/issues]
 
 Larger bugs / issues include:
 
-- The `copy` command does not allow specifying file names that contain spaces
+- The `get` command does not allow specifying file names that contain spaces
 
 # Testing
 

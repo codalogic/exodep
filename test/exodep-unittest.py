@@ -168,54 +168,54 @@ class MyTest(unittest.TestCase):
 
     def test_download(self):
         make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n" +
-                            "copy dl-test-target.txt download/" )
+                            "get dl-test-target.txt download/" )
         self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target.txt' ) )
         make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n" +
-                            "copy dl-test-target.txt download/dl-test-target1.txt" )
+                            "get dl-test-target.txt download/dl-test-target1.txt" )
         self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target1.txt' ) )
-        make_ProcessDeps( "copy https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target.txt download/dl-test-target2.txt" )
+        make_ProcessDeps( "get https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target.txt download/dl-test-target2.txt" )
         self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target2.txt' ) )
 
         make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n" +
-                            "copy dl-test-target-other.txt download/" )
+                            "get dl-test-target-other.txt download/" )
         self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target.txt' ) )   # Check file of different name doesn't overwrite existing one
         self.assertTrue( filecmp.cmp( 'dl-test-target-other.txt', 'download/dl-test-target-other.txt' ) )
 
-        make_ProcessDeps( "get https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target-other.txt download/dl-test-target3.txt" )
+        make_ProcessDeps( "copy https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target-other.txt download/dl-test-target3.txt" )
         self.assertTrue( filecmp.cmp( 'dl-test-target-other.txt', 'download/dl-test-target3.txt' ) )    # Check download of different file updates an existing one
 
     def test_download_copy_with_only_one_arg(self):
         make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\n" +
-                            "copy file1.txt" )
+                            "get file1.txt" )
         self.assertTrue( filecmp.cmp( 'exodep-test-data-file1-reference.txt', 'file1.txt' ) )
 
         make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\n" +
-                            "copy dir1/file2.txt" )
+                            "get dir1/file2.txt" )
         self.assertTrue( filecmp.cmp( 'exodep-test-data-dir1-file2-reference.txt', 'dir1/file2.txt' ) )
 
         os.remove( 'dir1/file2.txt' )
         make_ProcessDeps( "$path nothing\n" +       # $path should be ignored because it's not in the uritemplate
                             "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\n" +
-                            "copy dir1/file2.txt" )
+                            "get dir1/file2.txt" )
         self.assertTrue( filecmp.cmp( 'exodep-test-data-dir1-file2-reference.txt', 'dir1/file2.txt' ) )
 
         os.remove( 'dir1/file2.txt' )
         make_ProcessDeps( "$path dir1/\n" +
                             "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${path}${file}\n" +
-                            "copy file2.txt" )
+                            "get file2.txt" )
         self.assertTrue( filecmp.cmp( 'exodep-test-data-dir1-file2-reference.txt', 'dir1/file2.txt' ) )
 
     def test_download_repeat(self):
         make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n" +
-                            "copy dl-test-target.txt download/dl-test-target-repeat.txt" )
+                            "get dl-test-target.txt download/dl-test-target-repeat.txt" )
         self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target-repeat.txt' ) )
         shutil.copy( 'dl-test-target-other.txt', 'download/dl-test-target-repeat.txt' )    # Change the file so we can detect whether it has been re-downloaded
         make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n" +
-                            "copy dl-test-target.txt download/dl-test-target-repeat.txt" )
+                            "get dl-test-target.txt download/dl-test-target-repeat.txt" )
         self.assertTrue( not filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target-repeat.txt' ) )
 
     def test_bcopy(self):
-        make_ProcessDeps( "bcopy https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target.txt download/bcopy-file.txt" )
+        make_ProcessDeps( "bget https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target.txt download/bcopy-file.txt" )
         self.assertTrue( os.path.isfile( 'download/bcopy-file.txt' ) )
 
         make_ProcessDeps( "bget https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target.txt download/bget-file.txt" )
@@ -241,19 +241,19 @@ class MyTest(unittest.TestCase):
         make_ProcessDeps( "$strand alto\n" +
                             "uritemplate https://raw.githubusercontent.com/codalogic/exodep/${strand}/${file}\n" +
                             "versions versions.exodep\n" +
-                            "copy test/dl-test-target.txt download/dl-test-target11.txt" )
+                            "get test/dl-test-target.txt download/dl-test-target11.txt" )
         self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target11.txt' ) )
 
         make_ProcessDeps( "$strand alto\n" +
                             "uritemplate https://raw.githubusercontent.com/codalogic/exodep/${strand}/${file}\n" +
                             "versions\n" +  # Specify default versions
-                            "copy test/dl-test-target.txt download/dl-test-target12.txt" )
+                            "get test/dl-test-target.txt download/dl-test-target12.txt" )
         self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target12.txt' ) )
 
         make_ProcessDeps( "versions https://raw.githubusercontent.com/codalogic/exodep/master/versions.exodep\n" +
                             "$strand alto\n" +
                             "uritemplate https://raw.githubusercontent.com/codalogic/exodep/${strand}/${file}\n" +
-                            "copy test/dl-test-target.txt download/dl-test-target14.txt" )
+                            "get test/dl-test-target.txt download/dl-test-target14.txt" )
         self.assertTrue( filecmp.cmp( 'dl-test-target.txt', 'download/dl-test-target14.txt' ) )
 
     def test_include(self):

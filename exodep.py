@@ -115,8 +115,8 @@ class ProcessDeps:
                 self.consider_versions( line ) or
                 self.consider_variable( line ) or
                 self.consider_default_variable( line ) or
-                self.consider_copy( line ) or
-                self.consider_bcopy( line ) or
+                self.consider_get( line ) or
+                self.consider_bget( line ) or
                 self.consider_file_ops( line ) or
                 self.consider_exec( line ) or
                 self.consider_subst( line ) or
@@ -211,15 +211,15 @@ class ProcessDeps:
             return True
         return False
 
-    def consider_copy( self, line ):
-        m = re.match( '(?:copy|get)\s+(\S+)(?:\s+(\S+))?', line )
+    def consider_get( self, line ):
+        m = re.match( '(?:get|copy)\s+(\S+)(?:\s+(\S+))?', line )
         if m != None:
             self.retrieve_text_file( m.group(1), m.group(2) )
             return True
         return False
 
-    def consider_bcopy( self, line ):
-        m = re.match( '(?:bcopy|bget)\s+(\S+)(?:\s+(\S+))?', line )
+    def consider_bget( self, line ):
+        m = re.match( '(?:bget|bcopy)\s+(\S+)(?:\s+(\S+))?', line )
         if m != None:
             self.retrieve_binary_file( m.group(1), m.group(2) )
             return True
@@ -237,7 +237,7 @@ class ProcessDeps:
     def retrieve_file( self, src, dst, handler ):
         if dst == None:
             if re.match( 'https?://', src ):
-                self.error( "Explicit uri not supported with commands of the form 'bcopy src_and_dst'" )
+                self.error( "Explicit uri not supported with commands of the form 'get src_and_dst'" )
                 return
             dst = src
             if re.search( '\$\{path\}', self.uritemplate ):
@@ -301,7 +301,7 @@ class ProcessDeps:
         return self.expand_variables( uri )
 
     def make_destination_file_name( self, src, dst ):
-        # dst in a copy command may refer to a folder, in which case the base file name from the src needs to be incorporated
+        # dst in a get command may refer to a folder, in which case the base file name from the src needs to be incorporated
         dst = self.expand_variables( dst )
         if dst.endswith( '/' ) or os.path.isdir( dst ):
             if not dst.endswith( '/' ):
