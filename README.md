@@ -260,7 +260,8 @@ this has the effect of the two files having the same name.)
 
 ## subst
 
-The `subst` command substitutes exodep variables into a named file.
+The `subst` command substitutes exodep variables contained in a named file.
+For example, it can be used to customise a downloaded makefile.
 
 The format of the command is:
 
@@ -277,11 +278,11 @@ For example, given exodep variables of the form:
     $h_path   include/
     $cpp_path src/
 
-and an input file of the form:
+and an input file containing the line:
 
-    g++ -I ${exodep:h_path} ${exodep:src}file1.cpp
+    g++ -I ${exodep:h_path} ${exodep:cpp_path}file1.cpp
 
-the output file would be:
+the output file would contain:
 
     g++ -I include/ src/file1.cpp
 
