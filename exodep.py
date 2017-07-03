@@ -104,7 +104,7 @@ class ProcessDeps:
                 ProcessDeps( file, self.vars )
 
     def process_line( self, line ):
-        line = line.rstrip()
+        line = line.strip()
         line = remove_comments( line )
         if is_blank_line( line ):
             return
@@ -129,7 +129,7 @@ class ProcessDeps:
             self.report_unrecognised_command( line )
 
     def consider_include( self, line ):
-        m = re.match( 'include\s+(.+)', line )
+        m = re.match( '^include\s+(.+)', line )
         if m != None:
             file_name = self.script_relative_path( m.group(1) )
             if not os.path.isfile( file_name ):
@@ -140,7 +140,7 @@ class ProcessDeps:
         return False
 
     def consider_sinclude( self, line ):        # This method is used to support testing
-        m = re.match( 'sinclude\s+(.+)', line )
+        m = re.match( '^sinclude\s+(.+)', line )
         if m != None:
             args = m.group(1)
             ProcessDeps( io.StringIO( args.replace( '\t', '\n' ) ), self.vars )
@@ -151,7 +151,7 @@ class ProcessDeps:
         return os.path.normpath( os.path.join( os.path.dirname( self.file ), src ) ).replace( '\\', '/' )
 
     def consider_hosting( self, line ):
-        m = re.match( 'hosting\s+(.+)', line )
+        m = re.match( '^hosting\s+(.+)', line )
         if m != None:
             host = m.group(1)
             if host in host_templates:
@@ -162,14 +162,14 @@ class ProcessDeps:
         return False
 
     def consider_uri_template( self, line ):
-        m = re.match( 'uritemplate\s+(.+)', line )
+        m = re.match( '^uritemplate\s+(.+)', line )
         if m != None:
             self.uritemplate = m.group(1)
             return True
         return False
 
     def consider_versions( self, line ):
-        m = re.match( 'versions(?:\s+(.*))?', line )    # If no arguments to 'versions' command, it should use 'versions.exodep'
+        m = re.match( '^versions(?:\s+(.*))?', line )    # If no arguments to 'versions' command, it should use 'versions.exodep'
         if m != None:
             file_name = m.group(1) if m.group(1) else 'versions.exodep'
             uri = self.make_master_strand_uri( file_name )
@@ -197,14 +197,14 @@ class ProcessDeps:
                     self.versions[m.group(2)] = m.group(1)
 
     def consider_variable( self, line ):
-        m = re.match( '\$(\w+)(?:\s+(.*))?$', line )
+        m = re.match( '^\$(\w+)(?:\s+(.*))?$', line )
         if m != None:
             self.vars[m.group(1)] = m.group(2) if m.group(2) else ''
             return True
         return False
 
     def consider_default_variable( self, line ):
-        m = re.match( 'default\s+\$(\w+)\s+(.*)', line )
+        m = re.match( '^default\s+\$(\w+)\s+(.*)', line )
         if m != None:
             if m.group(1) not in self.vars:
                 self.vars[m.group(1)] = m.group(2)
@@ -212,14 +212,14 @@ class ProcessDeps:
         return False
 
     def consider_get( self, line ):
-        m = re.match( '(?:get|copy)\s+(\S+)(?:\s+(\S+))?', line )
+        m = re.match( '^(?:get|copy)\s+(\S+)(?:\s+(\S+))?', line )
         if m != None:
             self.retrieve_text_file( m.group(1), m.group(2) )
             return True
         return False
 
     def consider_bget( self, line ):
-        m = re.match( '(?:bget|bcopy)\s+(\S+)(?:\s+(\S+))?', line )
+        m = re.match( '^(?:bget|bcopy)\s+(\S+)(?:\s+(\S+))?', line )
         if m != None:
             self.retrieve_binary_file( m.group(1), m.group(2) )
             return True
@@ -349,7 +349,7 @@ class ProcessDeps:
             return ''
 
     def consider_subst( self, line ):
-        m = re.match( 'subst\s+(\S+)(?:\s+(\S+))?', line )
+        m = re.match( '^subst\s+(\S+)(?:\s+(\S+))?', line )
         if m != None:
             src = m.group(1)
             dst = m.group(2)
@@ -383,7 +383,7 @@ class ProcessDeps:
                 return line
 
     def consider_file_ops( self, line ):
-        m = re.match( '(cp|mv)\s+(\S+)\s+(\S+)', line )
+        m = re.match( '^(cp|mv)\s+(\S+)\s+(\S+)', line )
         if m != None:
             op = m.group(1)
             src = self.expand_variables( m.group(2) )
@@ -402,7 +402,7 @@ class ProcessDeps:
                 except:
                     self.error( "Unable to 'mv' file '" + src + "' to '" + dst + "'" )
             return True
-        m = re.match( '(mkdir|rmdir|rm)\s+(\S+)', line )
+        m = re.match( '^(mkdir|rmdir|rm)\s+(\S+)', line )
         if m != None:
             op = m.group(1)
             path = self.expand_variables( m.group(2) )
@@ -431,7 +431,7 @@ class ProcessDeps:
         return not os.path.isfile( dst ) or not filecmp.cmp( src, dst )
 
     def consider_exec( self, line ):
-        m = re.match( 'exec\s+(.+)', line )
+        m = re.match( '^exec\s+(.+)', line )
         if m != None:
             command = m.group(1)
             org_cwd = os.getcwd()
@@ -444,7 +444,7 @@ class ProcessDeps:
         return False
 
     def consider_on_conditional( self, line ):
-        m = re.match( 'on\s+\$(\w+)\s+(.+)', line )
+        m = re.match( '^on\s+\$(\w+)\s+(.+)', line )
         if m != None:
             var_name = m.group(1)
             command = m.group(2)
@@ -457,7 +457,7 @@ class ProcessDeps:
         return False
 
     def consider_ondir( self, line ):
-        m = re.match( 'ondir\s+(\S+)\s+(.+)', line )
+        m = re.match( '^ondir\s+(\S+)\s+(.+)', line )
         if m != None:
             dir = m.group(1)
             command = m.group(2)
@@ -467,7 +467,7 @@ class ProcessDeps:
         return False
 
     def consider_onfile( self, line ):
-        m = re.match( 'onfile\s+(\S+)\s+(.+)', line )
+        m = re.match( '^onfile\s+(\S+)\s+(.+)', line )
         if m != None:
             file = m.group(1)
             command = m.group(2)
@@ -477,7 +477,7 @@ class ProcessDeps:
         return False
 
     def consider_onchanged( self, line ):
-        m = re.match( 'onchanged\s+(.+)', line )
+        m = re.match( '^onchanged\s+(.+)', line )
         if m != None:
             command = m.group(1)
             if self.are_files_changed:
@@ -486,7 +486,7 @@ class ProcessDeps:
         return False
 
     def consider_onanychanged( self, line ):
-        m = re.match( 'onanychanged\s+(.+)', line )
+        m = re.match( '^onanychanged\s+(.+)', line )
         if m != None:
             command = m.group(1)
             if ProcessDeps.are_any_files_changed:
@@ -497,7 +497,7 @@ class ProcessDeps:
     os_names = { 'windows': 'win32', 'linux': 'linux', 'osx': 'darwin' }
 
     def consider_os_conditional( self, line ):
-        m = re.match( '(windows|linux|osx)\s+(.+)', line )
+        m = re.match( '^(windows|linux|osx)\s+(.+)', line )
         if m != None:
             os_key = m.group(1)
             command = m.group(2)
