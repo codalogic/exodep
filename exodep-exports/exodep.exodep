@@ -1,1 +1,1 @@
-copy https://raw.githubusercontent.com/codalogic/exodep/master/exodep.py ./
+get https://raw.githubusercontent.com/codalogic/exodep/master/exodep.py ./
