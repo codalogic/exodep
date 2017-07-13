@@ -364,7 +364,7 @@ class ProcessDeps:
                 fout.close()
                 self.conditionally_update_dst_file( fout.name, dst )
             except FileNotFoundError:
-                error( "Unable to open file for 'subst' command: " + src )
+                self.error( "Unable to open file for 'subst' command: " + src )
             return True
         return False
 
