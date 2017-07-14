@@ -426,7 +426,7 @@ you could do:
 ## pause
 
 The `pause` command will wait for user to press the `Return` key before
-continuing.  This can give the user the change to see any errors, particularly
+continuing.  This can give the user the chance to see any errors, particularly
 if running the script by double-clicking it on Windows.  For example, the
 following could be placed in the `exodep-imports/__end.exodep`:
 
