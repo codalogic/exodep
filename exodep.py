@@ -135,7 +135,8 @@ class ProcessDeps:
                 self.consider_onfile( line ) or
                 self.consider_onchanged( line ) or
                 self.consider_onanychanged( line ) or
-                self.consider_os_conditional( line ) ):
+                self.consider_os_conditional( line ) or
+                self.consider_pause( line ) ):
             self.report_unrecognised_command( line )
 
     def consider_include( self, line ):
@@ -513,6 +514,13 @@ class ProcessDeps:
             command = m.group(2)
             if sys.platform.startswith( ProcessDeps.os_names[os_key] ):
                 self.process_line( command )
+            return True
+        return False
+
+    def consider_pause( self, line ):
+        if line == 'pause':
+            print( "\n>>> Press <Return> to continue <<<" )
+            input()
             return True
         return False
 

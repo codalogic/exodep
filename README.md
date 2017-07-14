@@ -423,6 +423,15 @@ you could do:
 
     linux get makefile ./
 
+## pause
+
+The `pause` command will wait for user to press the `Return` key before
+continuing.  This can give the user the change to see any errors, particularly
+if running the script by double-clicking it on Windows.  For example, the
+following could be placed in the `exodep-imports/__end.exodep`:
+
+    windows onanychanged pause
+
 # Example
 
 This is an example configuration for including the `dsl-pa` project at
