@@ -386,6 +386,10 @@ Example:
     ondir httpdocs default $php_dst httpdocs/
     default $php_dst ./
 
+and:
+
+    onfile send-report.py exec send-report.py
+
 ## onchanged
 
 The `onchanged` command allows conditional execution of exodep commands based
