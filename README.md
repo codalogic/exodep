@@ -65,6 +65,9 @@ If `exodep-imports/__init.exodep` is not
 found then it will interpret all the config files it finds by globbing
 `exodep-imports/*.exodep`.
 
+After all found exodep files are processed,  if present, the file
+`exodep-imports/__end.exodep` will be processed.
+
 # Configuration file format
 
 Exodep configuration files are line oriented.  Each command must be on its
