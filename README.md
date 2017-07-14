@@ -479,7 +479,7 @@ and exports respectively.
 
 If `exodep` config files are both imported and exported
 they can be placed and editted in the `exodep-imports` sub-directory and an
-`exodep` configuration file (e.g. `__copy-exports.exodep`) can be used to
+`exodep` configuration file (e.g. `_copy-exports.exodep`) can be used to
 copy them to the `exodep-exports` sub-directory.
 
 If a project exports multiple `exodep` configuration files, it maybe
@@ -495,6 +495,14 @@ If when including an `exodep` configuration file into your project, modify the
 name by prefixing it with your project name.  For example, if you edit the
 `mylib.exodep` file from the `mylib` project, and place it in your `myproj`
 project, call it `myproj.mylib.exodep`.
+
+`exodep` configuration files with names beginning with `__` (2 underscores,
+for example `__init.exodep`) should be considered to be reserved to have
+special meaning to the `exodep` processor.  `exodep` configuration file names
+beginning with `_` (1 underscore, e.g. `_copy-exports.exodep`), should be used
+for user specified local processing, not directly related to downloading files.
+`exodep` configuration file names associated with downloads should not begin
+with `_` characters.
 
 It's suggested that a version controlled project is self-contained such that it
 contains all of it external dependencies as part of the repo, rather than
