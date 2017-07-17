@@ -390,6 +390,22 @@ and:
 
     onfile send-report.py exec send-report.py
 
+## onlastchanged
+
+The `onlastchanged` command allows conditional execution of exodep commands based
+on whether the last downloaded file has been changed.
+
+It has the form:
+
+    onlastchanged <command>
+
+Example:
+
+    get makefile
+    onlastchanged make
+
+See also `onchanged` and `onanychanged`.
+
 ## onchanged
 
 The `onchanged` command allows conditional execution of exodep commands based
@@ -426,6 +442,26 @@ on.  For example, if you only wanted to download a makefile when on Linux,
 you could do:
 
     linux get makefile ./
+
+## alert
+
+Prints out an alert message.  Each alert message is displayed as the command
+is processed, and is also stored.  The `showalerts` command (perhaps invoked in
+`exodep-imports/__end.exodep`) will print out all the accumulated alerts. This
+feature is intended to make the alerts more visible.
+
+For example:
+
+    get makefile
+    onlastchnaged alert makefile changed
+
+    ...
+    showalerts
+    windows pause
+
+## showalerts
+
+See the `alert` command for more information.
 
 ## pause
 
