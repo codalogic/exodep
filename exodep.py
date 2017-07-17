@@ -74,6 +74,7 @@ def process_globbed_exodep_imports():
 class ProcessDeps:
     are_any_files_changed = False
     alert_messages = ""
+    shown_alert_messages = ""
 
     def __init__( self, dependencies_src, vars = default_vars ):
         self.is_last_file_changed = self.are_files_changed = False
@@ -139,6 +140,7 @@ class ProcessDeps:
                 self.consider_onlastchanged( line ) or
                 self.consider_onchanged( line ) or
                 self.consider_onanychanged( line ) or
+                self.consider_onalerts( line ) or
                 self.consider_os_conditional( line ) or
                 self.consider_pause( line ) or
                 self.consider_alert( line ) or
@@ -521,6 +523,15 @@ class ProcessDeps:
             return True
         return False
 
+    def consider_onalerts( self, line ):
+        m = re.match( '^onalerts\s+(.+)', line )
+        if m != None:
+            command = m.group(1)
+            if ProcessDeps.shown_alert_messages != "" or ProcessDeps.alert_messages != "":
+                self.process_line( command )
+            return True
+        return False
+
     os_names = { 'windows': 'win32', 'linux': 'linux', 'osx': 'darwin' }
 
     def consider_os_conditional( self, line ):
@@ -549,10 +560,10 @@ class ProcessDeps:
         m = re.match( '^alert\s+(.*)', line )
         if m != None:
             message = self.expand_variables( m.group(1) )
-            if ProcessDeps.alert_messages != "":
-                ProcessDeps.alert_messages += "\n"
             alert = "ALERT: " + self.file + " (" + str(self.line_num) + "):\n" + "       " + message
             print( alert )
+            if ProcessDeps.alert_messages != "":
+                ProcessDeps.alert_messages += "\n"
             ProcessDeps.alert_messages += alert
             return True
         return False
@@ -562,6 +573,9 @@ class ProcessDeps:
             if ProcessDeps.alert_messages != "":
                 print( "RECORDED ALERTS:" )
                 print( ProcessDeps.alert_messages )
+                if ProcessDeps.shown_alert_messages != "":
+                    ProcessDeps.shown_alert_messages += "\n"
+                ProcessDeps.shown_alert_messages = ProcessDeps.alert_messages
                 ProcessDeps.alert_messages = ""
             return True
         return False

@@ -428,11 +428,13 @@ class MyTest(unittest.TestCase):
     def test_alert(self):
         # This requires visual inspection!
         self.assertTrue( exodep.ProcessDeps.alert_messages == "" )
-        make_ProcessDeps( 'uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n' +
+        pd = make_ProcessDeps( 'uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n' +
                             'alert This is an ALERT ${strand}\n' +
-                            'alert Another ALERT\n' )
+                            'alert Another ALERT\n' +
+                            'onalerts $has_alerts 1' )
         print( exodep.ProcessDeps.alert_messages )
         self.assertTrue( exodep.ProcessDeps.alert_messages == "ALERT: <StringIO> (2):\n       This is an ALERT master\nALERT: <StringIO> (3):\n       Another ALERT" )
+        self.assertTrue( 'has_alerts' in pd.vars )
 
     # def test_error_visually(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )
