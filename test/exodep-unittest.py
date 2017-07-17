@@ -298,6 +298,23 @@ class MyTest(unittest.TestCase):
         pd = make_ProcessDeps( '$val v1\n$param p2\nsubst subst-input.txt download/subst-copy.txt' )
         self.assertTrue( filecmp.cmp( 'subst-expected-result.txt', 'download/subst-copy.txt' ) )
 
+    def test_onlastchanged_conditional(self):
+        make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n" +
+                                "get dl-test-target.txt download/onlastchanged_already_downloaded.txt\n" )
+        pd = make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n" +
+                                "get dl-test-target.txt download/onlastchanged_already_downloaded.txt\n" +
+                                "onlastchanged $onlastchanged_already_should_not_set 1\n" +
+                                "get dl-test-target.txt download/onlastchanged_should_be_written.txt\n" +
+                                "onlastchanged $onlastchanged_original_should_set 1\n" +
+                                "get dl-test-target-other.txt download/onlastchanged_should_be_written.txt\n" +
+                                "onlastchanged $onlastchanged_other_should_set 1\n" +
+                                "get dl-test-target-other.txt download/onlastchanged_should_be_written.txt\n" +     # Repeat download should not trigger onlastchanged
+                                "onlastchanged $onlastchanged_repeat_should_not_set 1\n" )
+        self.assertTrue( 'onlastchanged_already_should_not_set' not in pd.vars )
+        self.assertTrue( 'onlastchanged_original_should_set' in pd.vars )
+        self.assertTrue( 'onlastchanged_other_should_set' in pd.vars )
+        self.assertTrue( 'onlastchanged_repeat_should_not_set' not in pd.vars )
+
     def test_onchanged_conditional(self):
         pd = make_ProcessDeps( 'sinclude ' +
                                         'uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\t' +

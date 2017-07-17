@@ -67,7 +67,7 @@ class ProcessDeps:
     are_any_files_changed = False
 
     def __init__( self, dependencies_src, vars = { 'strand': 'master', 'path': '' } ):
-        self.are_files_changed = False
+        self.is_last_file_changed = self.are_files_changed = False
         self.line_num = 0
         self.uritemplate = host_templates['github']
         self.vars = vars.copy()
@@ -133,6 +133,7 @@ class ProcessDeps:
                 self.consider_on_conditional( line ) or
                 self.consider_ondir( line ) or
                 self.consider_onfile( line ) or
+                self.consider_onlastchanged( line ) or
                 self.consider_onchanged( line ) or
                 self.consider_onanychanged( line ) or
                 self.consider_os_conditional( line ) or
@@ -246,6 +247,7 @@ class ProcessDeps:
         self.retrieve_file( src, dst, BinaryDownloadHandler() )
 
     def retrieve_file( self, src, dst, handler ):
+        self.is_last_file_changed = False
         if dst == None:
             if re.match( 'https?://', src ):
                 self.error( "Explicit uri not supported with commands of the form 'get src_and_dst'" )
@@ -287,11 +289,11 @@ class ProcessDeps:
             if os.path.dirname( to_file ):
                 os.makedirs( os.path.dirname( to_file ), exist_ok=True )
             shutil.move( tmp_name, to_file )
-            self.are_files_changed = ProcessDeps.are_any_files_changed = True
+            self.is_last_file_changed = self.are_files_changed = ProcessDeps.are_any_files_changed = True
             print( 'Created...', to_file )
         elif not filecmp.cmp( tmp_name, to_file ):
             shutil.move( tmp_name, to_file )
-            self.are_files_changed = ProcessDeps.are_any_files_changed = True
+            self.is_last_file_changed = self.are_files_changed = ProcessDeps.are_any_files_changed = True
             print( 'Updated...', to_file )
         else:
             os.unlink( tmp_name )
@@ -483,6 +485,15 @@ class ProcessDeps:
             file = m.group(1)
             command = m.group(2)
             if os.path.isfile( file ):
+                self.process_line( command )
+            return True
+        return False
+
+    def consider_onlastchanged( self, line ):
+        m = re.match( '^onlastchanged\s+(.+)', line )
+        if m != None:
+            command = m.group(1)
+            if self.is_last_file_changed:
                 self.process_line( command )
             return True
         return False
