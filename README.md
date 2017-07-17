@@ -434,6 +434,17 @@ Example:
 
     onanychanged exec commit
 
+## onalerts
+
+`onalerts` executes the associated command if any alert messages have been
+processed.  The format is:
+
+    onalerts <command>
+
+For example:
+
+    onalerts exec send-alerts-report.py
+
 ## windows, linux, osx
 
 `windows`, `linux` and `osx` are command pre-fixes that allow conditional
