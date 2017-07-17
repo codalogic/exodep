@@ -451,6 +451,12 @@ class MyTest(unittest.TestCase):
         self.assertTrue( os.path.isfile( 'alerts/alerts.txt' ) )
         self.assertTrue( os.path.getsize( 'alerts/alerts.txt' ) > 100 )
 
+    def test_echo(self):
+        make_ProcessDeps(
+                    'echo An echo\n' +
+                    'echo\n' +
+                    'echo Another echo' )
+
     # def test_error_visually(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )
 

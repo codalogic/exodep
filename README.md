@@ -467,6 +467,18 @@ you could do:
 
     linux get makefile ./
 
+## echo
+
+Prints the message associated with the command to the screen.  Variable
+expansion is performed prior to printing the message.  The format is:
+
+    echo <message>
+
+
+For example:
+
+    onanychanged echo There were changes
+
 ## alert
 
 Prints out an alert message.  Each alert message is displayed as the command

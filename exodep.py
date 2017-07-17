@@ -142,6 +142,7 @@ class ProcessDeps:
                 self.consider_onanychanged( line ) or
                 self.consider_onalerts( line ) or
                 self.consider_os_conditional( line ) or
+                self.consider_echo( line ) or
                 self.consider_pause( line ) or
                 self.consider_alert( line ) or
                 self.consider_showalerts( line ) or
@@ -547,6 +548,17 @@ class ProcessDeps:
             command = m.group(2)
             if sys.platform.startswith( ProcessDeps.os_names[os_key] ):
                 self.process_line( command )
+            return True
+        return False
+
+    def consider_echo( self, line ):
+        m = re.match( '^echo(?:\s+(.*))?', line )
+        if m != None:
+            message = m.group(1)
+            if message:
+                print( self.expand_variables( message ) )
+            else:
+                print( "" )
             return True
         return False
 
