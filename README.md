@@ -343,6 +343,19 @@ Example:
     mkdir ${logs}
     rmdir ${tmp}
 
+## touch
+
+`touch` makes sure that a file of the specified name exists.  Note that it
+will not create an parent directories in the named file path if they are
+not already present.  The format is:
+
+    touch <file>
+
+For example:
+
+    rm alerts-made.txt
+    onalerts touch alerts-made.txt
+
 ## exec
 
 Causes a shell command to be executed.  It's probably a good idea to use

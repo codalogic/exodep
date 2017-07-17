@@ -445,6 +445,11 @@ class ProcessDeps:
                 except:
                     self.error( "Unable to 'rm' file '" + path + "'" )
             return True
+        m = re.match( '^touch\s+(\S+)', line )
+        if m != None:
+            file = self.expand_variables( m.group(1) )
+            open( file, 'a' ).close()
+            return True
         return False
 
     def is_copy_needed( self, src, dst ):

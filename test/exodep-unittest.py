@@ -397,6 +397,11 @@ class MyTest(unittest.TestCase):
                             'mv ${path}cp-file.txt ${path}mv-file.txt' )
         self.assertTrue( os.path.isfile( 'file-ops-test-dir/mv-file.txt' ) )
 
+        # touch test
+        make_ProcessDeps( '$tfile touch-file.txt\n' +
+                            'touch file-ops-test-dir/${tfile}\n' )
+        self.assertTrue( os.path.isfile( 'file-ops-test-dir/touch-file.txt' ) )
+
         # rm test
         make_ProcessDeps( '$src subst-input.txt\n' +
                             '$path file-ops-test-dir/\n' +
