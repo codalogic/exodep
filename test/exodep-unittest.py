@@ -433,13 +433,23 @@ class MyTest(unittest.TestCase):
     def test_alert(self):
         # This requires visual inspection!
         self.assertTrue( exodep.ProcessDeps.alert_messages == "" )
+        if not os.path.isdir( 'alerts' ):
+            os.mkdir( 'alerts' )
+        if os.path.isfile( 'alerts/alerts.txt.old' ):
+            os.unlink( 'alerts/alerts.txt.old' )
         pd = make_ProcessDeps( 'uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n' +
                             'alert This is an ALERT ${strand}\n' +
                             'alert Another ALERT\n' +
-                            'onalerts $has_alerts 1' )
-        print( exodep.ProcessDeps.alert_messages )
-        self.assertTrue( exodep.ProcessDeps.alert_messages == "ALERT: <StringIO> (2):\n       This is an ALERT master\nALERT: <StringIO> (3):\n       Another ALERT" )
+                            'onalerts $has_alerts 1\n' +
+                            'showalerts\n' +
+                            'alert Even more alert\n' +
+                            'alert Still more alerts\n' +
+                            'alertstofile alerts/alerts.txt\n' )
+        self.assertTrue( exodep.ProcessDeps.alert_messages == "ALERT: <StringIO> (6):\n       Even more alert\nALERT: <StringIO> (7):\n       Still more alerts" )
         self.assertTrue( 'has_alerts' in pd.vars )
+        self.assertTrue( os.path.isfile( 'alerts/alerts.txt.old' ) )
+        self.assertTrue( os.path.isfile( 'alerts/alerts.txt' ) )
+        self.assertTrue( os.path.getsize( 'alerts/alerts.txt' ) > 100 )
 
     # def test_error_visually(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )

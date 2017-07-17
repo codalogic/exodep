@@ -144,7 +144,8 @@ class ProcessDeps:
                 self.consider_os_conditional( line ) or
                 self.consider_pause( line ) or
                 self.consider_alert( line ) or
-                self.consider_showalerts( line ) ):
+                self.consider_showalerts( line ) or
+                self.consider_alertstofile( line ) ):
             self.report_unrecognised_command( line )
 
     def consider_include( self, line ):
@@ -582,6 +583,21 @@ class ProcessDeps:
                     ProcessDeps.shown_alert_messages += "\n"
                 ProcessDeps.shown_alert_messages = ProcessDeps.alert_messages
                 ProcessDeps.alert_messages = ""
+            return True
+        return False
+
+    def consider_alertstofile( self, line ):
+        m = re.match( '^alertstofile\s+(.*)', line )
+        if m != None:
+            file = m.group(1)
+            if os.path.isfile( file ):
+                shutil.move( file, file + ".old" )
+            if ProcessDeps.shown_alert_messages != "" or ProcessDeps.alert_messages != "":
+                with open( file, 'w') as fout:
+                    if ProcessDeps.shown_alert_messages != "":
+                        fout.write( ProcessDeps.shown_alert_messages + "\n" )
+                    if ProcessDeps.alert_messages != "":
+                        fout.write( ProcessDeps.alert_messages + "\n" )
             return True
         return False
 

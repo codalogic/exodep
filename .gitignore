@@ -89,6 +89,7 @@ ENV/
 .ropeproject
 
 # Project specific
+test/alerts
 test/download
 test/dir1
 test/file1.txt

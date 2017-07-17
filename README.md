@@ -487,6 +487,24 @@ For example:
 
 See the `alert` command for more information.
 
+## alertstofile
+
+`alertstofile` sends any recorded alerts to the file named in the command. The
+command format is:
+
+    alertstofile <file>
+
+If the named file already exists it will be renamed to `<file>.old` before the
+new alerts are written to the file.
+
+If there are no alerts to be written, the named file will effectively be
+deleted.  Hence scripts using `exodep` can use the presence or absence of the
+named file to determine if alerts were generated.
+
+For example:
+
+    alertstofile alerts.exodep
+
 ## pause
 
 The `pause` command will wait for user to press the `Return` key before
