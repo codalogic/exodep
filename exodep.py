@@ -518,8 +518,13 @@ class ProcessDeps:
         return False
 
     def consider_pause( self, line ):
-        if line == 'pause':
-            print( "\n>>> Press <Return> to continue <<<" )
+        m = re.match( '^pause(?:\s+(.*))?', line )
+        if m != None:
+            message = m.group(1)
+            print( "" )
+            if message:
+                print( self.expand_variables( message ) )
+            print( ">>> Press <Return> to continue <<<" )
             input()
             return True
         return False

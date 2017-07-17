@@ -436,6 +436,11 @@ following could be placed in the `exodep-imports/__end.exodep`:
 
     windows onanychanged pause
 
+The `pause` command can optionally specify a message to be displayed prior
+to pausing.  For example:
+
+    onchanged pause Project foo has changed
+
 # Example
 
 This is an example configuration for including the `dsl-pa` project at
