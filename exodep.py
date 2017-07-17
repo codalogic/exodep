@@ -46,6 +46,8 @@ end_exodep = 'exodep-imports/__end.exodep'
 
 glob_ignore = [ init_exodep, end_exodep ]
 
+default_vars = { 'strand': 'master', 'path': '' }
+
 def main() :
     if len( sys.argv ) >= 2:
         ProcessDeps( sys.argv[1] )
@@ -53,20 +55,27 @@ def main() :
         ProcessDeps( 'mydeps.exodep' )
     elif os.path.isfile( 'exodep-imports/mydeps.exodep' ):
         ProcessDeps( 'exodep-imports/mydeps.exodep' )
-    elif os.path.isfile( init_exodep ):
-        ProcessDeps( init_exodep )
     else:
+        process_globbed_exodep_imports()
+
+def process_globbed_exodep_imports():
+        vars = default_vars
+        if os.path.isfile( init_exodep ):
+            pd = ProcessDeps( init_exodep, vars )
+            vars = pd.get_vars()
         for file in glob.glob( 'exodep-imports/*.exodep' ):
+            file = file.replace( '\\', '/' )
             if file not in glob_ignore:
-                ProcessDeps( file )
+                ProcessDeps( file, vars )
         if os.path.isfile( end_exodep ):
-            ProcessDeps( end_exodep )
+            ProcessDeps( end_exodep, vars )
 
 
 class ProcessDeps:
     are_any_files_changed = False
+    alert_messages = ""
 
-    def __init__( self, dependencies_src, vars = { 'strand': 'master', 'path': '' } ):
+    def __init__( self, dependencies_src, vars = default_vars ):
         self.is_last_file_changed = self.are_files_changed = False
         self.line_num = 0
         self.uritemplate = host_templates['github']
@@ -85,6 +94,9 @@ class ProcessDeps:
 
     processed_configs = {}
 
+    def get_vars():
+        return self.vars
+
     def is_config_already_processed( self, dependencies_src ):
         abs_dependencies_src = os.path.abspath( dependencies_src )
         if abs_dependencies_src in ProcessDeps.processed_configs:
@@ -98,20 +110,11 @@ class ProcessDeps:
                 self.process_dependency_stream( f )
         except FileNotFoundError:
             self.error( "Unable to open exodep file: " + self.file )
-        if self.file == init_exodep:
-            self.process_globbed_config_files_after_init()
 
     def process_dependency_stream( self, f ):
         for line in f:
             self.line_num += 1
             self.process_line( line )
-
-    def process_globbed_config_files_after_init( self ):
-        for file in glob.glob( 'exodep-imports/*.exodep' ):
-            if file not in glob_ignore:
-                ProcessDeps( file, self.vars )
-        if os.path.isfile( end_exodep ):
-            ProcessDeps( end_exodep )
 
     def process_line( self, line ):
         line = line.strip()
@@ -137,7 +140,9 @@ class ProcessDeps:
                 self.consider_onchanged( line ) or
                 self.consider_onanychanged( line ) or
                 self.consider_os_conditional( line ) or
-                self.consider_pause( line ) ):
+                self.consider_pause( line ) or
+                self.consider_alert( line ) or
+                self.consider_showalerts( line ) ):
             self.report_unrecognised_command( line )
 
     def consider_include( self, line ):
@@ -537,6 +542,27 @@ class ProcessDeps:
                 print( self.expand_variables( message ) )
             print( ">>> Press <Return> to continue <<<" )
             input()
+            return True
+        return False
+
+    def consider_alert( self, line ):
+        m = re.match( '^alert\s+(.*)', line )
+        if m != None:
+            message = self.expand_variables( m.group(1) )
+            if ProcessDeps.alert_messages != "":
+                ProcessDeps.alert_messages += "\n"
+            alert = "ALERT: " + self.file + " (" + str(self.line_num) + "):\n" + "       " + message
+            print( alert )
+            ProcessDeps.alert_messages += alert
+            return True
+        return False
+
+    def consider_showalerts( self, line ):
+        if line == "showalerts":
+            if ProcessDeps.alert_messages != "":
+                print( "RECORDED ALERTS:" )
+                print( ProcessDeps.alert_messages )
+                ProcessDeps.alert_messages = ""
             return True
         return False
 

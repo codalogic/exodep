@@ -425,6 +425,15 @@ class MyTest(unittest.TestCase):
                             'linux exec mv ${path}/exec_file2.txt download/exec_renamed_file2.txt' )
         self.assertTrue( os.path.isfile( 'download/exec_renamed_file2.txt' ) )
 
+    def test_alert(self):
+        # This requires visual inspection!
+        self.assertTrue( exodep.ProcessDeps.alert_messages == "" )
+        make_ProcessDeps( 'uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n' +
+                            'alert This is an ALERT ${strand}\n' +
+                            'alert Another ALERT\n' )
+        print( exodep.ProcessDeps.alert_messages )
+        self.assertTrue( exodep.ProcessDeps.alert_messages == "ALERT: <StringIO> (2):\n       This is an ALERT master\nALERT: <StringIO> (3):\n       Another ALERT" )
+
     # def test_error_visually(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )
 
