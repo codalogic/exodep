@@ -67,22 +67,24 @@ def main():
         pass
 
 def process_globbed_exodep_imports():
-        vars = default_vars
-        if os.path.isfile( init_exodep ):
-            pd = ProcessDeps( init_exodep, vars )
-            vars = pd.get_vars()
-        for file in glob.glob( 'exodep-imports/*.exodep' ):
-            file = file.replace( '\\', '/' )
-            if file not in glob_ignore:
-                ProcessDeps( file, vars )
-        if os.path.isfile( end_exodep ):
-            ProcessDeps( end_exodep, vars )
+    vars = default_vars
+    if os.path.isfile( init_exodep ):
+        pd = ProcessDeps( init_exodep, vars )
+        vars = pd.get_vars()
+    for file in glob.glob( 'exodep-imports/*.exodep' ):
+        file = file.replace( '\\', '/' )
+        if file not in glob_ignore:
+            ProcessDeps( file, vars )
+    if os.path.isfile( end_exodep ):
+        ProcessDeps( end_exodep, vars )
 
 
 class ProcessDeps:
     are_any_files_changed = False
     alert_messages = ""
     shown_alert_messages = ""
+
+    processed_configs = {}
 
     def __init__( self, dependencies_src, vars = default_vars ):
         self.is_last_file_changed = self.are_files_changed = False
@@ -100,8 +102,6 @@ class ProcessDeps:
             self.process_dependency_stream( dependencies_src )
         else:
             self.error( "Unrecognised dependencies_src type format" )
-
-    processed_configs = {}
 
     def get_vars():
         return self.vars
