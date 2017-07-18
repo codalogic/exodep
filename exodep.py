@@ -43,20 +43,28 @@ host_templates = {
 
 init_exodep = 'exodep-imports/__init.exodep'
 end_exodep = 'exodep-imports/__end.exodep'
+onstop_exodep = 'exodep-imports/__onstop.exodep'
 
-glob_ignore = [ init_exodep, end_exodep ]
+glob_ignore = [ init_exodep, end_exodep, onstop_exodep ]
 
 default_vars = { 'strand': 'master', 'path': '' }
 
-def main() :
-    if len( sys.argv ) >= 2:
-        ProcessDeps( sys.argv[1] )
-    elif os.path.isfile( 'mydeps.exodep' ):
-        ProcessDeps( 'mydeps.exodep' )
-    elif os.path.isfile( 'exodep-imports/mydeps.exodep' ):
-        ProcessDeps( 'exodep-imports/mydeps.exodep' )
-    else:
-        process_globbed_exodep_imports()
+class StopException( Exception ):
+    pass
+
+def main():
+    try:
+        if len( sys.argv ) >= 2:
+            ProcessDeps( sys.argv[1] )
+        elif os.path.isfile( 'mydeps.exodep' ):
+            ProcessDeps( 'mydeps.exodep' )
+        elif os.path.isfile( 'exodep-imports/mydeps.exodep' ):
+            ProcessDeps( 'exodep-imports/mydeps.exodep' )
+        else:
+            process_globbed_exodep_imports()
+
+    except StopException:
+        pass
 
 def process_globbed_exodep_imports():
         vars = default_vars
@@ -146,7 +154,8 @@ class ProcessDeps:
                 self.consider_pause( line ) or
                 self.consider_alert( line ) or
                 self.consider_showalerts( line ) or
-                self.consider_alertstofile( line ) ):
+                self.consider_alertstofile( line ) or
+                self.consider_stop( line ) ):
             self.report_unrecognised_command( line )
 
     def consider_include( self, line ):
@@ -611,6 +620,19 @@ class ProcessDeps:
                     if ProcessDeps.alert_messages != "":
                         fout.write( ProcessDeps.alert_messages + "\n" )
             return True
+        return False
+
+    def consider_stop( self, line ):
+        m = re.match( '^stop(?:\s+(.*))?', line )
+        if m != None:
+            message = m.group(1)
+            print( "STOPPED: " + self.file + " (" + str(self.line_num) + "):" )
+            if message:
+                print( "      " + self.expand_variables( message ) )
+            if self.file != onstop_exodep and os.path.isfile( onstop_exodep ):
+                ProcessDeps( onstop_exodep, self.vars )
+            # return True
+            raise StopException
         return False
 
     def error( self, what ):

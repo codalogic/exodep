@@ -36,6 +36,10 @@ import filecmp
 sys.path.append("..")
 import exodep
 
+exodep_exe = '../exodep.py '
+if sys.platform.startswith( 'win32' ):
+    exodep_exe = '..\\exodep.py '
+
 def main():
     pre_clean()
     unittest.main()
@@ -49,6 +53,10 @@ def pre_clean():
         shutil.rmtree( 'dir1' )
     if os.path.isfile( 'file1.txt' ):
         os.remove( 'file1.txt' )
+    if os.path.isdir( 'stop' ):
+        shutil.rmtree( 'stop' )
+    if os.path.isdir( 'exodep-imports' ):
+        shutil.rmtree( 'exodep-imports' )
 
 class MyTest(unittest.TestCase):
     def test_default_setup(self):
@@ -457,11 +465,32 @@ class MyTest(unittest.TestCase):
                     'echo\n' +
                     'echo Another echo' )
 
+    def test_stop(self):
+        ensure_dir( 'stop' )
+        to_file( 'stop/test-stop.exodep',
+                'touch stop/should-be-made.txt\n' +
+                'stop\n' +
+                'touch stop/should-not-be-made.txt\n' )
+        ensure_dir( 'exodep-imports' )
+        to_file( 'exodep-imports/__onstop.exodep',
+                'touch stop/onstop-should-be-made.txt\n' )
+        os.system( exodep_exe + 'stop/test-stop.exodep' )
+        self.assertTrue( os.path.isfile( 'stop/should-be-made.txt' ) )
+        self.assertTrue( not os.path.isfile( 'stop/should-not-be-made.txt' ) )
+        self.assertTrue( os.path.isfile( 'stop/onstop-should-be-made.txt' ) )
+
     # def test_error_visually(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )
 
 def make_ProcessDeps( s ):
     return exodep.ProcessDeps( io.StringIO( s ) )
+
+def to_file( file, content ):
+    with open( file, 'w') as fout:
+        fout.write( content )
+
+def ensure_dir( dir ):
+    os.makedirs( dir, exist_ok=True )
 
 if __name__ == '__main__':
     main()

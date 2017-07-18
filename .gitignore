@@ -90,6 +90,8 @@ ENV/
 
 # Project specific
 test/alerts
+test/stop
+test/exodep-imports
 test/download
 test/dir1
 test/file1.txt

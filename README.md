@@ -531,6 +531,18 @@ to pausing.  For example:
 
     onchanged pause Project foo has changed
 
+## stop
+
+The `stop` command terminates processing.  If the command has an associated
+message, this will be printed out.  If the the file
+`exodep-imports/__onstop.exodep` exists, this will be processed in the current
+context before execution terminates.
+
+Example:
+
+    get LICENSE
+    onlastchanged stop Oh dear! We might need to think about this
+
 # Example
 
 This is an example configuration for including the `dsl-pa` project at
