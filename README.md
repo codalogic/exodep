@@ -615,6 +615,17 @@ for user specified local processing, not directly related to downloading files.
 `exodep` configuration file names associated with downloads should not begin
 with `_` characters.
 
+To make it easier to download dependent code, and facilitate sharing of code
+without clashing of names, it is suggested that
+the headers and source are separated into separate directory trees, called
+`./include/` and `./src/` respectively.  Within each of these directories, a
+directory with the name of the project is placed.  (e.g. leading to
+`./include/myproject/` and `./src/myproject/`.)  Files for the projects are
+then placed in their respective directories, leading to file names like:
+`./include/myproject/myfile.h` and `./src/myproject/myfile.cpp`.  (Parts
+of the project that are not intended to be downloaded via `exodep` can be
+structured according to developer preference.)
+
 It's suggested that a version controlled project is self-contained such that it
 contains all of it external dependencies as part of the repo, rather than
 having to run exodep to load them as part of setting up a project.  This makes
