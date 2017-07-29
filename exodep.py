@@ -90,7 +90,7 @@ class ProcessDeps:
         self.is_last_file_changed = self.are_files_changed = False
         self.line_num = 0
         self.uritemplate = host_templates['github']
-        self.vars = vars.copy()
+        self.set_vars( vars )
         self.versions = {}  # Each entry is <string of space separated strand names> : <string to use as strand in uri template>
         if isinstance( dependencies_src, str ):
             if self.is_config_already_processed( dependencies_src ):
@@ -105,6 +105,11 @@ class ProcessDeps:
 
     def get_vars( self ):
         return self.vars
+
+    def set_vars( self, vars ):
+        self.vars = vars.copy()
+        # Remove non-exportable vars
+        self.vars.pop( '__authority', None )
 
     def is_config_already_processed( self, dependencies_src ):
         abs_dependencies_src = os.path.abspath( dependencies_src )

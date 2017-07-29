@@ -239,10 +239,10 @@ Example:
     $owner codalogic
     $project exodep
     $strand apple
-    
+
     versions
     authority exodep-exports/exodep.exodep
-    
+
     get exodep.py
 
 ## get and bget
