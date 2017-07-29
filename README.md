@@ -490,6 +490,17 @@ you could do:
 
     linux get makefile ./
 
+## not
+
+The `not` command inverts the conditions looked for in the conditional
+commands.  So, for example, `onfile` by itself executes its associated
+command if the named file is present, whereas `not onfile` would look for
+the absence of a file.
+
+For example:
+
+    not onanychanged echo There were no changes
+
 ## echo
 
 Prints the message associated with the command to the screen.  Variable

@@ -495,6 +495,26 @@ class MyTest(unittest.TestCase):
         self.assertEqual( pd2.vars['__authority'], 'https://codalogic.com/codalogic/exodep/master/exodep-exports/exodep.exodep' )
         self.assertEqual( pd2.vars['v2'], 'p2' )
 
+    def test_not(self):
+        pd = make_ProcessDeps( '$v1 p1\n' +
+                                'on $v1 $v2 p2\n' +
+                                'not on $v1 $v3 p3\n' +
+                                'not not on $v1 $v4 p4\n' +
+                                'not not not on $v1 $v5 p5\n' +
+                                'not on $x1 $x2 y2\n' + # $x1 is not present
+                                'not on $x1 on $v1 $x3 y3\n' +
+                                'not on $x1 not on $v1 $x4 y4\n' +
+                                'not on $x1 not not on $v1 $x5 y5\n' )
+        self.assertEqual( pd.vars['v1'], 'p1' )
+        self.assertEqual( pd.vars['v2'], 'p2' )
+        self.assertTrue( 'v3' not in pd.vars )
+        self.assertEqual( pd.vars['v4'], 'p4' )
+        self.assertTrue( 'v5' not in pd.vars )
+        self.assertEqual( pd.vars['x2'], 'y2' )
+        self.assertEqual( pd.vars['x3'], 'y3' )
+        self.assertTrue( 'x4' not in pd.vars )
+        self.assertEqual( pd.vars['x5'], 'y5' )
+
     # def test_error_visually(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )
 
