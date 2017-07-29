@@ -225,6 +225,26 @@ Example:
 
     versions
 
+## authority
+
+Specifies where the 'original', authorative exodep file of the download exodep
+file being processed is located.  Currently this command is ignored, and
+treated as human readble documentation, but
+see https://github.com/codalogic/exodep/issues/26 .  Exodep file authors are
+encouraged to include `authority` commands in files so that the enhanced
+feature can make use of them when implemented.
+
+Example:
+
+    $owner codalogic
+    $project exodep
+    $strand apple
+    
+    versions
+    authority exodep-exports/exodep.exodep
+    
+    get exodep.py
+
 ## get and bget
 
 The `get` command downloads a text file and the `bget` command downloads

@@ -479,6 +479,22 @@ class MyTest(unittest.TestCase):
         self.assertTrue( not os.path.isfile( 'stop/should-not-be-made.txt' ) )
         self.assertTrue( os.path.isfile( 'stop/onstop-should-be-made.txt' ) )
 
+    def test_authority(self):
+        pd = make_ProcessDeps( '$v1 p1\n' +
+                                'uritemplate https://raw.githubusercontent.com/codalogic/exodep/${strand}/${file}\n' +
+                                'authority exodep-exports/exodep.exodep\n' +
+                                '$v2 p2' )
+        self.assertEqual( pd.vars['v1'], 'p1' )
+        self.assertEqual( pd.vars['__authority'], 'https://raw.githubusercontent.com/codalogic/exodep/master/exodep-exports/exodep.exodep' )
+        self.assertEqual( pd.vars['v2'], 'p2' )
+
+        pd2 = make_ProcessDeps( '$v1 p1\n' +
+                                'authority https://codalogic.com/codalogic/exodep/master/exodep-exports/exodep.exodep\n' +
+                                '$v2 p2' )
+        self.assertEqual( pd2.vars['v1'], 'p1' )
+        self.assertEqual( pd2.vars['__authority'], 'https://codalogic.com/codalogic/exodep/master/exodep-exports/exodep.exodep' )
+        self.assertEqual( pd2.vars['v2'], 'p2' )
+
     # def test_error_visually(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )
 
