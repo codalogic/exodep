@@ -159,6 +159,9 @@ Examples:
     $project exodep
     $strand apple
 
+Variables with names starting with two underscores (`__`) are reserved for use
+by `exodep` internally, and shouldn't be set by the user.
+
 ### default
 
 The `default` command allows a configuration called by another script to
