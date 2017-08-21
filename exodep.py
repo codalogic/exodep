@@ -145,7 +145,7 @@ class ProcessDeps:
                 self.consider_variable( line ) or
                 self.consider_default_variable( line ) or
                 self.consider_showvars( line ) or
-                self.consider_autoconfig( line ) or
+                self.consider_autovars( line ) or
                 self.consider_get( line ) or
                 self.consider_bget( line ) or
                 self.consider_file_ops( line ) or
@@ -260,8 +260,8 @@ class ProcessDeps:
             return True
         return False
 
-    def consider_autoconfig( self, line ):
-        m = re.match( '^autoconfig', line )
+    def consider_autovars( self, line ):
+        m = re.match( '^autovars', line )
         if m != None:
             uri = re.compile( '-' ).sub( 'master', self.uritemplate )
             project = self.vars['project']

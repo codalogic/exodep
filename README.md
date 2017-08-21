@@ -232,9 +232,9 @@ Example:
 
     versions
 
-## autoconfig
+## autovars
 
-`autoconfig` conveniently sets up a number of variables, based on the value of
+`autovars` conveniently sets up a number of variables, based on the value of
 the `$project` variable.  The following commands are effectively run, where
 `<project-safe-name>` is the value of `$project` with any hyphen (`-`) characters
 converted to underscores (`_`):
@@ -269,7 +269,7 @@ For example, if you have the following in `__init.exodep`:
 And the following in `my-proj.exodep`:
 
     $project  my-proj
-    autoconfig
+    autovars
 
 This would result in the following variables being setup:
 

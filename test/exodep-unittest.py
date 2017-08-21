@@ -530,8 +530,8 @@ class MyTest(unittest.TestCase):
         self.assertTrue( 'x4' not in pd.vars )
         self.assertEqual( pd.vars['x5'], 'y5' )
 
-    def test_autoconfig(self):
-        pd = make_ProcessDeps( '$project my-proj\nautoconfig' )
+    def test_autovars(self):
+        pd = make_ProcessDeps( '$project my-proj\nautovars' )
         self.assertTrue( 'ext_home' in pd.vars )
         self.assertEqual( pd.expand_variables( pd.vars['ext_home'] ), '' )
         self.assertTrue( 'ext_inc_home' in pd.vars )
