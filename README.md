@@ -27,9 +27,9 @@ configuration files as described below.
 
 # Principles of Operation
 
-Exodep downloads files from a Github or Bitbucket like central code repository
+Exodep downloads files from a Github or Bitbucket-like central code repository
 over HTTP.  It can also copy from files that are on a central file server
-that is mounted into your directory structure.  For convenience we assume that
+that is mounted into your directory structure.  For convenience it's assumed that
 the former scenario is in effect.
 
 The basic command for downloading a file is the `get` command.  So that this
@@ -264,6 +264,7 @@ converted to underscores (`_`):
 For example, if you have the following in `__init.exodep`:
 
     $ext_home external/
+    $ext_build_home build/
     $lib_dst  lib/
 
 And the following in `my-proj.exodep`:
@@ -277,19 +278,19 @@ This would result in the following variables being setup:
 
     $ext_inc_home   external/include/
     $ext_src_home   external/src/
-    $ext_build_home external/build/
+    $ext_build_home build/
     $ext_lib_home   external/lib/
     $ext_bin_home   external/bin/
 
     $inc_dst   external/include/my-proj/
     $src_dst   external/src/my-proj/
-    $build_dst external/build/my-proj/
+    $build_dst build/my-proj/
     $lib_dst   lib/
     $bin_dst   external/bin/my-proj/
 
     $my_proj_inc_dst   external/include/my-proj/
     $my_proj_src_dst   external/src/my-proj/
-    $my_proj_build_dst external/build/my-proj/
+    $my_proj_build_dst build/my-proj/
     $my_proj_lib_dst   lib/
     $my_proj_bin_dst   external/bin/my-proj/
 
