@@ -136,6 +136,8 @@ set using the form:
     $variable_name  variable_value
 
 The `variable_value` may contain spaces.  The `variable_name` can not.
+`variable_value` can be absent, in which case the variable is set to the
+empty string.
 
 Certain variables, such as `$owner` and `$project` have standardised meanings
 by convention.
@@ -162,7 +164,7 @@ Examples:
 Variables with names starting with two underscores (`__`) are reserved for use
 by `exodep` internally, and shouldn't be set by the user.
 
-### default
+## default
 
 The `default` command allows a configuration called by another script to
 specify default values.  The format is:
@@ -189,6 +191,11 @@ value for `$h_files` by doing:
 As a result of this, the `get` command would be expanded to:
 
     get my-lib.h include/
+
+## showvars
+
+The `showvars` command shows the currently set variables.  It is intended to
+aid debugging.
 
 ## versions
 

@@ -146,6 +146,9 @@ class MyTest(unittest.TestCase):
         self.assertTrue( 'plant' in pd.vars )
         self.assertEqual( pd.vars['plant'], 'rose' )
 
+    def test_showvars(self):
+        pd = make_ProcessDeps( "$plant rose\n$animal sheep\nshowvars" )
+
     def test_uri_formation(self):
         pd = make_ProcessDeps( "$owner marvin\n$strand apple\n$project exodep\n$path bin/" )
 

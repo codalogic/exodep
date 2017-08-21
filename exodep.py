@@ -144,6 +144,7 @@ class ProcessDeps:
                 self.consider_versions( line ) or
                 self.consider_variable( line ) or
                 self.consider_default_variable( line ) or
+                self.consider_showvars( line ) or
                 self.consider_get( line ) or
                 self.consider_bget( line ) or
                 self.consider_file_ops( line ) or
@@ -247,6 +248,14 @@ class ProcessDeps:
         if m != None:
             if m.group(1) not in self.vars:
                 self.vars[m.group(1)] = m.group(2) if m.group(2) else ''
+            return True
+        return False
+
+    def consider_showvars( self, line ):
+        m = re.match( '^showvars', line )
+        if m != None:
+            for var in sorted( self.vars.keys() ):
+                print( var + ": " + self.vars[var] )
             return True
         return False
 
