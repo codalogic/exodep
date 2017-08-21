@@ -106,18 +106,6 @@ class MyTest(unittest.TestCase):
         self.assertTrue( 'animal' in pd.vars )
         self.assertEqual( pd.vars['animal'], 'sheep' )
 
-    def test_set_default_vars_1(self):
-        pd = make_ProcessDeps( "default $plant tulip" )
-        self.assertEqual( len( pd.vars ), 3 )
-        self.assertTrue( 'plant' in pd.vars )
-        self.assertEqual( pd.vars['plant'], 'tulip' )
-
-    def test_set_default_vars_2(self):
-        pd = make_ProcessDeps( "$plant rose\ndefault $plant tulip" )
-        self.assertEqual( len( pd.vars ), 3 )
-        self.assertTrue( 'plant' in pd.vars )
-        self.assertEqual( pd.vars['plant'], 'rose' )
-
     def test_set_empty_vars_1(self):
         pd = make_ProcessDeps( "$plant\n$animal sheep" )
         self.assertEqual( len( pd.vars ), 4 )
@@ -133,6 +121,30 @@ class MyTest(unittest.TestCase):
         self.assertEqual( pd.vars['plant'], '' )
         self.assertTrue( 'animal' in pd.vars )
         self.assertEqual( pd.vars['animal'], 'sheep' )
+
+    def test_set_default_vars_1(self):
+        pd = make_ProcessDeps( "default $plant tulip" )
+        self.assertEqual( len( pd.vars ), 3 )
+        self.assertTrue( 'plant' in pd.vars )
+        self.assertEqual( pd.vars['plant'], 'tulip' )
+
+    def test_set_default_vars_2(self):
+        pd = make_ProcessDeps( "$plant rose\ndefault $plant tulip" )
+        self.assertEqual( len( pd.vars ), 3 )
+        self.assertTrue( 'plant' in pd.vars )
+        self.assertEqual( pd.vars['plant'], 'rose' )
+
+    def test_set_default_empty_vars_1(self):
+        pd = make_ProcessDeps( "default $plant" )
+        self.assertEqual( len( pd.vars ), 3 )
+        self.assertTrue( 'plant' in pd.vars )
+        self.assertEqual( pd.vars['plant'], '' )
+
+    def test_set_default_empty_vars_2(self):
+        pd = make_ProcessDeps( "$plant rose\ndefault $plant" )
+        self.assertEqual( len( pd.vars ), 3 )
+        self.assertTrue( 'plant' in pd.vars )
+        self.assertEqual( pd.vars['plant'], 'rose' )
 
     def test_uri_formation(self):
         pd = make_ProcessDeps( "$owner marvin\n$strand apple\n$project exodep\n$path bin/" )
