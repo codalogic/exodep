@@ -145,6 +145,7 @@ class ProcessDeps:
                 self.consider_variable( line ) or
                 self.consider_default_variable( line ) or
                 self.consider_showvars( line ) or
+                self.consider_autoconfig( line ) or
                 self.consider_get( line ) or
                 self.consider_bget( line ) or
                 self.consider_file_ops( line ) or
@@ -256,6 +257,36 @@ class ProcessDeps:
         if m != None:
             for var in sorted( self.vars.keys() ):
                 print( var + ": " + self.vars[var] )
+            return True
+        return False
+
+    def consider_autoconfig( self, line ):
+        m = re.match( '^autoconfig', line )
+        if m != None:
+            uri = re.compile( '-' ).sub( 'master', self.uritemplate )
+            project = self.vars['project']
+            safe_project = project.replace( '-', '_' )
+            if project != '':
+                self.process_line( 'versions' )
+            self.process_line( 'default $ext_home' )
+
+            self.process_line( 'default $ext_inc_home   ${ext_home}include/' )
+            self.process_line( 'default $ext_src_home   ${ext_home}src/' )
+            self.process_line( 'default $ext_build_home ${ext_home}build/' )
+            self.process_line( 'default $ext_lib_home   ${ext_home}lib/' )
+            self.process_line( 'default $ext_bin_home   ${ext_home}bin/' )
+
+            self.process_line( 'default $inc_dst   ${ext_inc_home}' +   project + '/' )
+            self.process_line( 'default $src_dst   ${ext_src_home}' +   project + '/' )
+            self.process_line( 'default $build_dst ${ext_build_home}' + project + '/' )
+            self.process_line( 'default $lib_dst   ${ext_lib_home}' +   project + '/' )
+            self.process_line( 'default $bin_dst   ${ext_bin_home}' +   project + '/' )
+
+            self.process_line( 'default $' + safe_project + '_inc_dst   ${inc_dst}' )
+            self.process_line( 'default $' + safe_project + '_src_dst   ${src_dst}' )
+            self.process_line( 'default $' + safe_project + '_build_dst ${build_dst}' )
+            self.process_line( 'default $' + safe_project + '_lib_dst   ${lib_dst}' )
+            self.process_line( 'default $' + safe_project + '_bin_dst   ${bin_dst}' )
             return True
         return False
 

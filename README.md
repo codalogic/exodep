@@ -232,6 +232,67 @@ Example:
 
     versions
 
+## autoconfig
+
+`autoconfig` conveniently sets up a number of variables, based on the value of
+the `$project` variable.  The following commands are effectively run, where
+`<project-safe-name>` is the value of `$project` with any hyphen (`-`) characters
+converted to underscores (`_`):
+
+    versions    # Only executed if $strand != 'master'
+
+    default $ext_home
+
+    default $ext_inc_home   ${ext_home}include/
+    default $ext_src_home   ${ext_home}src/
+    default $ext_build_home ${ext_home}build/
+    default $ext_lib_home   ${ext_home}lib/
+    default $ext_bin_home   ${ext_home}bin/
+
+    default $inc_dst   ${ext_inc_home}${project}/
+    default $src_dst   ${ext_src_home}${project}/
+    default $build_dst ${ext_build_home}${project}/
+    default $lib_dst   ${ext_lib_home}${project}/
+    default $bin_dst   ${ext_bin_home}${project}/
+
+    default $<project-safe-name>_inc_dst   ${inc_dst}
+    default $<project-safe-name>_src_dst   ${src_dst}
+    default $<project-safe-name>_build_dst ${build_dst}
+    default $<project-safe-name>_lib_dst   ${lib_dst}
+    default $<project-safe-name>_bin_dst   ${bin_dst}
+
+For example, if you have the following in `__init.exodep`:
+
+    $ext_home external/
+    $lib_dst  lib/
+
+And the following in `my-proj.exodep`:
+
+    $project  my-proj
+    autoconfig
+
+This would result in the following variables being setup:
+
+    $ext_home external/
+
+    $ext_inc_home   external/include/
+    $ext_src_home   external/src/
+    $ext_build_home external/build/
+    $ext_lib_home   external/lib/
+    $ext_bin_home   external/bin/
+
+    $inc_dst   external/include/my-proj/
+    $src_dst   external/src/my-proj/
+    $build_dst external/build/my-proj/
+    $lib_dst   lib/
+    $bin_dst   external/bin/my-proj/
+
+    $my_proj_inc_dst   external/include/my-proj/
+    $my_proj_src_dst   external/src/my-proj/
+    $my_proj_build_dst external/build/my-proj/
+    $my_proj_lib_dst   lib/
+    $my_proj_bin_dst   external/bin/my-proj/
+
 ## authority
 
 Specifies where the 'original', authorative exodep file of the download exodep
