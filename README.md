@@ -194,8 +194,19 @@ As a result of this, the `get` command would be expanded to:
 
 ## showvars
 
-The `showvars` command shows the currently set variables.  It is intended to
-aid debugging.
+The `showvars` command shows the currently set variables in alphabetical
+order.  If a variable references other variables, both the un-expanded
+and expanded forms are shown.  It is intended to aid debugging.
+
+For example, given:
+
+    $pet dog
+    $animal ${pet}
+
+Would yield:
+
+    $animal: ${pet} -> dog
+    $pet: dog
 
 ## versions
 

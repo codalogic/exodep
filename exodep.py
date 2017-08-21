@@ -256,7 +256,10 @@ class ProcessDeps:
         m = re.match( '^showvars', line )
         if m != None:
             for var in sorted( self.vars.keys() ):
-                print( var + ": " + self.vars[var] )
+                raw = self.vars[var]
+                expanded = self.expand_variables( raw )
+                expansion = '' if expanded == raw else (' -> ' + expanded)
+                print( var + ": " + raw + expansion )
             return True
         return False
 

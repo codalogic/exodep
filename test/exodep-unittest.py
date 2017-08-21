@@ -147,7 +147,7 @@ class MyTest(unittest.TestCase):
         self.assertEqual( pd.vars['plant'], 'rose' )
 
     def test_showvars(self):
-        pd = make_ProcessDeps( "$plant rose\n$animal sheep\nshowvars" )
+        pd = make_ProcessDeps( "$plant rose\n$animal sheep\n$plant_animal ${plant} ${animal}\nshowvars" )
 
     def test_uri_formation(self):
         pd = make_ProcessDeps( "$owner marvin\n$strand apple\n$project exodep\n$path bin/" )
@@ -531,7 +531,7 @@ class MyTest(unittest.TestCase):
         self.assertEqual( pd.vars['x5'], 'y5' )
 
     def test_autovars(self):
-        pd = make_ProcessDeps( '$project my-proj\nautovars' )
+        pd = make_ProcessDeps( '$project my-proj\nautovars\nshowvars' )
         self.assertTrue( 'ext_home' in pd.vars )
         self.assertEqual( pd.expand_variables( pd.vars['ext_home'] ), '' )
         self.assertTrue( 'ext_inc_home' in pd.vars )
