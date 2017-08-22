@@ -668,34 +668,26 @@ This is an example configuration for including the `dsl-pa` project at
 [https://github.com/codalogic/dsl-pa](https://github.com/codalogic/dsl-pa)
 into another project.
 
-    default $h_dst   include/dsl-pa/
-    default $cpp_dst src/dsl-pa/
-
-    default $dsl_pa_h_dst   ${h_dst}
-    default $dsl_pa_cpp_dst ${cpp_dst}
-
     $owner   codalogic
     $project dsl-pa
     $strand  angst
 
-    hosting github
-    versions    # Invoking 'versions' must happen after setting $owner/$project variables
+    autovars
 
     $path include/dsl-pa/
-    get dsl-pa.h          ${h_dst}
-    get dsl-pa-dsl-pa.h   ${h_dst}
-    get dsl-pa-alphabet.h ${h_dst}
-    get dsl-pa-reader.h   ${h_dst}
+    get dsl-pa.h          ${dsl_pa_inc_dst}
+    get dsl-pa-dsl-pa.h   ${dsl_pa_inc_dst}
+    get dsl-pa-alphabet.h ${dsl_pa_inc_dst}
+    get dsl-pa-reader.h   ${dsl_pa_inc_dst}
 
-    $path src/
-    get dsl-pa-dsl-pa.cpp   ${cpp_dst}
-    get dsl-pa-alphabet.cpp ${cpp_dst}
-    get dsl-pa-reader.cpp   ${cpp_dst}
+    $path src/dsl-pa/
+    get dsl-pa-dsl-pa.cpp   ${dsl_pa_src_dst}
+    get dsl-pa-alphabet.cpp ${dsl_pa_src_dst}
+    get dsl-pa-reader.cpp   ${dsl_pa_src_dst}
 
-Setting `$dsl_pa_h_dst` and `$h_dst`, and `$dsl_pa_cpp_dst` and `$cpp_dst`
-as default values allows for the configuration to be used stand-alone, while
-also offering a configuration that includes it the option to modify its
-behaviour.
+The automatic setting of `$dsl_pa_inc_dst` and `$dsl_pa_src_dst` as default
+values via `autovars` allows the configuration to be easily created,
+while also offering the option to modify its default behaviour.
 
 # Best Current Practices
 
