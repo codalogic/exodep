@@ -80,7 +80,7 @@ own line.  The various commands are documented below.
 
 ## Comments
 
-Comments begin with a `#`.  Blank lines and lines consistig only of comments
+Comments begin with a `#`.  Blank lines and lines consisting only of comments
 are ignored.
 
 Example:
