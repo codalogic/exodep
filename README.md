@@ -660,7 +660,7 @@ context before execution terminates.
 Example:
 
     get LICENSE
-    onlastchanged stop Oh dear! We might need to think about this
+    onlastchanged stop Oh dear! License changed! We might need to think about this
 
 # Example
 
