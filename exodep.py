@@ -45,8 +45,6 @@ init_exodep = 'exodep-imports/__init.exodep'
 end_exodep = 'exodep-imports/__end.exodep'
 onstop_exodep = 'exodep-imports/__onstop.exodep'
 
-glob_ignore = [ init_exodep, end_exodep, onstop_exodep ]
-
 default_vars = { 'strand': 'master', 'path': '' }
 
 class StopException( Exception ):
@@ -73,11 +71,13 @@ def process_globbed_exodep_imports():
         vars = pd.get_vars()
     for file in glob.glob( 'exodep-imports/*.exodep' ):
         file = file.replace( '\\', '/' )
-        if file not in glob_ignore:
+        if not is_ignored_glob( file ):
             ProcessDeps( file, vars )
     if os.path.isfile( end_exodep ):
         ProcessDeps( end_exodep, vars )
 
+def is_ignored_glob( file ):
+    return file.find( '/__' ) >= 0 or file.find( '/^' ) >= 0;
 
 class ProcessDeps:
     are_any_files_changed = False

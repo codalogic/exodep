@@ -531,7 +531,7 @@ class MyTest(unittest.TestCase):
         self.assertEqual( pd.vars['x5'], 'y5' )
 
     def test_autovars(self):
-        pd = make_ProcessDeps( '$project my-proj\nautovars\nshowvars' )
+        pd = make_ProcessDeps( '$project my-proj\nautovars' )
         self.assertTrue( 'ext_home' in pd.vars )
         self.assertEqual( pd.expand_variables( pd.vars['ext_home'] ), '' )
         self.assertTrue( 'ext_inc_home' in pd.vars )
