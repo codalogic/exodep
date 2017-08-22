@@ -65,6 +65,11 @@ If `exodep-imports/__init.exodep` is not
 found then it will interpret all the config files it finds by globbing
 `exodep-imports/*.exodep`.
 
+Note that, during globbing, files with names beginning with `__` and `^` are
+skipped.  (Exodep file names beginning with `__` are reserved to have special
+meaning to `exodep`, and files beginning with `^` are designated as
+user-specified, non-globbed files.)
+
 After all found exodep files are processed,  if present, the file
 `exodep-imports/__end.exodep` will be processed.
 
@@ -707,27 +712,32 @@ they can be placed and editted in the `exodep-imports` sub-directory and an
 `exodep` configuration file (e.g. `_copy-exports.exodep`) can be used to
 copy them to the `exodep-exports` sub-directory.
 
-If a project exports multiple `exodep` configuration files, it maybe
-appropriate to put all those files within a sub-directory of the
-`exodep-imports` sub-directory in the importing project.
-
 Some projects, such as utility libraries may have multiple parts that can be
 separately exported.  It's suggested that the `exodep` files for such projects
 be named according to the format `project-name.sub-feature.exodep`, e.g.
 `myutils.string-ops.exodep`.
 
-If when including an `exodep` configuration file into your project, modify the
-name by prefixing it with your project name.  For example, if you edit the
-`mylib.exodep` file from the `mylib` project, and place it in your `myproj`
-project, call it `myproj.mylib.exodep`.
+If you change the contents of an `exodep` configuration file included into
+your project, modify its name by prefixing it with your project name.  For
+example, if you edit the `importedlib.exodep` file from the `importedlib`
+project, and place it in your `myproj` project, call it
+`myproj.importedlib.exodep`.
+
+`exodep` configuration file names associated with downloads should not begin
+with `_` or `^` characters.
 
 `exodep` configuration files with names beginning with `__` (2 underscores,
-for example `__init.exodep`) should be considered to be reserved to have
+for example `__init.exodep`) are reserved to have
 special meaning to the `exodep` processor.  `exodep` configuration file names
 beginning with `_` (1 underscore, e.g. `_copy-exports.exodep`), should be used
-for user specified local processing, not directly related to downloading files.
-`exodep` configuration file names associated with downloads should not begin
-with `_` characters.
+for user-specified local processing, not directly related to downloading files.
+`exodep` file names beginning with `^` are also designated for user-specified,
+local processing.  The difference is that files with names beginning with a
+single `_` are processed during the globbing process, and files with names
+beginning with `^` are not processed during the globbing phase.  As a result,
+processing of files with names beginning with `^` must be explicitly invoked
+in another `exodep` configuration file, such as `exodep-imports/__init.exodep`
+or `exodep-imports/__end.exodep`.
 
 To make it easier to download dependent code, and facilitate sharing of code
 without clashing of names, it is suggested that
@@ -763,7 +773,7 @@ Open a shell and cd to the `test` directory.  Then run `exodep-unittest.py`.
 
     The MIT License (MIT)
 
-    Copyright (c) 2016 Codalogic Ltd
+    Copyright (c) 2016-17 Codalogic Ltd
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
