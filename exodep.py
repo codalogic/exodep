@@ -266,10 +266,12 @@ class ProcessDeps:
     def consider_autovars( self, line ):
         m = re.match( '^autovars', line )
         if m != None:
-            uri = re.compile( '-' ).sub( 'master', self.uritemplate )
+            if 'project' not in self.vars:
+                self.error( "`$project` variable must be set before calling `autovars` command" )
+                return True
             project = self.vars['project']
             safe_project = project.replace( '-', '_' )
-            if project != '':
+            if 'strand' in self.vars:
                 self.process_line( 'versions' )
             self.process_line( 'default $ext_home' )
 
