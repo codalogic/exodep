@@ -31,7 +31,11 @@ Alternatively, if you are on Windows, you can download and install the `exodep`
 installer from [here](https://raw.githubusercontent.com/codalogic/exodep/master/installers/windows/Release/exodep.msi).
 This will also add an option to run `exodep.py` into the Windows Explorer
 context menu. On the downside, it may not always be the most up-to-date
-version.
+version.  (One option is to install `exodep` into a location other than the
+default `C:\Program Files\...` folder, such as `C:\Programs\Exodep`.  This
+then doesn't require Administrator permissions to write to it, and `exodep.py`
+can be used to update itself with the latest version simply by double clicking
+on it in Windows Explorer, or by using the right-cick context menu.)
 
 # Principles of Operation
 
