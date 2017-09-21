@@ -95,3 +95,4 @@ test/exodep-imports
 test/download
 test/dir1
 test/file1.txt
+*.exe
