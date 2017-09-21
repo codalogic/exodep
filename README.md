@@ -28,7 +28,7 @@ top-level directory.  You can then configure `exodep` using `exodep`
 configuration files as described below.
 
 Alternatively, if you are on Windows, you can download and install the `exodep`
-installer from [here](https://raw.githubusercontent.com/codalogic/exodep/blob/master/installers/windows/Release/exodep.msi).
+installer from [here](https://raw.githubusercontent.com/codalogic/exodep/master/installers/windows/Release/exodep.msi).
 This will also add an option to run `exodep.py` into the Windows Explorer
 context menu. On the downside, it may not always be the most up-to-date
 version.
