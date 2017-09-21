@@ -20,14 +20,22 @@ Downloader, or Dependency Refresher.
 
 # Getting Started
 
-You'll need Python 3 on your system.  Once you've got that installed,
+Firstly, you'll need Python 3 on your system.
+
+Once you've got Python installed, the simplest way to install `exodep` is to
 simply copy `exodep.py` to your repo, most likely placing it in its
 top-level directory.  You can then configure `exodep` using `exodep`
 configuration files as described below.
 
+Alternatively, if you are on Windows, you can download and install the `exodep`
+installer from [here](https://raw.githubusercontent.com/codalogic/exodep/blob/master/installers/windows/Release/exodep.msi).
+This will also add an option to run `exodep.py` into the Windows Explorer
+context menu. On the downside, it may not always be the most up-to-date
+version.
+
 # Principles of Operation
 
-Exodep downloads files from a Github or Bitbucket-like central code repository
+Exodep downloads files from a Github, Gitlab or Bitbucket-like central code repository
 over HTTP.  It can also copy from files that are on a central file server
 that is mounted into your directory structure.  For convenience it's assumed that
 the former scenario is in effect.
