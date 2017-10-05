@@ -271,23 +271,29 @@ converted to underscores (`_`):
 
     default $ext_home
 
-    default $ext_inc_home   ${ext_home}include/
-    default $ext_src_home   ${ext_home}src/
-    default $ext_build_home ${ext_home}build/
-    default $ext_lib_home   ${ext_home}lib/
-    default $ext_bin_home   ${ext_home}bin/
+    default $ext_inc_home     ${ext_home}include/
+    default $ext_src_home     ${ext_home}src/
+    default $ext_code_home    ${ext_home}
+    default $ext_build_home   ${ext_home}build/
+    default $ext_lib_home     ${ext_home}lib/
+    default $ext_bin_home     ${ext_home}bin/
+    default $ext_scripts_home ${ext_home}scripts/
 
-    default $inc_dst   ${ext_inc_home}${project}/
-    default $src_dst   ${ext_src_home}${project}/
-    default $build_dst ${ext_build_home}${project}/
-    default $lib_dst   ${ext_lib_home}${project}/
-    default $bin_dst   ${ext_bin_home}${project}/
+    default $inc_dst     ${ext_inc_home}${project}/
+    default $src_dst     ${ext_src_home}${project}/
+    default $code_dst    ${ext_code_home}${project}/
+    default $build_dst   ${ext_build_home}${project}/
+    default $lib_dst     ${ext_lib_home}${project}/
+    default $bin_dst     ${ext_bin_home}${project}/
+    default $scripts_dst ${ext_scripts_home}${project}/
 
-    default $<project-safe-name>_inc_dst   ${inc_dst}
-    default $<project-safe-name>_src_dst   ${src_dst}
-    default $<project-safe-name>_build_dst ${build_dst}
-    default $<project-safe-name>_lib_dst   ${lib_dst}
-    default $<project-safe-name>_bin_dst   ${bin_dst}
+    default $<project-safe-name>_inc_dst     ${inc_dst}
+    default $<project-safe-name>_src_dst     ${src_dst}
+    default $<project-safe-name>_code_dst    ${code_dst}
+    default $<project-safe-name>_build_dst   ${build_dst}
+    default $<project-safe-name>_lib_dst     ${lib_dst}
+    default $<project-safe-name>_bin_dst     ${bin_dst}
+    default $<project-safe-name>_scripts_dst ${scripts_dst}
 
 For example, if you have the following in `__init.exodep`:
 
@@ -304,23 +310,39 @@ This would result in the following variables being setup:
 
     $ext_home external/
 
-    $ext_inc_home   external/include/
-    $ext_src_home   external/src/
-    $ext_build_home build/
-    $ext_lib_home   external/lib/
-    $ext_bin_home   external/bin/
+    $ext_inc_home      external/include/
+    $ext_src_home      external/src/
+    $ext_code_home     external/
+    $ext_build_home    build/
+    $ext_lib_home      external/lib/
+    $ext_bin_home      external/bin/
+    $ext_scripts_home  external/scripts/
 
-    $inc_dst   external/include/my-proj/
-    $src_dst   external/src/my-proj/
-    $build_dst build/my-proj/
-    $lib_dst   lib/
-    $bin_dst   external/bin/my-proj/
+    $inc_dst      external/include/my-proj/
+    $src_dst      external/src/my-proj/
+    $code_dst     external/my-proj/
+    $build_dst    build/my-proj/
+    $lib_dst      lib/
+    $bin_dst      external/bin/my-proj/
+    $scripts_dst  external/scripts/my-proj/
 
-    $my_proj_inc_dst   external/include/my-proj/
-    $my_proj_src_dst   external/src/my-proj/
-    $my_proj_build_dst build/my-proj/
-    $my_proj_lib_dst   lib/
-    $my_proj_bin_dst   external/bin/my-proj/
+    $my_proj_inc_dst      external/include/my-proj/
+    $my_proj_src_dst      external/src/my-proj/
+    $my_proj_code_dst     external/my-proj/
+    $my_proj_build_dst    build/my-proj/
+    $my_proj_lib_dst      lib/
+    $my_proj_bin_dst      external/bin/my-proj/
+    $my_proj_scripts_dst  external/scripts/my-proj/
+
+Variables of the form `???_inc_???` and `???_src_???` are intended to be used
+with languages that separate code into include files and source files, such as
+C++.  Variables of the form `???_code_???` are intended to be used with
+languages that don't use include files, such as Java and C#.  Languages such
+as Python and Ruby might be associated with the `???_code_???` variables, if
+the project is a Python / Ruby project.  If the project incorporates
+Python / Ruby as a project support function, for example to run tests or
+generate code, then the Python / Ruby might be associated with the
+`???_scripts_???` variable.
 
 ## authority
 
