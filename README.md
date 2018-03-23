@@ -30,7 +30,7 @@ configuration files as described below.
 ## Windows Installer
 
 If you are on Windows, you can download and install the [`exodep`
-Windows MSI installer] (https://raw.githubusercontent.com/codalogic/exodep/master/installers/windows/Release/exodep.msi).
+Windows MSI installer](https://raw.githubusercontent.com/codalogic/exodep/master/installers/windows/Release/exodep.msi).
 
 This doesn't install Python 3, but it does add registry settings to create a
 context menu entry in Windows Explorer to run `exodep.py` in the current folder.
