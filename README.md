@@ -40,7 +40,7 @@ version.  One option is to install `exodep` into a location other than the
 default `C:\Program Files\...` folder, such as `C:\Programs\Exodep`.  This
 then doesn't require Administrator permissions to write to it, and `exodep.py`
 can be used to update itself with the latest version simply by double clicking
-on it in Windows Explorer, or by using the right-cick context menu.
+on it in Windows Explorer, or by using the right-click context menu.
 
 # Principles of Operation
 
