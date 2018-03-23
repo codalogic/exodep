@@ -27,15 +27,20 @@ simply copy `exodep.py` to your repo, most likely placing it in its
 top-level directory.  You can then configure `exodep` using `exodep`
 configuration files as described below.
 
-Alternatively, if you are on Windows, you can download and install the `exodep`
-installer from [here](https://raw.githubusercontent.com/codalogic/exodep/master/installers/windows/Release/exodep.msi).
-This will also add an option to run `exodep.py` into the Windows Explorer
-context menu. On the downside, it may not always be the most up-to-date
-version.  (One option is to install `exodep` into a location other than the
+## Windows Installer
+
+If you are on Windows, you can download and install the [`exodep`
+Windows MSI installer] (https://raw.githubusercontent.com/codalogic/exodep/master/installers/windows/Release/exodep.msi).
+
+This doesn't install Python 3, but it does add registry settings to create a
+context menu entry in Windows Explorer to run `exodep.py` in the current folder.
+
+On the downside, it may not always be the most up-to-date
+version.  One option is to install `exodep` into a location other than the
 default `C:\Program Files\...` folder, such as `C:\Programs\Exodep`.  This
 then doesn't require Administrator permissions to write to it, and `exodep.py`
 can be used to update itself with the latest version simply by double clicking
-on it in Windows Explorer, or by using the right-cick context menu.)
+on it in Windows Explorer, or by using the right-cick context menu.
 
 # Principles of Operation
 
