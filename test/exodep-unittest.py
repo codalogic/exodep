@@ -189,6 +189,19 @@ class MyTest(unittest.TestCase):
 
         os.rmdir( fake_dir )
 
+    def test_globbing(self):
+        os.remove( 'glob-test-1.txt' )
+        os.remove( 'glob-test-2.txt' )
+        ensure_dir( 'exodep-imports' )
+        ensure_dir( 'exodep-imports/child' )
+        to_file( 'exodep-imports/glob-test-1.exodep',
+                'touch glob-test-1.txt\n' )
+        to_file( 'exodep-imports/child/glob-test-2.exodep',
+                'touch glob-test-2.txt\n' )
+        os.system( exodep_exe )
+        self.assertTrue( os.path.isfile( 'glob-test-1.txt' ) )
+        self.assertTrue( os.path.isfile( 'glob-test-2.txt' ) )
+
     def test_download(self):
         make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n" +
                             "get dl-test-target.txt download/" )

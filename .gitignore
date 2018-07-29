@@ -95,4 +95,6 @@ test/exodep-imports
 test/download
 test/dir1
 test/file1.txt
+test/glob-test-1.txt
+test/glob-test-2.txt
 *.exe

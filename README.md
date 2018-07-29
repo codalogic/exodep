@@ -71,24 +71,21 @@ will interpret the contents of the file named `mydeps.exodep`.
 If `mydeps.exodep` is not present it will look for a file called
 `exodep-imports/mydeps.exodep`.
 
-If that is also not present it will look for a file called
-`exodep-imports/__init.exodep`.  If the init file is found it will process it
-and then interpret all the `exodep` config files it finds by globbing
-`exodep-imports/*.exodep` using the context created by processing
-`exodep-imports/__init.exodep`.  This allows simple customisation of the
+If that is also not present it will look for `exodep` files in the
+`exodep-imports/` directory and its sub-directories.  by globbing `*.exodep`.
+Before globbing the contents of a directory, it will test whether a file
+called `__init.exodep` is present.  If the init file is found, the context it
+creates will be used while processing `exodep` files found in the directory
+and its sub-directories.  This allows simple customisation of the
 behaviour of imported `exodep` files without having to edit them.
-
-If `exodep-imports/__init.exodep` is not
-found then it will interpret all the config files it finds by globbing
-`exodep-imports/*.exodep`.
 
 Note that, during globbing, files with names beginning with `__` and `^` are
 skipped.  (Exodep file names beginning with `__` are reserved to have special
 meaning to `exodep`, and files beginning with `^` are designated as
 user-specified, non-globbed files.)
 
-After all found exodep files are processed,  if present, the file
-`exodep-imports/__end.exodep` will be processed.
+After all `exodep` files in a directory and its sub-directories have been
+processed, if present, the directory's `__end.exodep` file will be processed.
 
 # Configuration file format
 

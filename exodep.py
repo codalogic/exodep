@@ -41,8 +41,6 @@ host_templates = {
         'gitlab': 'https://gitlab.com/${owner}/${project}/raw/${strand}/${path}${file}',
         'bitbucket': 'https://bitbucket.org/${owner}/${project}/raw/${strand}/${path}${file}' }
 
-init_exodep = 'exodep-imports/__init.exodep'
-end_exodep = 'exodep-imports/__end.exodep'
 onstop_exodep = 'exodep-imports/__onstop.exodep'
 
 default_vars = { 'strand': 'master', 'path': '' }
@@ -59,20 +57,25 @@ def main():
         elif os.path.isfile( 'exodep-imports/mydeps.exodep' ):
             ProcessDeps( 'exodep-imports/mydeps.exodep' )
         else:
-            process_globbed_exodep_imports()
+            process_globbed_exodep_imports( 'exodep-imports', default_vars )
 
     except StopException:
         pass
 
-def process_globbed_exodep_imports():
-    vars = default_vars
+def process_globbed_exodep_imports( dir, vars ):
+    init_exodep = dir + '/__init.exodep'
+    end_exodep = dir + '/__end.exodep'
     if os.path.isfile( init_exodep ):
         pd = ProcessDeps( init_exodep, vars )
         vars = pd.get_vars()
-    for file in glob.glob( 'exodep-imports/*.exodep' ):
+    for file in glob.glob( dir + '/*.exodep' ):
         file = file.replace( '\\', '/' )
         if not is_ignored_glob( file ):
             ProcessDeps( file, vars )
+    for subdir in glob.glob( dir + '/*' ):
+        subdir = subdir.replace( '\\', '/' )
+        if os.path.isdir( subdir ):
+            process_globbed_exodep_imports( subdir, vars )
     if os.path.isfile( end_exodep ):
         ProcessDeps( end_exodep, vars )
 
