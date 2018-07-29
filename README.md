@@ -72,7 +72,7 @@ If `mydeps.exodep` is not present it will look for a file called
 `exodep-imports/mydeps.exodep`.
 
 If that is also not present it will look for `exodep` files in the
-`exodep-imports/` directory and its sub-directories.  by globbing `*.exodep`.
+`exodep-imports/` directory and its sub-directories by globbing `*.exodep`.
 Before globbing the contents of a directory, it will test whether a file
 called `__init.exodep` is present.  If the init file is found, the context it
 creates will be used while processing `exodep` files found in the directory
