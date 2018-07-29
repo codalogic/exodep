@@ -647,7 +647,7 @@ feature is intended to make the alerts more visible.
 For example:
 
     get makefile
-    onlastchnaged alert makefile changed
+    onlastchanged alert makefile changed
 
     ...
     showalerts
