@@ -728,6 +728,11 @@ The automatic setting of `$dsl_pa_inc_dst` and `$dsl_pa_src_dst` as default
 values via `autovars` allows the configuration to be easily created,
 while also offering the option to modify its default behaviour.
 
+# Command-line Flags
+
+`--pause` or `-p` will cause `exodep` to pause and wait for user input once
+the update has been done.
+
 # Best Current Practices
 
 It's a bit early to talk about Best Practices at this stage.  However, the
