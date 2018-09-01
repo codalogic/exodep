@@ -383,7 +383,7 @@
                                                             "Condition" = "8:"
                                                             "Transitive" = "11:FALSE"
                                                             "ValueTypes" = "3:1"
-                                                            "Value" = "8:python \"[TARGETDIR]exodep.py\""
+                                                            "Value" = "8:python \"[TARGETDIR]exodep.py\" --pause"
                                                             }
                                                         }
                                                     }
