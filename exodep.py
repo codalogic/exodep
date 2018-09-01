@@ -318,9 +318,6 @@ class ProcessDeps:
             return True
         return False
 
-    def report_unrecognised_command( self, line ):
-        self.error( "Unrecognised command: " + line )
-
     def retrieve_text_file( self, src, dst ):
         self.retrieve_file( src, dst, TextDownloadHandler() )
 
@@ -725,6 +722,9 @@ class ProcessDeps:
             # return True
             raise StopException
         return False
+
+    def report_unrecognised_command( self, line ):
+        self.error( "Unrecognised command: " + line )
 
     def error( self, what ):
         print( "Error:", self.file + ", line " + str(self.line_num) + ":" )
