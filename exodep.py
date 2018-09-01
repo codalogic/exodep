@@ -666,8 +666,7 @@ class ProcessDeps:
             print( "" )
             if message:
                 print( self.expand_variables( message ) )
-            print( ">>> Press <Return> to continue <<<" )
-            input()
+            pause()
             return True
         return False
 
@@ -735,6 +734,10 @@ def remove_comments( line ):
 
 def is_blank_line( line ):
     return re.match( '^\s*$', line )
+
+def pause():
+    print( ">>> Press <Return> to continue <<<" )
+    input()
 
 class TextDownloadHandler:
     def download_to_temp_file( self, uri ):
