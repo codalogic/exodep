@@ -26,6 +26,7 @@
 #
 #     https://github.com/codalogic/exodep
 
+import argparse
 import sys
 import re
 import io
@@ -49,15 +50,28 @@ class StopException( Exception ):
     pass
 
 def main():
+    args = process_command_line_args()
+    run( args )
+
+def process_command_line_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument( "recipe", nargs="?", default=None, help="An exodep file to be processed" )
+    parser.add_argument( "-p", "--pause", help="pause after execution", action="store_true" )
+    return parser.parse_args()
+
+def run( args ):
     try:
-        if len( sys.argv ) >= 2:
-            ProcessDeps( sys.argv[1] )
+        if args.recipe:
+            ProcessDeps( args.recipe )
         elif os.path.isfile( 'mydeps.exodep' ):
             ProcessDeps( 'mydeps.exodep' )
         elif os.path.isfile( 'exodep-imports/mydeps.exodep' ):
             ProcessDeps( 'exodep-imports/mydeps.exodep' )
         else:
             process_globbed_exodep_imports( 'exodep-imports', default_vars )
+
+        if args.pause:
+            pause()
 
     except StopException:
         pass

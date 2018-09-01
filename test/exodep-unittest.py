@@ -45,18 +45,12 @@ def main():
     unittest.main()
 
 def pre_clean():
-    if os.path.isdir( 'download' ):
-        shutil.rmtree( 'download' )
-    if os.path.isdir( 'file-ops-test-dir' ):
-        shutil.rmtree( 'file-ops-test-dir' )
-    if os.path.isdir( 'dir1' ):
-        shutil.rmtree( 'dir1' )
-    if os.path.isfile( 'file1.txt' ):
-        os.remove( 'file1.txt' )
-    if os.path.isdir( 'stop' ):
-        shutil.rmtree( 'stop' )
-    if os.path.isdir( 'exodep-imports' ):
-        shutil.rmtree( 'exodep-imports' )
+    rmdir( 'download' )
+    rmdir( 'file-ops-test-dir' )
+    rmdir( 'dir1' )
+    rm( 'file1.txt' )
+    rmdir( 'stop' )
+    rmdir( 'exodep-imports' )
 
 class MyTest(unittest.TestCase):
     def test_default_setup(self):
@@ -190,8 +184,8 @@ class MyTest(unittest.TestCase):
         os.rmdir( fake_dir )
 
     def test_globbing(self):
-        os.remove( 'glob-test-1.txt' )
-        os.remove( 'glob-test-2.txt' )
+        rm( 'glob-test-1.txt' )
+        rm( 'glob-test-2.txt' )
         ensure_dir( 'exodep-imports' )
         ensure_dir( 'exodep-imports/child' )
         to_file( 'exodep-imports/glob-test-1.exodep',
@@ -229,13 +223,13 @@ class MyTest(unittest.TestCase):
                             "get dir1/file2.txt" )
         self.assertTrue( filecmp.cmp( 'exodep-test-data-dir1-file2-reference.txt', 'dir1/file2.txt' ) )
 
-        os.remove( 'dir1/file2.txt' )
+        rm( 'dir1/file2.txt' )
         make_ProcessDeps( "$path nothing\n" +       # $path should be ignored because it's not in the uritemplate
                             "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\n" +
                             "get dir1/file2.txt" )
         self.assertTrue( filecmp.cmp( 'exodep-test-data-dir1-file2-reference.txt', 'dir1/file2.txt' ) )
 
-        os.remove( 'dir1/file2.txt' )
+        rm( 'dir1/file2.txt' )
         make_ProcessDeps( "$path dir1/\n" +
                             "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${path}${file}\n" +
                             "get file2.txt" )
@@ -471,8 +465,7 @@ class MyTest(unittest.TestCase):
         self.assertTrue( exodep.ProcessDeps.alert_messages == "" )
         if not os.path.isdir( 'alerts' ):
             os.mkdir( 'alerts' )
-        if os.path.isfile( 'alerts/alerts.txt.old' ):
-            os.unlink( 'alerts/alerts.txt.old' )
+        rm( 'alerts/alerts.txt.old' )
         pd = make_ProcessDeps( 'uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n' +
                             'alert This is an ALERT ${strand}\n' +
                             'alert Another ALERT\n' +
@@ -631,12 +624,20 @@ class MyTest(unittest.TestCase):
 def make_ProcessDeps( s ):
     return exodep.ProcessDeps( io.StringIO( s ) )
 
-def to_file( file, content ):
-    with open( file, 'w') as fout:
-        fout.write( content )
+def rm( file ):
+    if os.path.isfile( file ):
+        os.unlink( file )
+
+def rmdir( dir ):
+    if os.path.isdir( dir ):
+        shutil.rmtree( dir )
 
 def ensure_dir( dir ):
     os.makedirs( dir, exist_ok=True )
+
+def to_file( file, content ):
+    with open( file, 'w') as fout:
+        fout.write( content )
 
 if __name__ == '__main__':
     main()
