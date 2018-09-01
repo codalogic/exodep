@@ -87,6 +87,9 @@ user-specified, non-globbed files.)
 After all `exodep` files in a directory and its sub-directories have been
 processed, if present, the directory's `__end.exodep` file will be processed.
 
+Finally, if a file named `__pause.exodep` is present, a pause until the user
+presses the return key will be performed.
+
 # Configuration file format
 
 Exodep configuration files are line oriented.  Each command must be on its

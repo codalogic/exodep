@@ -65,6 +65,7 @@ def main():
 def process_globbed_exodep_imports( dir, vars ):
     init_exodep = dir + '/__init.exodep'
     end_exodep = dir + '/__end.exodep'
+    pause_exodep = dir + '/__pause.exodep'
     if os.path.isfile( init_exodep ):
         pd = ProcessDeps( init_exodep, vars )
         vars = pd.get_vars()
@@ -78,6 +79,8 @@ def process_globbed_exodep_imports( dir, vars ):
             process_globbed_exodep_imports( subdir, vars )
     if os.path.isfile( end_exodep ):
         ProcessDeps( end_exodep, vars )
+    if os.path.isfile( pause_exodep ):
+        pause()
 
 def is_ignored_glob( file ):
     return file.find( '/__' ) >= 0 or file.find( '/^' ) >= 0;
@@ -663,10 +666,9 @@ class ProcessDeps:
         m = re.match( '^pause(?:\s+(.*))?', line )
         if m != None:
             message = m.group(1)
-            print( "" )
             if message:
-                print( self.expand_variables( message ) )
-            pause()
+                message = self.expand_variables( message )
+            pause( message )
             return True
         return False
 
@@ -735,7 +737,10 @@ def remove_comments( line ):
 def is_blank_line( line ):
     return re.match( '^\s*$', line )
 
-def pause():
+def pause( message = None ):
+    print( "" )
+    if message:
+        print( message )
     print( ">>> Press <Return> to continue <<<" )
     input()
 
