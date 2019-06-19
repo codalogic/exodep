@@ -46,11 +46,14 @@ onstop_exodep = 'exodep-imports/__onstop.exodep'
 
 default_vars = { 'strand': 'master', 'path': '' }
 
+exodep_file_set = {}
+
 class StopException( Exception ):
     pass
 
 def main():
     args = process_command_line_args()
+    collect_exodep_file_set()
     run( args )
 
 def process_command_line_args():
@@ -58,6 +61,14 @@ def process_command_line_args():
     parser.add_argument( "recipe", nargs="?", default=None, help="An exodep file to be processed" )
     parser.add_argument( "-p", "--pause", help="pause after execution", action="store_true" )
     return parser.parse_args()
+
+def collect_exodep_file_set( dir = 'exodep-imports' ):
+    for file in glob.glob( dir + '/*.exodep' ):
+        exodep_file_set[os.path.basename(file)] = 1
+    for subdir in glob.glob( dir + '/*' ):
+        subdir = subdir.replace( '\\', '/' )
+        if os.path.isdir( subdir ):
+            collect_exodep_file_set( subdir )
 
 def run( args ):
     try:
@@ -162,6 +173,7 @@ class ProcessDeps:
                 self.consider_hosting( line ) or
                 self.consider_uri_template( line ) or
                 self.consider_versions( line ) or
+                self.consider_uses( line ) or
                 self.consider_variable( line ) or
                 self.consider_default_variable( line ) or
                 self.consider_showvars( line ) or
@@ -226,6 +238,15 @@ class ProcessDeps:
         m = re.match( '^uritemplate\s+(.+)', line )
         if m != None:
             self.uritemplate = m.group(1)
+            return True
+        return False
+
+    def consider_uses( self, line ):
+        m = re.match( '^uses\s+(.+)', line )
+        if m != None:
+            exodep_file = os.path.basename(m.group(1))
+            if not exodep_file in exodep_file_set:
+                self.error( "uses command specifies unfound exodep file: " + exodep_file )
             return True
         return False
 

@@ -618,6 +618,10 @@ class MyTest(unittest.TestCase):
         self.assertTrue( 'my_proj_bin_dst' in pd.vars )
         self.assertEqual( pd.expand_variables( pd.vars['my_proj_bin_dst'] ), 'external/bin/my-proj/' )
 
+    def test_uses(self):
+            os.system( exodep_exe + "uses-unknown.exodep > uses-test-out.txt" )
+            self.assertTrue( filecmp.cmp(  'uses-test-out.txt', 'uses-test-out-reference.txt' ) )
+
     # def test_error_visually(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )
 

@@ -1,0 +1,14 @@
+# When:
+#             ..\exodep.py uses-unknown.exodep
+# is run, the following iutput should be displayed:
+#
+# Error: uses-unknown.exodep, line 12:
+#        uses command specifies unfound exodep file: unknown.exodep
+# Error: uses-unknown.exodep, line 13:
+#        uses command specifies unfound exodep file: other-unknown.exodep
+
+$nothing 1
+
+uses http://www.codalogic.com/files.extra/unknown.exodep
+uses other-unknown.exodep
+uses https://www.codalogic.com/files.extra/glob-test-2.exodep

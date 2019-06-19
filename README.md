@@ -149,6 +149,18 @@ Examples:
     hosting github
     hosting gitlab
 
+## uses
+
+Specifies the name of an exodep file that this exodep file depends on.
+
+exodep will look for all the exodep files it can find and if it doesn't find
+the one named in the `uses` command it will report an error.
+
+For example, the following will report an error if `other.exodep` is not
+found in the `exodep-imports` sub-directory tree:
+
+    uses http://github.com/example/path/exodep-exports/other.exodep
+
 ## variables
 
 Variables can be set to values that can be substituted into the URI template

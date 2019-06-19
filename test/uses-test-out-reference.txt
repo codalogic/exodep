@@ -1,0 +1,4 @@
+Error: uses-unknown.exodep, line 12:
+       uses command specifies unfound exodep file: unknown.exodep
+Error: uses-unknown.exodep, line 13:
+       uses command specifies unfound exodep file: other-unknown.exodep
