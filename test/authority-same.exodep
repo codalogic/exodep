@@ -1,0 +1,4 @@
+$owner codalogic
+$project exodep
+
+authority test/authority-same.exodep
