@@ -630,6 +630,15 @@ class MyTest(unittest.TestCase):
         os.system( exodep_exe + "uses-unknown.exodep > uses-test-out.txt" )
         self.assertTrue( filecmp.cmp(  'uses-test-out.txt', 'uses-test-out-reference.txt' ) )
 
+    def test_text_filecmp(self):
+        self.assertTrue( exodep.text_filecmp(  'file-cmp-text-crlf.txt', 'file-cmp-text-crlf-same.txt' ) )
+        self.assertFalse( exodep.text_filecmp(  'file-cmp-text-crlf.txt', 'file-cmp-text-crlf-short.txt' ) )
+        self.assertFalse( exodep.text_filecmp(  'file-cmp-text-crlf-short.txt', 'file-cmp-text-crlf.txt' ) )
+        self.assertTrue( exodep.text_filecmp(  'file-cmp-text-lf.txt', 'file-cmp-text-crlf.txt' ) )
+        self.assertTrue( exodep.text_filecmp(  'file-cmp-text-crlf.txt', 'file-cmp-text-lf.txt' ) )
+        self.assertFalse( exodep.text_filecmp(  'file-cmp-text-crlf.txt', 'non-existant-file.txt' ) )
+        self.assertFalse( exodep.text_filecmp(  'non-existant-file.txt', 'file-cmp-text-crlf.txt' ) )
+        
     # def test_error_visually(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )
 

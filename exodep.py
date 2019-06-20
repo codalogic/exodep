@@ -254,7 +254,7 @@ class ProcessDeps:
             if not tmp_name:
                 self.error( "Unable to retrieve authority exodep file from: " + from_uri )
                 return True
-            if self.file[0] != "<" and not filecmp.cmp( tmp_name, self.file ):
+            if self.file[0] != "<" and not text_filecmp( tmp_name, self.file ):
                 self.error( "local exodep file out of sync with authority: " + self.file )
             os.unlink( tmp_name )
             return True
@@ -786,6 +786,18 @@ def pause( message = None ):
         print( message )
     print( ">>> Press <Return> to continue <<<" )
     input()
+
+def text_filecmp( file1, file2 ):
+    try:
+        with open( file1 ) as f1, open( file2 ) as f2:
+            for line in f1:
+                if( line.rstrip() != f2.readline().rstrip() ):
+                    return False
+            for line in f2:   # Check no more data available
+                return False
+        return True
+    except IOError:
+        return False
 
 class TextDownloadHandler:
     def download_to_temp_file( self, uri ):
