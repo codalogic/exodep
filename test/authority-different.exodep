@@ -1,0 +1,6 @@
+$owner codalogic
+$project exodep
+
+# A comment to make this file different to the authority one
+
+authority exodep-exports/exodep.exodep

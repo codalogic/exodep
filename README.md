@@ -149,6 +149,21 @@ Examples:
     hosting github
     hosting gitlab
 
+## authority
+
+Specifies where the 'original', authorative exodep file of the downloaded exodep
+file being processed is located.  The remote, authorative version is downloaded
+and if it differs from the local version an error message is displayed.
+
+Example:
+
+    $owner codalogic
+    $project exodep
+    $strand apple
+    versions
+
+    authority exodep-exports/exodep.exodep
+
 ## uses
 
 Specifies the name of an exodep file that this exodep file depends on.
@@ -360,26 +375,6 @@ the project is a Python / Ruby project.  If the project incorporates
 Python / Ruby as a project support function, for example to run tests or
 generate code, then the Python / Ruby might be associated with the
 `???_scripts_???` variable.
-
-## authority
-
-Specifies where the 'original', authorative exodep file of the download exodep
-file being processed is located.  Currently this command is ignored, and
-treated as human readble documentation, but
-see https://github.com/codalogic/exodep/issues/26 .  Exodep file authors are
-encouraged to include `authority` commands in files so that the enhanced
-feature can make use of them when implemented.
-
-Example:
-
-    $owner codalogic
-    $project exodep
-    $strand apple
-    versions
-
-    authority exodep-exports/exodep.exodep
-
-    get exodep.py
 
 ## get and bget
 

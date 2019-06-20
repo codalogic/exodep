@@ -173,6 +173,7 @@ class ProcessDeps:
                 self.consider_hosting( line ) or
                 self.consider_uri_template( line ) or
                 self.consider_versions( line ) or
+                self.consider_authority( line ) or
                 self.consider_uses( line ) or
                 self.consider_variable( line ) or
                 self.consider_default_variable( line ) or
@@ -183,7 +184,6 @@ class ProcessDeps:
                 self.consider_file_ops( line ) or
                 self.consider_exec( line ) or
                 self.consider_subst( line ) or
-                self.consider_authority( line ) or
                 self.consider_on_conditional( line ) or
                 self.consider_ondir( line ) or
                 self.consider_onfile( line ) or
@@ -238,6 +238,25 @@ class ProcessDeps:
         m = re.match( '^uritemplate\s+(.+)', line )
         if m != None:
             self.uritemplate = m.group(1)
+            return True
+        return False
+
+    def consider_authority( self, line ):
+        m = re.match( '^authority\s+(.+)', line )
+        if m != None:
+            src = m.group(1)
+            from_uri = self.make_uri( src )
+            self.vars['__authority'] = from_uri
+            if re.match( 'https?://', from_uri ):
+                tmp_name = TextDownloadHandler().download_to_temp_file( from_uri )
+            else:
+                tmp_name = self.local_copy_to_temp_file( from_uri )     # Taking a local copy is not optimal, but keeps the subsequent update logic the same
+            if not tmp_name:
+                self.error( "Unable to retrieve authority exodep file from: " + from_uri )
+                return True
+            if self.file[0] != "<" and not filecmp.cmp( tmp_name, self.file ):
+                self.error( "local exodep file out of sync with authority: " + self.file )
+            os.unlink( tmp_name )
             return True
         return False
 
@@ -574,17 +593,6 @@ class ProcessDeps:
                 os.chdir( file_dirname )
             os.system( self.expand_variables( command ) )
             os.chdir( org_cwd )
-            return True
-        return False
-
-    def consider_authority( self, line ):
-        m = re.match( '^authority\s+(.+)', line )
-        if m != None:
-            src = m.group(1)
-            from_uri = self.make_uri( src )
-            self.vars['__authority'] = from_uri
-            # Currently ignored.  Treated as a human readable documentation feature
-            # TODO - See https://github.com/codalogic/exodep/issues/26
             return True
         return False
 

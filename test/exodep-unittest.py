@@ -516,6 +516,14 @@ class MyTest(unittest.TestCase):
         self.assertEqual( pd2.vars['__authority'], 'https://codalogic.com/codalogic/exodep/master/exodep-exports/exodep.exodep' )
         self.assertEqual( pd2.vars['v2'], 'p2' )
 
+    def test_authority_different(self):
+        os.system( exodep_exe + "authority-different.exodep > authority-different-out.txt" )
+        self.assertTrue( filecmp.cmp(  'authority-different-out.txt', 'authority-different-out-reference.txt' ) )
+
+    def test_authority_same(self):
+        os.system( exodep_exe + "authority-same.exodep > authority-same-out.txt" )
+        self.assertTrue( os.path.getsize( 'authority-same-out.txt' ) == 0 ) # Shouldn't produce any output errors
+
     def test_not(self):
         pd = make_ProcessDeps( '$v1 p1\n' +
                                 'on $v1 $v2 p2\n' +
@@ -619,8 +627,8 @@ class MyTest(unittest.TestCase):
         self.assertEqual( pd.expand_variables( pd.vars['my_proj_bin_dst'] ), 'external/bin/my-proj/' )
 
     def test_uses(self):
-            os.system( exodep_exe + "uses-unknown.exodep > uses-test-out.txt" )
-            self.assertTrue( filecmp.cmp(  'uses-test-out.txt', 'uses-test-out-reference.txt' ) )
+        os.system( exodep_exe + "uses-unknown.exodep > uses-test-out.txt" )
+        self.assertTrue( filecmp.cmp(  'uses-test-out.txt', 'uses-test-out-reference.txt' ) )
 
     # def test_error_visually(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )
