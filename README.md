@@ -302,30 +302,40 @@ converted to underscores (`_`):
     versions    # Only executed if $strand != 'master'
 
     default $ext_home
+    default $ext_test_home      test/
 
-    default $ext_inc_home     ${ext_home}include/
-    default $ext_src_home     ${ext_home}src/
-    default $ext_code_home    ${ext_home}
-    default $ext_build_home   ${ext_home}build/
-    default $ext_lib_home     ${ext_home}lib/
-    default $ext_bin_home     ${ext_home}bin/
-    default $ext_scripts_home ${ext_home}scripts/
+    default $ext_inc_home        ${ext_home}include/
+    default $ext_src_home        ${ext_home}src/
+    default $ext_code_home       ${ext_home}
+    default $ext_test_inc_home   ${ext_test_home}include/
+    default $ext_test_src_home   ${ext_test_home}src/
+    default $ext_test_code_home  ${ext_test_home}
+    default $ext_build_home      ${ext_home}build/
+    default $ext_lib_home        ${ext_home}lib/
+    default $ext_bin_home        ${ext_home}bin/
+    default $ext_scripts_home    ${ext_home}scripts/
 
-    default $inc_dst     ${ext_inc_home}${project}/
-    default $src_dst     ${ext_src_home}${project}/
-    default $code_dst    ${ext_code_home}${project}/
-    default $build_dst   ${ext_build_home}${project}/
-    default $lib_dst     ${ext_lib_home}${project}/
-    default $bin_dst     ${ext_bin_home}${project}/
-    default $scripts_dst ${ext_scripts_home}${project}/
+    default $inc_dst        ${ext_inc_home}${project}/
+    default $src_dst        ${ext_src_home}${project}/
+    default $code_dst       ${ext_code_home}${project}/
+    default $test_inc_dst   ${ext_test_inc_home}${project}/
+    default $test_src_dst   ${ext_test_src_home}${project}/
+    default $test_code_dst  ${ext_test_code_home}${project}/
+    default $build_dst      ${ext_build_home}${project}/
+    default $lib_dst        ${ext_lib_home}${project}/
+    default $bin_dst        ${ext_bin_home}${project}/
+    default $scripts_dst    ${ext_scripts_home}${project}/
 
-    default $<project-safe-name>_inc_dst     ${inc_dst}
-    default $<project-safe-name>_src_dst     ${src_dst}
-    default $<project-safe-name>_code_dst    ${code_dst}
-    default $<project-safe-name>_build_dst   ${build_dst}
-    default $<project-safe-name>_lib_dst     ${lib_dst}
-    default $<project-safe-name>_bin_dst     ${bin_dst}
-    default $<project-safe-name>_scripts_dst ${scripts_dst}
+    default $<project-safe-name>_inc_dst        ${inc_dst}
+    default $<project-safe-name>_src_dst        ${src_dst}
+    default $<project-safe-name>_code_dst       ${code_dst}
+    default $<project-safe-name>_test_inc_dst   ${test_inc_dst}
+    default $<project-safe-name>_test_src_dst   ${test_src_dst}
+    default $<project-safe-name>_test_code_dst  ${test_code_dst}
+    default $<project-safe-name>_build_dst      ${build_dst}
+    default $<project-safe-name>_lib_dst        ${lib_dst}
+    default $<project-safe-name>_bin_dst        ${bin_dst}
+    default $<project-safe-name>_scripts_dst    ${scripts_dst}
 
 For example, if you have the following in `__init.exodep`:
 
