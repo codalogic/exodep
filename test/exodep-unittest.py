@@ -51,6 +51,7 @@ def pre_clean():
     rm( 'file1.txt' )
     rmdir( 'stop' )
     rmdir( 'exodep-imports' )
+    rmdir( 'dest-dir' )
 
 class MyTest(unittest.TestCase):
     def test_default_setup(self):
@@ -214,7 +215,7 @@ class MyTest(unittest.TestCase):
         make_ProcessDeps( "copy https://raw.githubusercontent.com/codalogic/exodep/master/test/dl-test-target-other.txt download/dl-test-target3.txt" )
         self.assertTrue( filecmp.cmp( 'dl-test-target-other.txt', 'download/dl-test-target3.txt' ) )    # Check download of different file updates an existing one
 
-    def test_download_copy_with_only_one_arg(self):
+    def test_download_copy_with_only_one_arg_without_dest_command(self):
         make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\n" +
                             "get file1.txt" )
         self.assertTrue( filecmp.cmp( 'exodep-test-data-file1-reference.txt', 'file1.txt' ) )
@@ -234,6 +235,16 @@ class MyTest(unittest.TestCase):
                             "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${path}${file}\n" +
                             "get file2.txt" )
         self.assertTrue( filecmp.cmp( 'exodep-test-data-dir1-file2-reference.txt', 'dir1/file2.txt' ) )
+
+    def test_download_copy_with_dest_command(self):
+        make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep-test-data/master/${file}\n" +
+                            "$dest_dir dest-dir/\n" +
+                            "dest ${dest_dir}\n" +
+                            "get dir1/file2.txt\n" +
+                            "dest\n" +  # Reset dest
+                            "get file1.txt\n" )
+        self.assertTrue( filecmp.cmp( 'exodep-test-data-dir1-file2-reference.txt', 'dest-dir/file2.txt' ) )
+        self.assertTrue( not os.path.isfile( 'dest-dir/file1.txt' ) )   # Should have been put elsewhere
 
     def test_download_repeat(self):
         make_ProcessDeps( "uritemplate https://raw.githubusercontent.com/codalogic/exodep/master/test/${file}\n" +

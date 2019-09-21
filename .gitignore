@@ -94,6 +94,7 @@ test/stop
 test/exodep-imports
 test/download
 test/dir1
+test/dest-dir
 test/file1.txt
 test/glob-test-1.txt
 test/glob-test-2.txt

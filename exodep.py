@@ -124,6 +124,7 @@ class ProcessDeps:
         self.set_vars( vars )
         self.versions = {}  # Each entry is <string of space separated strand names> : <string to use as strand in uri template>
         self.sought_condition = True
+        self.default_dest = None
         if isinstance( dependencies_src, str ):
             if self.is_config_already_processed( dependencies_src ):
                 return
@@ -179,6 +180,7 @@ class ProcessDeps:
                 self.consider_default_variable( line ) or
                 self.consider_showvars( line ) or
                 self.consider_autovars( line ) or
+                self.consider_dest( line ) or
                 self.consider_get( line ) or
                 self.consider_bget( line ) or
                 self.consider_file_ops( line ) or
@@ -371,6 +373,13 @@ class ProcessDeps:
             return True
         return False
 
+    def consider_dest( self, line ):
+        m = re.match( '^dest(?:\s+(\S+))?', line )
+        if m != None:
+            self.default_dest = m.group(1)
+            return True
+        return False
+
     def consider_get( self, line ):
         m = re.match( '^(?:get|copy)\s+(\S+)(?:\s+(\S+))?', line )
         if m != None:
@@ -394,12 +403,15 @@ class ProcessDeps:
     def retrieve_file( self, src, dst, handler ):
         self.is_last_file_changed = False
         if dst == None:
-            if re.match( 'https?://', src ):
-                self.error( "Explicit uri not supported with commands of the form 'get src_and_dst'" )
-                return
-            dst = src
-            if re.search( '\$\{path\}', self.uritemplate ):
-                dst = self.vars['path'] + dst
+            if self.default_dest != None:
+                dst = self.default_dest
+            else:
+                if re.match( 'https?://', src ):
+                    self.error( "Explicit uri not supported with commands of the form 'get src_and_dst'" )
+                    return
+                dst = src
+                if self.uritemplate.find( '${path}' ) >= 0:
+                    dst = self.vars['path'] + dst   # If present in the uri template, the ${path} variable will be included in the uri, so include it in the dst for symmetry
         from_uri = self.make_uri( src )
         to_file = self.make_destination_file_name( src, dst )
         if from_uri == '':

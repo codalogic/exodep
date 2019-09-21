@@ -411,8 +411,10 @@ recommended for 'quick and dirty' setups.
 When `<src-file-name>` is not a URI template, then `src-file-name` is
 used as the value of the `${file}` field in URI template expansion.
 
-A single argument form of `get` and `bget` are also supported.  In this
-case, the following:
+A single argument form of `get` and `bget` are also supported.  The behaviour
+depends on whether the `dest` command has been previously specified.
+
+If the `dest` command has not been previously specified, the following:
 
     get <src-file-name>
 
@@ -423,7 +425,24 @@ is effectively treated as:
 (As `$path` is included as part of the default URI template expansion,
 this has the effect of the two files having the same name.)
 
+If the `dest` command has been specified, the following:
+
+    dest output/
+    get <src-file-name>
+
+is effectively treated as:
+
+    get <src-file-name> output/
+
+The `dest` command can be reset by doing:
+
+    dest
+
 `copy` is a legacy alias of `get` and `bcopy` is an alias of `bget`.
+
+## dest
+
+See `get and bget` command for how the `dest` command works.
 
 ## subst
 
