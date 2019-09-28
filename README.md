@@ -210,6 +210,9 @@ Examples:
     $project exodep
     $strand apple
 
+When the `$project` variable is set, the variable `$lcproject` is also
+automatically set with all characters set to lower case.
+
 Variables with names starting with two underscores (`__`) are reserved for use
 by `exodep` internally, and shouldn't be set by the user.
 
@@ -304,43 +307,59 @@ converted to underscores (`_`):
     default $ext_home
     default $ext_test_home      test/
 
-    default $ext_inc_home        ${ext_home}include/
-    default $ext_src_home        ${ext_home}src/
-    default $ext_code_home       ${ext_home}
-    default $ext_test_inc_home   ${ext_test_home}include/
-    default $ext_test_src_home   ${ext_test_home}src/
-    default $ext_test_code_home  ${ext_test_home}
-    default $ext_build_home      ${ext_home}build/
-    default $ext_lib_home        ${ext_home}lib/
-    default $ext_bin_home        ${ext_home}bin/
-    default $ext_scripts_home    ${ext_home}scripts/
+    # These arethe top level of the various include/src directories etc.
+    default $inc_dst       ${ext_home}include/
+    default $src_dst       ${ext_home}src/
+    default $code_dst      ${ext_home}
+    default $test_inc_dst  ${ext_test_home}include/
+    default $test_src_dst  ${ext_test_home}src/
+    default $test_code_dst ${ext_test_home}
+    default $build_dst     ${ext_home}build/
+    default $lib_dst       ${ext_home}lib/
+    default $bin_dst       ${ext_home}bin/
+    default $scripts_dst   ${ext_home}scripts/
 
-    default $inc_dst        ${ext_inc_home}${project}/
-    default $src_dst        ${ext_src_home}${project}/
-    default $code_dst       ${ext_code_home}${project}/
-    default $test_inc_dst   ${ext_test_inc_home}${project}/
-    default $test_src_dst   ${ext_test_src_home}${project}/
-    default $test_code_dst  ${ext_test_code_home}${project}/
-    default $build_dst      ${ext_build_home}${project}/
-    default $lib_dst        ${ext_lib_home}${project}/
-    default $bin_dst        ${ext_bin_home}${project}/
-    default $scripts_dst    ${ext_scripts_home}${project}/
+    # These allow the format of project specified files to be changed. e.g. whether it should be "include/myproj/myfile.h" or just "include/myfile.h"
+    default $proj_inc_dst        ${inc_dst}${project}/
+    default $proj_src_dst        ${src_dst}${project}/
+    default $proj_code_dst       ${code_dst}${project}/
+    default $proj_test_inc_dst   ${test_inc_dst}${project}/
+    default $proj_test_src_dst   ${test_src_dst}${project}/
+    default $proj_test_code_dst  ${test_code_dst}${project}/
+    default $proj_build_dst      ${build_dst}${project}/
+    default $proj_lib_dst        ${lib_dst}${project}/
+    default $proj_bin_dst        ${bin_dst}${project}/
+    default $proj_scripts_dst    ${scripts_dst}${project}/
 
-    default $<project-safe-name>_inc_dst        ${inc_dst}
-    default $<project-safe-name>_src_dst        ${src_dst}
-    default $<project-safe-name>_code_dst       ${code_dst}
-    default $<project-safe-name>_test_inc_dst   ${test_inc_dst}
-    default $<project-safe-name>_test_src_dst   ${test_src_dst}
-    default $<project-safe-name>_test_code_dst  ${test_code_dst}
-    default $<project-safe-name>_build_dst      ${build_dst}
-    default $<project-safe-name>_lib_dst        ${lib_dst}
-    default $<project-safe-name>_bin_dst        ${bin_dst}
-    default $<project-safe-name>_scripts_dst    ${scripts_dst}
+    default $<project-safe-name>_inc_dst        ${proj_inc_dst}
+    default $<project-safe-name>_src_dst        ${proj_src_dst}
+    default $<project-safe-name>_code_dst       ${proj_code_dst}
+    default $<project-safe-name>_test_inc_dst   ${proj_test_inc_dst}
+    default $<project-safe-name>_test_src_dst   ${proj_test_src_dst}
+    default $<project-safe-name>_test_code_dst  ${proj_test_code_dst}
+    default $<project-safe-name>_build_dst      ${proj_build_dst}
+    default $<project-safe-name>_lib_dst        ${proj_lib_dst}
+    default $<project-safe-name>_bin_dst        ${proj_bin_dst}
+    default $<project-safe-name>_scripts_dst    ${proj_scripts_dst}
+
+If the `$project` variable contains upper case letters, the following variables
+are also set:
+
+    default $<lcproject-safe-name>_inc_dst        ${inc_dst}${lcproject}/
+    default $<lcproject-safe-name>_src_dst        ${src_dst}${lcproject}/
+    default $<lcproject-safe-name>_code_dst       ${code_dst}${lcproject}/
+    default $<lcproject-safe-name>_test_inc_dst   ${test_inc_dst}${lcproject}/
+    default $<lcproject-safe-name>_test_src_dst   ${test_src_dst}${lcproject}/
+    default $<lcproject-safe-name>_test_code_dst  ${test_code_dst}${lcproject}/
+    default $<lcproject-safe-name>_build_dst      ${build_dst}${lcproject}/
+    default $<lcproject-safe-name>_lib_dst        ${lib_dst}${lcproject}/
+    default $<lcproject-safe-name>_bin_dst        ${bin_dst}${lcproject}/
+    default $<lcproject-safe-name>_scripts_dst    ${scripts_dst}${lcproject}/
 
 For example, if you have the following in `__init.exodep`:
 
     $ext_home external/
-    $ext_build_home build/
+    $build_dst build/
     $lib_dst  lib/
 
 And the following in `my-proj.exodep`:
@@ -352,27 +371,19 @@ This would result in the following variables being setup:
 
     $ext_home external/
 
-    $ext_inc_home      external/include/
-    $ext_src_home      external/src/
-    $ext_code_home     external/
-    $ext_build_home    build/
-    $ext_lib_home      external/lib/
-    $ext_bin_home      external/bin/
-    $ext_scripts_home  external/scripts/
-
-    $inc_dst      external/include/my-proj/
-    $src_dst      external/src/my-proj/
-    $code_dst     external/my-proj/
-    $build_dst    build/my-proj/
+    $inc_dst      external/include/
+    $src_dst      external/src/
+    $code_dst     external/
+    $build_dst    build/
     $lib_dst      lib/
-    $bin_dst      external/bin/my-proj/
-    $scripts_dst  external/scripts/my-proj/
+    $bin_dst      external/bin/
+    $scripts_dst  external/scripts/
 
     $my_proj_inc_dst      external/include/my-proj/
     $my_proj_src_dst      external/src/my-proj/
     $my_proj_code_dst     external/my-proj/
     $my_proj_build_dst    build/my-proj/
-    $my_proj_lib_dst      lib/
+    $my_proj_lib_dst      lib/my-proj/
     $my_proj_bin_dst      external/bin/my-proj/
     $my_proj_scripts_dst  external/scripts/my-proj/
 
@@ -385,6 +396,15 @@ the project is a Python / Ruby project.  If the project incorporates
 Python / Ruby as a project support function, for example to run tests or
 generate code, then the Python / Ruby might be associated with the
 `???_scripts_???` variable.
+
+To prevent files being put in project specific sub-directories, set variables such as:
+
+    $proj_inc_dst        ${inc_dst}
+
+To ensure project specific sub-directories use only lower case names, use
+variables such as:
+
+    $proj_inc_dst        ${inc_dst}${lcproject}/
 
 ## get and bget
 

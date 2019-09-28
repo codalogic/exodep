@@ -302,7 +302,7 @@ class ProcessDeps:
     def consider_variable( self, line ):
         m = re.match( '^\$(\w+)(?:\s+(.*))?', line )
         if m != None:
-            self.vars[m.group(1)] = m.group(2) if m.group(2) else ''
+            self.set_single_variable( m.group(1), m.group(2) )
             return True
         return False
 
@@ -310,10 +310,15 @@ class ProcessDeps:
         m = re.match( '^default\s+\$(\w+)(?:\s+(.*))?', line )
         if m != None:
             if m.group(1) not in self.vars:
-                self.vars[m.group(1)] = m.group(2) if m.group(2) else ''
+                self.set_single_variable( m.group(1), m.group(2) )
             return True
         return False
 
+    def set_single_variable( self, name, value ):
+        self.vars[name] = value if value else ''
+        if name == 'project':
+            self.vars['lcproject'] = value.lower() if value else ''
+        
     def consider_showvars( self, line ):
         m = re.match( '^showvars', line )
         if m != None:
@@ -333,43 +338,60 @@ class ProcessDeps:
                 return True
             project = self.vars['project']
             safe_project = project.replace( '-', '_' )
-            if 'strand' in self.vars:
+            if 'strand' in self.vars and self.vars['strand'] != 'master':
                 self.process_line( 'versions' )
+
             self.process_line( 'default $ext_home' )
             self.process_line( 'default $ext_test_home    test/' )
 
-            self.process_line( 'default $ext_inc_home       ${ext_home}include/' )
-            self.process_line( 'default $ext_src_home       ${ext_home}src/' )
-            self.process_line( 'default $ext_code_home      ${ext_home}' )
-            self.process_line( 'default $ext_test_inc_home  ${ext_test_home}include/' )
-            self.process_line( 'default $ext_test_src_home  ${ext_test_home}src/' )
-            self.process_line( 'default $ext_test_code_home ${ext_test_home}' )
-            self.process_line( 'default $ext_build_home     ${ext_home}build/' )
-            self.process_line( 'default $ext_lib_home       ${ext_home}lib/' )
-            self.process_line( 'default $ext_bin_home       ${ext_home}bin/' )
-            self.process_line( 'default $ext_scripts_home   ${ext_home}scripts/' )
+            # These arethe top level of the various include/src directories etc.
+            self.process_line( 'default $inc_dst       ${ext_home}include/' )
+            self.process_line( 'default $src_dst       ${ext_home}src/' )
+            self.process_line( 'default $code_dst      ${ext_home}' )
+            self.process_line( 'default $test_inc_dst  ${ext_test_home}include/' )
+            self.process_line( 'default $test_src_dst  ${ext_test_home}src/' )
+            self.process_line( 'default $test_code_dst ${ext_test_home}' )
+            self.process_line( 'default $build_dst     ${ext_home}build/' )
+            self.process_line( 'default $lib_dst       ${ext_home}lib/' )
+            self.process_line( 'default $bin_dst       ${ext_home}bin/' )
+            self.process_line( 'default $scripts_dst   ${ext_home}scripts/' )
 
-            self.process_line( 'default $inc_dst        ${ext_inc_home}' +       project + '/' )
-            self.process_line( 'default $src_dst        ${ext_src_home}' +       project + '/' )
-            self.process_line( 'default $code_dst       ${ext_code_home}' +      project + '/' )
-            self.process_line( 'default $test_inc_dst   ${ext_test_inc_home}' +  project + '/' )
-            self.process_line( 'default $test_src_dst   ${ext_test_src_home}' +  project + '/' )
-            self.process_line( 'default $test_code_dst  ${ext_test_code_home}' + project + '/' )
-            self.process_line( 'default $build_dst      ${ext_build_home}' +     project + '/' )
-            self.process_line( 'default $lib_dst        ${ext_lib_home}' +       project + '/' )
-            self.process_line( 'default $bin_dst        ${ext_bin_home}' +       project + '/' )
-            self.process_line( 'default $scripts_dst    ${ext_scripts_home}' +   project + '/' )
+            # These allow the format of project specified files to be changed. e.g. whether it should be "include/myproj/myfile.h" or just "include/myfile.h"
+            self.process_line( 'default $proj_inc_dst        ${inc_dst}${project}/' )
+            self.process_line( 'default $proj_src_dst        ${src_dst}${project}/' )
+            self.process_line( 'default $proj_code_dst       ${code_dst}${project}/' )
+            self.process_line( 'default $proj_test_inc_dst   ${test_inc_dst}${project}/' )
+            self.process_line( 'default $proj_test_src_dst   ${test_src_dst}${project}/' )
+            self.process_line( 'default $proj_test_code_dst  ${test_code_dst}${project}/' )
+            self.process_line( 'default $proj_build_dst      ${build_dst}${project}/' )
+            self.process_line( 'default $proj_lib_dst        ${lib_dst}${project}/' )
+            self.process_line( 'default $proj_bin_dst        ${bin_dst}${project}/' )
+            self.process_line( 'default $proj_scripts_dst    ${scripts_dst}${project}/' )
 
-            self.process_line( 'default $' + safe_project + '_inc_dst        ${inc_dst}' )
-            self.process_line( 'default $' + safe_project + '_src_dst        ${src_dst}' )
-            self.process_line( 'default $' + safe_project + '_code_dst       ${code_dst}' )
-            self.process_line( 'default $' + safe_project + '_test_inc_dst   ${test_inc_dst}' )
-            self.process_line( 'default $' + safe_project + '_test_src_dst   ${test_src_dst}' )
-            self.process_line( 'default $' + safe_project + '_test_code_dst  ${test_code_dst}' )
-            self.process_line( 'default $' + safe_project + '_build_dst      ${build_dst}' )
-            self.process_line( 'default $' + safe_project + '_lib_dst        ${lib_dst}' )
-            self.process_line( 'default $' + safe_project + '_bin_dst        ${bin_dst}' )
-            self.process_line( 'default $' + safe_project + '_scripts_dst    ${scripts_dst}' )
+            self.process_line( 'default $' + safe_project + '_inc_dst        ${proj_inc_dst}' )
+            self.process_line( 'default $' + safe_project + '_src_dst        ${proj_src_dst}' )
+            self.process_line( 'default $' + safe_project + '_code_dst       ${proj_code_dst}' )
+            self.process_line( 'default $' + safe_project + '_test_inc_dst   ${proj_test_inc_dst}' )
+            self.process_line( 'default $' + safe_project + '_test_src_dst   ${proj_test_src_dst}' )
+            self.process_line( 'default $' + safe_project + '_test_code_dst  ${proj_test_code_dst}' )
+            self.process_line( 'default $' + safe_project + '_build_dst      ${proj_build_dst}' )
+            self.process_line( 'default $' + safe_project + '_lib_dst        ${proj_lib_dst}' )
+            self.process_line( 'default $' + safe_project + '_bin_dst        ${proj_bin_dst}' )
+            self.process_line( 'default $' + safe_project + '_scripts_dst    ${proj_scripts_dst}' )
+
+            lc_safe_project = safe_project.lower()
+            if lc_safe_project != safe_project:
+                self.process_line( 'default $' + lc_safe_project + '_inc_dst        ${inc_dst}${lcproject}/' )
+                self.process_line( 'default $' + lc_safe_project + '_src_dst        ${src_dst}${lcproject}/' )
+                self.process_line( 'default $' + lc_safe_project + '_code_dst       ${code_dst}${lcproject}/' )
+                self.process_line( 'default $' + lc_safe_project + '_test_inc_dst   ${test_inc_dst}${lcproject}/' )
+                self.process_line( 'default $' + lc_safe_project + '_test_src_dst   ${test_src_dst}${lcproject}/' )
+                self.process_line( 'default $' + lc_safe_project + '_test_code_dst  ${test_code_dst}${lcproject}/' )
+                self.process_line( 'default $' + lc_safe_project + '_build_dst      ${build_dst}${lcproject}/' )
+                self.process_line( 'default $' + lc_safe_project + '_lib_dst        ${lib_dst}${lcproject}/' )
+                self.process_line( 'default $' + lc_safe_project + '_bin_dst        ${bin_dst}${lcproject}/' )
+                self.process_line( 'default $' + lc_safe_project + '_scripts_dst    ${scripts_dst}${lcproject}/' )
+
             return True
         return False
 
