@@ -179,6 +179,7 @@ class ProcessDeps:
                 self.consider_variable( line ) or
                 self.consider_default_variable( line ) or
                 self.consider_showvars( line ) or
+                self.consider_lcvars( line ) or
                 self.consider_autovars( line ) or
                 self.consider_dest( line ) or
                 self.consider_get( line ) or
@@ -327,6 +328,22 @@ class ProcessDeps:
                 expanded = self.expand_variables( raw )
                 expansion = '' if expanded == raw else (' -> ' + expanded)
                 print( var + ": " + raw + expansion )
+            return True
+        return False
+
+    def consider_lcvars( self, line ):
+        m = re.match( '^lcvars', line )
+        if m != None:
+            self.process_line( 'default $proj_inc_dst        ${inc_dst}${lcproject}/' )
+            self.process_line( 'default $proj_src_dst        ${src_dst}${lcproject}/' )
+            self.process_line( 'default $proj_code_dst       ${code_dst}${lcproject}/' )
+            self.process_line( 'default $proj_test_inc_dst   ${test_inc_dst}${lcproject}/' )
+            self.process_line( 'default $proj_test_src_dst   ${test_src_dst}${lcproject}/' )
+            self.process_line( 'default $proj_test_code_dst  ${test_code_dst}${lcproject}/' )
+            self.process_line( 'default $proj_build_dst      ${build_dst}${lcproject}/' )
+            self.process_line( 'default $proj_lib_dst        ${lib_dst}${lcproject}/' )
+            self.process_line( 'default $proj_bin_dst        ${bin_dst}${lcproject}/' )
+            self.process_line( 'default $proj_scripts_dst    ${scripts_dst}${lcproject}/' )
             return True
         return False
 

@@ -669,6 +669,22 @@ class MyTest(unittest.TestCase):
         self.assertTrue( 'my_proj_bin_dst' in pd.vars )
         self.assertEqual( pd.expand_variables( pd.vars['my_proj_bin_dst'] ), 'external/bin/my-proj/' )
 
+    def test_autovars_lcvars(self):
+        pd = make_ProcessDeps( '$project My-Proj\n$ext_home external/\n$ext_test_home ext/test/\n$build_dst build/\n$lib_dst  lib/\nlcvars\nautovars' )
+        self.assertTrue( 'My_Proj_inc_dst' in pd.vars )
+        self.assertEqual( pd.expand_variables( pd.vars['My_Proj_inc_dst'] ), 'external/include/my-proj/' )
+        self.assertTrue( 'My_Proj_src_dst' in pd.vars )
+        self.assertEqual( pd.expand_variables( pd.vars['My_Proj_src_dst'] ), 'external/src/my-proj/' )
+        self.assertTrue( 'My_Proj_test_inc_dst' in pd.vars )
+        self.assertEqual( pd.expand_variables( pd.vars['My_Proj_test_inc_dst'] ), 'ext/test/include/my-proj/' )
+        self.assertTrue( 'My_Proj_test_src_dst' in pd.vars )
+        self.assertEqual( pd.expand_variables( pd.vars['My_Proj_test_src_dst'] ), 'ext/test/src/my-proj/' )
+        self.assertTrue( 'My_Proj_build_dst' in pd.vars )
+        self.assertEqual( pd.expand_variables( pd.vars['My_Proj_build_dst'] ), 'build/my-proj/' )
+        self.assertTrue( 'My_Proj_lib_dst' in pd.vars )
+        self.assertEqual( pd.expand_variables( pd.vars['My_Proj_lib_dst'] ), 'lib/my-proj/' )
+        self.assertTrue( 'My_Proj_bin_dst' in pd.vars )
+
     def test_uses(self):
         os.system( exodep_exe + "uses-unknown.exodep > uses-test-out.txt" )
         self.assertTrue( filecmp.cmp(  'uses-test-out.txt', 'uses-test-out-reference.txt' ) )

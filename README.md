@@ -406,6 +406,27 @@ variables such as:
 
     $proj_inc_dst        ${inc_dst}${lcproject}/
 
+See also the `lcvars` command.
+
+## lcvars
+
+When run prior to the `autovars` command, typically in the `__init.exodep` file,
+this invokes the following commands:
+
+    default $proj_inc_dst        ${inc_dst}${lcproject}/
+    default $proj_src_dst        ${src_dst}${lcproject}/
+    default $proj_code_dst       ${code_dst}${lcproject}/
+    default $proj_test_inc_dst   ${test_inc_dst}${lcproject}/
+    default $proj_test_src_dst   ${test_src_dst}${lcproject}/
+    default $proj_test_code_dst  ${test_code_dst}${lcproject}/
+    default $proj_build_dst      ${build_dst}${lcproject}/
+    default $proj_lib_dst        ${lib_dst}${lcproject}/
+    default $proj_bin_dst        ${bin_dst}${lcproject}/
+    default $proj_scripts_dst    ${scripts_dst}${lcproject}/
+
+This will cause the generated project specific sub-directories to have
+lower case names.
+
 ## get and bget
 
 The `get` command downloads a text file and the `bget` command downloads
