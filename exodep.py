@@ -169,45 +169,45 @@ class ProcessDeps:
         line = remove_comments( line )
         if is_blank_line( line ):
             return
-        if not (self.consider_include( line ) or
-                self.consider_sinclude( line ) or
-                self.consider_hosting( line ) or
-                self.consider_uri_template( line ) or
-                self.consider_versions( line ) or
-                self.consider_authority( line ) or
-                self.consider_uses( line ) or
-                self.consider_variable( line ) or
-                self.consider_default_variable( line ) or
-                self.consider_showvars( line ) or
-                self.consider_lcvars( line ) or
-                self.consider_autovars( line ) or
-                self.consider_dest( line ) or
-                self.consider_get( line ) or
-                self.consider_bget( line ) or
-                self.consider_file_ops( line ) or
-                self.consider_exec( line ) or
-                self.consider_subst( line ) or
-                self.consider_on_conditional( line ) or
-                self.consider_ondir( line ) or
-                self.consider_onfile( line ) or
-                self.consider_onlastchanged( line ) or
-                self.consider_onchanged( line ) or
-                self.consider_onanychanged( line ) or
-                self.consider_onalerts( line ) or
-                self.consider_os_conditional( line ) or
-                self.consider_not( line ) or
-                self.consider_echo( line ) or
-                self.consider_pause( line ) or
-                self.consider_alert( line ) or
-                self.consider_showalerts( line ) or
-                self.consider_alertstofile( line ) or
-                self.consider_stop( line ) ):
+        command, arguments = split_in_2( line )
+        if not (self.consider_include( command, arguments ) or
+                self.consider_sinclude( command, arguments ) or
+                self.consider_hosting( command, arguments ) or
+                self.consider_uritemplate( command, arguments ) or
+                self.consider_versions( command, arguments ) or
+                self.consider_authority( command, arguments ) or
+                self.consider_uses( command, arguments ) or
+                self.consider_variable( command, arguments ) or
+                self.consider_default_variable( command, arguments ) or
+                self.consider_showvars( command, arguments ) or
+                self.consider_lcvars( command, arguments ) or
+                self.consider_autovars( command, arguments ) or
+                self.consider_dest( command, arguments ) or
+                self.consider_get( command, arguments ) or
+                self.consider_bget( command, arguments ) or
+                self.consider_file_ops( command, arguments ) or
+                self.consider_exec( command, arguments ) or
+                self.consider_subst( command, arguments ) or
+                self.consider_on_conditional( command, arguments ) or
+                self.consider_ondir( command, arguments ) or
+                self.consider_onfile( command, arguments ) or
+                self.consider_onlastchanged( command, arguments ) or
+                self.consider_onchanged( command, arguments ) or
+                self.consider_onanychanged( command, arguments ) or
+                self.consider_onalerts( command, arguments ) or
+                self.consider_os_conditional( command, arguments ) or
+                self.consider_not( command, arguments ) or
+                self.consider_echo( command, arguments ) or
+                self.consider_pause( command, arguments ) or
+                self.consider_alert( command, arguments ) or
+                self.consider_showalerts( command, arguments ) or
+                self.consider_alertstofile( command, arguments ) or
+                self.consider_stop( command, arguments ) ):
             self.report_unrecognised_command( line )
 
-    def consider_include( self, line ):
-        m = re.match( '^include\s+(.+)', line )
-        if m != None:
-            file_name = self.script_relative_path( m.group(1) )
+    def consider_include( self, command, arguments ):
+        if command == 'include' and  arguments != None:
+            file_name = self.script_relative_path( arguments )
             if not os.path.isfile( file_name ):
                 self.error( "'include' file not found: " + file_name )
                 return True     # It was an 'include' command, even though it was a bad one
@@ -215,21 +215,18 @@ class ProcessDeps:
             return True
         return False
 
-    def consider_sinclude( self, line ):        # This method is used to support testing
-        m = re.match( '^sinclude\s+(.+)', line )
-        if m != None:
-            args = m.group(1)
-            ProcessDeps( io.StringIO( args.replace( '\t', '\n' ) ), self.vars )
+    def consider_sinclude( self, command, arguments ):        # This method is used to support testing
+        if command == 'sinclude' and arguments != None:
+            ProcessDeps( io.StringIO( arguments.replace( '\t', '\n' ) ), self.vars )
             return True
         return False
 
     def script_relative_path( self, src ):
         return os.path.normpath( os.path.join( os.path.dirname( self.file ), src ) ).replace( '\\', '/' )
 
-    def consider_hosting( self, line ):
-        m = re.match( '^hosting\s+(.+)', line )
-        if m != None:
-            host = m.group(1)
+    def consider_hosting( self, command, arguments ):
+        if command == 'hosting' and arguments != None:
+            host = arguments
             if host in host_templates:
                 self.uritemplate = host_templates[host]
             else:
@@ -237,17 +234,15 @@ class ProcessDeps:
             return True
         return False
 
-    def consider_uri_template( self, line ):
-        m = re.match( '^uritemplate\s+(.+)', line )
-        if m != None:
-            self.uritemplate = m.group(1)
+    def consider_uritemplate( self, command, arguments ):
+        if command == 'uritemplate' and arguments != None:
+            self.uritemplate = arguments
             return True
         return False
 
-    def consider_authority( self, line ):
-        m = re.match( '^authority\s+(.+)', line )
-        if m != None:
-            src = m.group(1)
+    def consider_authority( self, command, arguments ):
+        if command == 'authority' and arguments != None:
+            src = arguments
             from_uri = self.make_uri( src )
             self.vars['__authority'] = from_uri
             if re.match( 'https?://', from_uri ):
@@ -263,19 +258,17 @@ class ProcessDeps:
             return True
         return False
 
-    def consider_uses( self, line ):
-        m = re.match( '^uses\s+(.+)', line )
-        if m != None:
-            exodep_file = os.path.basename(m.group(1))
+    def consider_uses( self, command, arguments ):
+        if command == 'uses' and arguments != None:
+            exodep_file = os.path.basename( arguments )
             if not exodep_file in exodep_file_set:
                 self.error( "uses command specifies unfound exodep file: " + exodep_file )
             return True
         return False
 
-    def consider_versions( self, line ):
-        m = re.match( '^versions(?:\s+(.*))?', line )    # If no arguments to 'versions' command, it should use 'versions.exodep'
-        if m != None:
-            file_name = m.group(1) if m.group(1) else 'versions.exodep'
+    def consider_versions( self, command, arguments ):
+        if command == 'versions':
+            file_name = arguments if arguments else 'versions.exodep'
             uri = self.make_master_strand_uri( file_name )
             try:
                 if re.match( 'https?://', uri ):
@@ -300,18 +293,18 @@ class ProcessDeps:
                 if m != None:
                     self.versions[m.group(2)] = m.group(1)
 
-    def consider_variable( self, line ):
-        m = re.match( '^\$(\w+)(?:\s+(.*))?', line )
-        if m != None:
-            self.set_single_variable( m.group(1), m.group(2) )
+    def consider_variable( self, command, arguments ):
+        if command[0] == '$':
+            self.set_single_variable( command[1:], arguments )
             return True
         return False
 
-    def consider_default_variable( self, line ):
-        m = re.match( '^default\s+\$(\w+)(?:\s+(.*))?', line )
-        if m != None:
-            if m.group(1) not in self.vars:
-                self.set_single_variable( m.group(1), m.group(2) )
+    def consider_default_variable( self, command, arguments ):
+        if command == 'default' and arguments != None and arguments[0] == '$':
+            var, value = split_in_2( arguments )
+            var_name = var[1:]
+            if var_name not in self.vars:
+                self.set_single_variable( var_name, value )
             return True
         return False
 
@@ -320,9 +313,8 @@ class ProcessDeps:
         if name == 'project':
             self.vars['lcproject'] = value.lower() if value else ''
         
-    def consider_showvars( self, line ):
-        m = re.match( '^showvars', line )
-        if m != None:
+    def consider_showvars( self, command, arguments ):
+        if command == 'showvars':
             for var in sorted( self.vars.keys() ):
                 raw = self.vars[var]
                 expanded = self.expand_variables( raw )
@@ -331,9 +323,8 @@ class ProcessDeps:
             return True
         return False
 
-    def consider_lcvars( self, line ):
-        m = re.match( '^lcvars', line )
-        if m != None:
+    def consider_lcvars( self, command, arguments ):
+        if command == 'lcvars':
             self.process_line( 'default $proj_inc_dst        ${inc_dst}${lcproject}/' )
             self.process_line( 'default $proj_src_dst        ${src_dst}${lcproject}/' )
             self.process_line( 'default $proj_code_dst       ${code_dst}${lcproject}/' )
@@ -347,9 +338,8 @@ class ProcessDeps:
             return True
         return False
 
-    def consider_autovars( self, line ):
-        m = re.match( '^autovars', line )
-        if m != None:
+    def consider_autovars( self, command, arguments ):
+        if command == 'autovars':
             if 'project' not in self.vars:
                 self.error( "`$project` variable must be set before calling `autovars` command" )
                 return True
@@ -412,24 +402,23 @@ class ProcessDeps:
             return True
         return False
 
-    def consider_dest( self, line ):
-        m = re.match( '^dest(?:\s+(\S+))?', line )
-        if m != None:
-            self.default_dest = m.group(1)
+    def consider_dest( self, command, arguments ):
+        if command == 'dest':
+            self.default_dest = arguments
             return True
         return False
 
-    def consider_get( self, line ):
-        m = re.match( '^(?:get|copy)\s+(\S+)(?:\s+(\S+))?', line )
-        if m != None:
-            self.retrieve_text_file( m.group(1), m.group(2) )
+    def consider_get( self, command, arguments ):
+        if (command == 'get' or command == 'copy') and arguments != None:
+            src, dest_spec = split_in_2( arguments )    # dest_spec maybe = None
+            self.retrieve_text_file( src, dest_spec )
             return True
         return False
 
-    def consider_bget( self, line ):
-        m = re.match( '^(?:bget|bcopy)\s+(\S+)(?:\s+(\S+))?', line )
-        if m != None:
-            self.retrieve_binary_file( m.group(1), m.group(2) )
+    def consider_bget( self, command, arguments ):
+        if (command == 'bget' or command == 'bcopy') and arguments != None:
+            src, dest_spec = split_in_2( arguments )    # dest_spec maybe = None
+            self.retrieve_binary_file( src, dest_spec )
             return True
         return False
 
@@ -557,11 +546,9 @@ class ProcessDeps:
         except FileNotFoundError:
             return ''
 
-    def consider_subst( self, line ):
-        m = re.match( '^subst\s+(\S+)(?:\s+(\S+))?', line )
-        if m != None:
-            src = m.group(1)
-            dst = m.group(2)
+    def consider_subst( self, command, arguments ):
+        if command == 'subst' and arguments != None:
+            src, dst = split_in_2( arguments )    # dst maybe = None
             if dst == None:
                 dst = src
             try:
@@ -591,12 +578,14 @@ class ProcessDeps:
                 self.error( "Unrecognised variable in 'subst' command: " + var_name )
                 return line
 
-    def consider_file_ops( self, line ):
-        m = re.match( '^(cp|mv)\s+(\S+)\s+(\S+)', line )
-        if m != None:
-            op = m.group(1)
-            src = self.expand_variables( m.group(2) )
-            dst = self.make_destination_file_name( src, m.group(3) )
+    def consider_file_ops( self, command, arguments ):
+        if (command == 'cp' or command == 'mv') and arguments != None:
+            src_spec, dst_spec = split_in_2( arguments )    # dst_spec maybe = None
+            if dst_spec == None:
+                return False
+            op = command
+            src = self.expand_variables( src_spec )
+            dst = self.make_destination_file_name( src, dst_spec )
             if op == 'cp':
                 try:
                     if self.is_copy_needed( src, dst ):
@@ -611,10 +600,10 @@ class ProcessDeps:
                 except:
                     self.error( "Unable to 'mv' file '" + src + "' to '" + dst + "'" )
             return True
-        m = re.match( '^(mkdir|rmdir|rm)\s+(\S+)', line )
-        if m != None:
-            op = m.group(1)
-            path = self.expand_variables( m.group(2) )
+
+        if (command == 'mkdir' or command == 'rmdir' or command == 'rm') and arguments != None:
+            op = command
+            path = self.expand_variables( arguments )
             if op == 'mkdir':
                 try:
                     os.makedirs( path, exist_ok=True )
@@ -634,9 +623,10 @@ class ProcessDeps:
                 except:
                     self.error( "Unable to 'rm' file '" + path + "'" )
             return True
-        m = re.match( '^touch\s+(\S+)', line )
-        if m != None:
-            file = self.expand_variables( m.group(1) )
+
+        if command == 'touch' and arguments != None:
+            op = command
+            file = self.expand_variables( arguments )
             open( file, 'a' ).close()
             return True
         return False
@@ -644,107 +634,101 @@ class ProcessDeps:
     def is_copy_needed( self, src, dst ):
         return not os.path.isfile( dst ) or not filecmp.cmp( src, dst )
 
-    def consider_exec( self, line ):
-        m = re.match( '^exec\s+(.+)', line )
-        if m != None:
-            command = m.group(1)
+    def consider_exec( self, command, arguments ):
+        if command == 'exec' and arguments != None:
+            cmd = arguments
             org_cwd = os.getcwd()
             file_dirname = os.path.dirname( self.file )
             if file_dirname:
                 os.chdir( file_dirname )
-            os.system( self.expand_variables( command ) )
+            os.system( self.expand_variables( cmd ) )
             os.chdir( org_cwd )
             return True
         return False
 
-    def consider_on_conditional( self, line ):
-        m = re.match( '^on\s+\$(\w+)\s+(.+)', line )
-        if m != None:
-            var_name = m.group(1)
-            command = m.group(2)
+    def consider_on_conditional( self, command, arguments ):
+        if command == 'on' and arguments != None and arguments[0] == '$':
+            var, instruction = split_in_2( arguments )
+            var_name = var[1:]
+            if instruction == None:
+                return False
             if self.is_sought_condition( \
                     var_name in self.vars and \
                     self.vars[var_name] != '' and \
                     self.vars[var_name] != '0' and \
                     self.vars[var_name].lower() != 'false' ):
-                self.process_line( command )
+                self.process_line( instruction )
             return True
         return False
 
-    def consider_ondir( self, line ):
-        m = re.match( '^ondir\s+(\S+)\s+(.+)', line )
-        if m != None:
-            dir = m.group(1)
-            command = m.group(2)
+    def consider_ondir( self, command, arguments ):
+        if command == 'ondir' and arguments != None:
+            dir, instruction = split_in_2( arguments )
+            if instruction == None:
+                return False
             if self.is_sought_condition( os.path.isdir( dir ) ):
-                self.process_line( command )
+                self.process_line( instruction )
             return True
         return False
 
-    def consider_onfile( self, line ):
-        m = re.match( '^onfile\s+(\S+)\s+(.+)', line )
-        if m != None:
-            file = m.group(1)
-            command = m.group(2)
+    def consider_onfile( self, command, arguments ):
+        if command == 'onfile' and arguments != None:
+            file, instruction = split_in_2( arguments )
+            if instruction == None:
+                return False
             if self.is_sought_condition( os.path.isfile( file ) ):
-                self.process_line( command )
+                self.process_line( instruction )
             return True
         return False
 
-    def consider_onlastchanged( self, line ):
-        m = re.match( '^onlastchanged\s+(.+)', line )
-        if m != None:
-            command = m.group(1)
+    def consider_onlastchanged( self, command, arguments ):
+        if command == 'onlastchanged' and arguments != None:
+            instruction = arguments
             if self.is_sought_condition( self.is_last_file_changed ):
-                self.process_line( command )
+                self.process_line( instruction )
             return True
         return False
 
-    def consider_onchanged( self, line ):
-        m = re.match( '^onchanged\s+(.+)', line )
-        if m != None:
-            command = m.group(1)
+    def consider_onchanged( self, command, arguments ):
+        if command == 'onchanged' and arguments != None:
+            instruction = arguments
             if self.is_sought_condition( self.are_files_changed ):
-                self.process_line( command )
+                self.process_line( instruction )
             return True
         return False
 
-    def consider_onanychanged( self, line ):
-        m = re.match( '^onanychanged\s+(.+)', line )
-        if m != None:
-            command = m.group(1)
+    def consider_onanychanged( self, command, arguments ):
+        if command == 'onanychanged' and arguments != None:
+            instruction = arguments
             if self.is_sought_condition( ProcessDeps.are_any_files_changed ):
-                self.process_line( command )
+                self.process_line( instruction )
             return True
         return False
 
-    def consider_onalerts( self, line ):
-        m = re.match( '^onalerts\s+(.+)', line )
-        if m != None:
-            command = m.group(1)
+    def consider_onalerts( self, command, arguments ):
+        if command == 'onalerts' and arguments != None:
+            instruction = arguments
             if self.is_sought_condition( ProcessDeps.shown_alert_messages != "" or ProcessDeps.alert_messages != "" ):
-                self.process_line( command )
+                self.process_line( instruction )
             return True
         return False
 
     os_names = { 'windows': 'win32', 'linux': 'linux', 'osx': 'darwin' }
 
-    def consider_os_conditional( self, line ):
-        m = re.match( '^(windows|linux|osx)\s+(.+)', line )
-        if m != None:
-            os_key = m.group(1)
-            command = m.group(2)
+    def consider_os_conditional( self, command, arguments ):
+        if (command == 'windows' or command == 'linux' or command == 'osx') and arguments != None:
+            os_key = command
+            instruction = arguments
             if self.is_sought_condition( sys.platform.startswith( ProcessDeps.os_names[os_key] ) ):
-                self.process_line( command )
+                self.process_line( instruction )
             return True
         return False
 
-    def consider_not( self, line ):
-        m = re.match( '^not\s+(.+)', line )
-        if m != None:
-            command = m.group(1)
+    def consider_not( self, command, arguments ):
+        if command == 'not' and arguments != None:
+            instruction = arguments
             self.sought_condition = not self.sought_condition
-            self.process_line( command )
+            self.process_line( instruction )
             return True
         return False
 
@@ -755,10 +739,9 @@ class ProcessDeps:
             return my_sought_condition
         return not my_sought_condition
 
-    def consider_echo( self, line ):
-        m = re.match( '^echo(?:\s+(.*))?', line )
-        if m != None:
-            message = m.group(1)
+    def consider_echo( self, command, arguments ):
+        if command == 'echo':
+            message = arguments
             if message:
                 print( self.expand_variables( message ) )
             else:
@@ -766,20 +749,18 @@ class ProcessDeps:
             return True
         return False
 
-    def consider_pause( self, line ):
-        m = re.match( '^pause(?:\s+(.*))?', line )
-        if m != None:
-            message = m.group(1)
+    def consider_pause( self, command, arguments ):
+        if command == 'pause':
+            message = arguments
             if message:
                 message = self.expand_variables( message )
             pause( message )
             return True
         return False
 
-    def consider_alert( self, line ):
-        m = re.match( '^alert\s+(.*)', line )
-        if m != None:
-            message = self.expand_variables( m.group(1) )
+    def consider_alert( self, command, arguments ):
+        if command == 'alert' and arguments != None:
+            message = self.expand_variables( arguments )
             alert = "ALERT: " + self.file + " (" + str(self.line_num) + "):\n" + "       " + message
             print( alert )
             if ProcessDeps.alert_messages != "":
@@ -788,8 +769,8 @@ class ProcessDeps:
             return True
         return False
 
-    def consider_showalerts( self, line ):
-        if line == "showalerts":
+    def consider_showalerts( self, command, arguments ):
+        if command == 'showalerts':
             if ProcessDeps.alert_messages != "":
                 print( "RECORDED ALERTS:" )
                 print( ProcessDeps.alert_messages )
@@ -800,10 +781,9 @@ class ProcessDeps:
             return True
         return False
 
-    def consider_alertstofile( self, line ):
-        m = re.match( '^alertstofile\s+(.*)', line )
-        if m != None:
-            file = m.group(1)
+    def consider_alertstofile( self, command, arguments ):
+        if command == 'alertstofile' and arguments != None:
+            file = arguments
             if os.path.isfile( file ):
                 shutil.move( file, file + ".old" )
             if ProcessDeps.shown_alert_messages != "" or ProcessDeps.alert_messages != "":
@@ -815,16 +795,14 @@ class ProcessDeps:
             return True
         return False
 
-    def consider_stop( self, line ):
-        m = re.match( '^stop(?:\s+(.*))?', line )
-        if m != None:
-            message = m.group(1)
+    def consider_stop( self, command, arguments ):
+        if command == 'stop':
+            message = arguments # May be None
             print( "STOPPED: " + self.file + " (" + str(self.line_num) + "):" )
             if message:
                 print( "      " + self.expand_variables( message ) )
             if self.file != onstop_exodep and os.path.isfile( onstop_exodep ):
                 ProcessDeps( onstop_exodep, self.vars )
-            # return True
             raise StopException
         return False
 
@@ -836,10 +814,16 @@ class ProcessDeps:
         print( "      ", what )
 
 def remove_comments( line ):
-    return re.compile( '\s*#.*' ).sub( '', line )
+    return line.split( '#', 1 )[0]
 
 def is_blank_line( line ):
-    return re.match( '^\s*$', line )
+    return line.strip() == ''
+
+def split_in_2( text ):
+    parts = text.split( maxsplit=1 )
+    if( len(parts) == 1 ):
+        return [ parts[0], None ]
+    return parts
 
 def pause( message = None ):
     print( "" )
