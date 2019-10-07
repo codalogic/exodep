@@ -814,7 +814,7 @@ class ProcessDeps:
         print( "      ", what )
 
 def remove_comments( line ):
-    return line.split( '#', 1 )[0]
+    return line.split( '#', 1 )[0].rstrip()
 
 def is_blank_line( line ):
     return line.strip() == ''
