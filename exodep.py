@@ -553,8 +553,8 @@ class ProcessDeps:
                 dst = src
             try:
                 fout = None
-                with open( src, 'rt' ) as fin:
-                    fout = tempfile.NamedTemporaryFile( mode='wt', delete=False )
+                with open( src, 'rt', encoding='utf-8' ) as fin:
+                    fout = tempfile.NamedTemporaryFile( mode='wt', delete=False, encoding='utf-8' )
                     for line in fin:
                         fout.write( self.subst_expand_variables( line ) )
                 fout.close()
@@ -849,7 +849,7 @@ class TextDownloadHandler:
         try:
             fout = None
             with urllib.request.urlopen( uri ) as fin:
-                fout = tempfile.NamedTemporaryFile( mode='wt', delete=False )
+                fout = tempfile.NamedTemporaryFile( mode='wt', delete=False, encoding='utf-8' )
                 for line in fin:
                     fout.write( self.normalise_line_ending( line.decode('utf-8') ) )
             fout.close()
