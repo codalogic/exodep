@@ -534,14 +534,13 @@ class ProcessDeps:
     def local_copy_to_temp_file( self, file ):
         try:
             with open( file, 'rb' ) as fin:
-                fout = tempfile.NamedTemporaryFile( mode='wb', delete=False )
-                while True:
-                    data = fin.read( 1000 )
-                    if not data:
-                        break
-                    fout.write( data )
-                fout.close()
-                return fout.name
+                with tempfile.NamedTemporaryFile( mode='wb', delete=False ) as fout:
+                    while True:
+                        data = fin.read( 1000 )
+                        if not data:
+                            break
+                        fout.write( data )
+                    return fout.name
             return ''
         except FileNotFoundError:
             return ''
@@ -553,11 +552,13 @@ class ProcessDeps:
                 dst = src
             try:
                 with open( src, 'rt', encoding='utf-8' ) as fin:
-                    fout = tempfile.NamedTemporaryFile( mode='wt', delete=False, encoding='utf-8' )
-                    for line in fin:
-                        fout.write( self.subst_expand_variables( line ) )
-                    fout.close()
-                    self.conditionally_update_dst_file( fout.name, dst )
+                    tempname = None
+                    with tempfile.NamedTemporaryFile( mode='wt', delete=False, encoding='utf-8' ) as fout:
+                        tempname = fout.name
+                        for line in fin:
+                            fout.write( self.subst_expand_variables( line ) )
+                    if tempname:    # Temp file needs to be closed (via 'with' statement) before we can move it
+                        self.conditionally_update_dst_file( tempname, dst )
             except FileNotFoundError:
                 self.error( "Unable to open file for 'subst' command: " + src )
             return True
@@ -847,11 +848,10 @@ class TextDownloadHandler:
     def download_to_temp_file( self, uri ):
         try:
             with urllib.request.urlopen( uri ) as fin:
-                fout = tempfile.NamedTemporaryFile( mode='wt', delete=False, encoding='utf-8' )
-                for line in fin:
-                    fout.write( self.normalise_line_ending( line.decode('utf-8') ) )
-                fout.close()
-                return fout.name
+                with tempfile.NamedTemporaryFile( mode='wt', delete=False, encoding='utf-8' ) as fout:
+                    for line in fin:
+                        fout.write( self.normalise_line_ending( line.decode('utf-8') ) )
+                    return fout.name
             return ''
         except urllib.error.URLError:
             return ''
@@ -867,14 +867,13 @@ class BinaryDownloadHandler:
     def download_to_temp_file( self, uri ):
         try:
             with urllib.request.urlopen( uri ) as fin:
-                fout = tempfile.NamedTemporaryFile( mode='wb', delete=False )
-                while True:
-                    data = fin.read( 1000 )
-                    if not data:
-                        break
-                    fout.write( data )
-                fout.close()
-                return fout.name
+                with tempfile.NamedTemporaryFile( mode='wb', delete=False ) as fout:
+                    while True:
+                        data = fin.read( 1000 )
+                        if not data:
+                            break
+                        fout.write( data )
+                    return fout.name
             return ''
         except urllib.error.URLError:
             return ''
