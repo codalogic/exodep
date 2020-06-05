@@ -166,7 +166,8 @@ class ProcessDeps:
 
     def process_line( self, line ):
         line = line.strip()
-        line = remove_comments( line )
+        if line != '' and line[0] != '$':
+            line = remove_comments( line )
         if is_blank_line( line ):
             return
         command, arguments = split_in_2( line )

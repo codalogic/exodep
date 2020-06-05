@@ -697,6 +697,11 @@ class MyTest(unittest.TestCase):
         self.assertTrue( exodep.text_filecmp(  'file-cmp-text-crlf.txt', 'file-cmp-text-lf.txt' ) )
         self.assertFalse( exodep.text_filecmp(  'file-cmp-text-crlf.txt', 'non-existant-file.txt' ) )
         self.assertFalse( exodep.text_filecmp(  'non-existant-file.txt', 'file-cmp-text-crlf.txt' ) )
+
+    def test_no_strip_comments_on_var_set(self):
+        pd = make_ProcessDeps( '$v v1 # not a comment' )
+        self.assertTrue( 'v' in pd.vars )
+        self.assertEqual( pd.vars['v'], 'v1 # not a comment' )
         
     # def test_error_visually(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )

@@ -1,6 +1,6 @@
 # When:
 #             ..\exodep.py uses-unknown.exodep
-# is run, the following iutput should be displayed:
+# is run, the following output should be displayed:
 #
 # Error: uses-unknown.exodep, line 12:
 #        uses command specifies unfound exodep file: unknown.exodep

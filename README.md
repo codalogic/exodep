@@ -100,9 +100,14 @@ own line.  The various commands are documented below.
 Comments begin with a `#`.  Blank lines and lines consisting only of comments
 are ignored.
 
+Comments can appear on their own line or at the end of a command line but are
+not permitted on lines that set variables.
+
 Example:
 
-    # A comment
+    # This is a comment
+    hosting gitlab    # This is a comment
+    $var   # This is NOT a comment (will be assigned to the variable)
 
 ## include
 
