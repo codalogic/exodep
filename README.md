@@ -885,7 +885,14 @@ You can see and submit issues here: [https://github.com/codalogic/exodep/issues]
 
 Larger bugs / issues include:
 
-- The `get` command does not allow specifying file names that contain spaces
+- The `get` command does not allow specifying file paths / names that contain
+  spaces or hashes. The workaround for this is to put the file path containing
+  spaces into a variable and then use the variable in the `get` command.  For
+  example:
+  ```
+  $var path/name with/spaces and/ a #/
+  get ${var}/file ${dst}
+  ```
 
 # Testing
 
