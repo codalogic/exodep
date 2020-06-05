@@ -79,6 +79,10 @@ class MyTest(unittest.TestCase):
         pd = make_ProcessDeps( "hosting gitlab" )
         self.assertEqual( pd.uritemplate, 'https://gitlab.com/${owner}/${project}/raw/${strand}/${path}${file}' )
 
+    def test_set_hosting_local(self):
+        pd = make_ProcessDeps( "hosting local" )
+        self.assertEqual( pd.uritemplate, '${path}${file}' )
+
     def test_set_single_var(self):
         pd = make_ProcessDeps( "$space Mumble" )
         self.assertEqual( len( pd.vars ), 3 )

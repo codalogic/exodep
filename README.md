@@ -148,11 +148,15 @@ The `hosting` command provides an easier and less error prone way of setting
 a URI template for common hosting providers.  Currently Github, Bitbucket and
 Gitlab are supported.  In effect, the default is `github`.
 
+`hosting local` indicates that the files on the local system or accessible
+via regular file names on the local system.
+
 Examples:
 
     hosting bitbucket
     hosting github
     hosting gitlab
+    hosting local
 
 ## authority
 
