@@ -280,7 +280,7 @@ class ProcessDeps:
                     with open( uri, "rt" ) as fin:
                         self.parse_versions_info( fin )
             except:
-                self.error( "Unable to retrieve: " + uri )
+                self.error( "Unable to retrieve 'versions' information from: " + uri )
             return True
         return False
 
