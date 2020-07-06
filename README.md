@@ -41,8 +41,8 @@ $project myproject
 
 autovars
 
-get include/myproject/myfile.h   ${myproject_inc_dst}
-get include/myproject/myfile.cpp ${myproject_src_dst}
+get include/myfile.h   ${myproject_inc_dst}
+get src/myfile.cpp     ${myproject_src_dst}
 ```
 
 To add an external dependency to a project, place the relevant `.exodep` file
