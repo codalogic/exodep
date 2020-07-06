@@ -213,11 +213,10 @@ might include:
     default $h_files include/my-lib/
     get my-lib.h ${h_files}
 
-A configuration file that includes the above project can enforce it's
-value for `$h_files` by doing:
+The value for `$h_files` could then be overriden by including the following
+in `exodep-imports/__init.exodep`:
 
     $h_files include/
-    include my-lib.exodep
 
 As a result of this, the `get` command would be expanded to:
 
