@@ -18,6 +18,38 @@ the right place for your particular project.
 As such Exodep might be more accurately described as a Dependecy
 Downloader, or Dependency Refresher.
 
+# Principles of Operation
+
+Exodep downloads files from a Github, Gitlab or Bitbucket-like central code repository
+over HTTP.  It can also copy from files that are on a central file server
+that is mounted into your directory structure.  For convenience it's assumed that
+the former scenario is in effect.
+
+The basic command for downloading a file is the `get` command.  So that this
+command can be compact, exodep has a `uritemplate` that says how to convert the
+file named in the `get` command into a URL that can be used to download the
+desired file.  As part of this, exodep allows the user to specify variables.
+These can be used to expand the `uritemplate` and specify where the downloaded
+files should be copied to.  The `default` command allows setting default values
+for variables that can be overridden.
+
+A simple Exodep import file might look like:
+
+```
+$owner codalogic
+$project myproject
+
+autovars
+
+get include/myproject/myfile.h   ${myproject_inc_dst}
+get include/myproject/myfile.cpp ${myproject_src_dst}
+```
+
+To add an external dependency to a project, place the relevant `.exodep` file
+in the project's `exodep-imports` sub-directory and run `exodep.py` in the
+project's top-level directory. Customising where Exodep downloads files to
+can be done by adding configuration to `exodep-imports/__init.exodep`.
+
 # Getting Started
 
 Firstly, you'll need Python 3 on your system.
@@ -42,36 +74,13 @@ then doesn't require Administrator permissions to write to it, and `exodep.py`
 can be used to update itself with the latest version simply by double clicking
 on it in Windows Explorer, or by using the right-click context menu.
 
-# Principles of Operation
-
-Exodep downloads files from a Github, Gitlab or Bitbucket-like central code repository
-over HTTP.  It can also copy from files that are on a central file server
-that is mounted into your directory structure.  For convenience it's assumed that
-the former scenario is in effect.
-
-The basic command for downloading a file is the `get` command.  So that this
-command can be compact, exodep has a `uritemplate` that says how to convert the
-file named in the `get` command into a URL that can be used to download the
-desired file.  As part of this, exodep allows the user to specify variables.
-These can be used to expand the `uritemplate` and specify where the downloaded
-files should be copied to.  The `default` command allows setting default values
-for variables that can be overridden.
-
-More than one exodep configuration file can be used in a project.  This is
-supported using the `include` command.
-
 # Configuration
 
 The operation of `exodep.py` is configured using configuration files.  The
 configuration file to use can be specified on the command line.
 
-If no configuration file is specified, the default usage scenario, `exodep.py`
-will interpret the contents of the file named `mydeps.exodep`.
-
-If `mydeps.exodep` is not present it will look for a file called
-`exodep-imports/mydeps.exodep`.
-
-If that is also not present it will look for `exodep` files in the
+If no configuration file is specified (the typical usage mode) it will look
+for `exodep` files in the
 `exodep-imports/` directory and its sub-directories by globbing `*.exodep`.
 Before globbing the contents of a directory, it will test whether a file
 called `__init.exodep` is present.  If the init file is found, the context it
@@ -109,18 +118,6 @@ Example:
     hosting gitlab    # This is a comment
     $var   # This is NOT a comment (will be assigned to the variable)
 
-## include
-
-A dependency may be dependent on other files specified in other exodep
-configuarion files.  These dependencies can be specified using the `include`
-command.  The same exodep configuration file can be `include`d in multiple
-configuration files.  Its contents are only processed the first time it is
-`include`d.
-
-Example:
-
-    include other-library.exodep
-
 ## uritemplate
 
 The URI template is used to map the files mentioned in the `get` commands
@@ -157,33 +154,6 @@ Examples:
     hosting github
     hosting gitlab
     hosting local
-
-## authority
-
-Specifies where the 'original', authorative exodep file of the downloaded exodep
-file being processed is located.  The remote, authorative version is downloaded
-and if it differs from the local version an error message is displayed.
-
-Example:
-
-    $owner codalogic
-    $project exodep
-    $strand apple
-    versions
-
-    authority exodep-exports/exodep.exodep
-
-## uses
-
-Specifies the name of an exodep file that this exodep file depends on.
-
-exodep will look for all the exodep files it can find and if it doesn't find
-the one named in the `uses` command it will report an error.
-
-For example, the following will report an error if `other.exodep` is not
-found in the `exodep-imports` sub-directory tree:
-
-    uses http://github.com/example/path/exodep-exports/other.exodep
 
 ## variables
 
@@ -252,57 +222,6 @@ value for `$h_files` by doing:
 As a result of this, the `get` command would be expanded to:
 
     get my-lib.h include/
-
-## showvars
-
-The `showvars` command shows the currently set variables in alphabetical
-order.  If a variable references other variables, both the un-expanded
-and expanded forms are shown.  It is intended to aid debugging.
-
-For example, given:
-
-    $pet dog
-    $animal ${pet}
-
-Would yield:
-
-    $animal: ${pet} -> dog
-    $pet: dog
-
-## versions
-
-The `versions` command downloads a file called `versions.exodep` from the
-top-level directory of the remote server's master branch.  If this command is
-invoked and is successful the value stored in the `$strand` variable
-is looked up in this file and converted to a suitable Git branch name
-before doing URI template expansion.
-
-The active lines in the `versions.exodep` file consist of a Git branch
-name (or similar VCS concept) followed by a list of space separated
-strand names that can be mapped to it.
-
-The file may also include comments and blank lines for clarity.
-
-For example, with a `versions.exodep` file containing:
-
-    # These are my mappings
-
-    master banana
-    defunct1 apple alpha
-
-if the `$strand` variable is set to `apple`, the look-up operation would
-yield `defunct1` and this value would be used in place of the `${strand}`
-field when forming the URL for file downloading.  The resulting URL might
-look like:
-
-    https://raw.githubusercontent.com/codalogic/exodep/defunct1/exodep.py
-
-This mechanims allows for separation of a version name and the repository
-branch on which it is stored.
-
-Example:
-
-    versions
 
 ## autovars
 
@@ -436,6 +355,57 @@ this invokes the following commands:
 This will cause the generated project specific sub-directories to have
 lower case names.
 
+## showvars
+
+The `showvars` command shows the currently set variables in alphabetical
+order.  If a variable references other variables, both the un-expanded
+and expanded forms are shown.  It is intended to aid debugging.
+
+For example, given:
+
+    $pet dog
+    $animal ${pet}
+
+Would yield:
+
+    $animal: ${pet} -> dog
+    $pet: dog
+
+## versions
+
+The `versions` command downloads a file called `versions.exodep` from the
+top-level directory of the remote server's master branch.  If this command is
+invoked and is successful the value stored in the `$strand` variable
+is looked up in this file and converted to a suitable Git branch name
+before doing URI template expansion.
+
+The active lines in the `versions.exodep` file consist of a Git branch
+name (or similar VCS concept) followed by a list of space separated
+strand names that can be mapped to it.
+
+The file may also include comments and blank lines for clarity.
+
+For example, with a `versions.exodep` file containing:
+
+    # These are my mappings
+
+    master banana
+    defunct1 apple alpha
+
+if the `$strand` variable is set to `apple`, the look-up operation would
+yield `defunct1` and this value would be used in place of the `${strand}`
+field when forming the URL for file downloading.  The resulting URL might
+look like:
+
+    https://raw.githubusercontent.com/codalogic/exodep/defunct1/exodep.py
+
+This mechanims allows for separation of a version name and the repository
+branch on which it is stored.
+
+Example:
+
+    versions
+
 ## get and bget
 
 The `get` command downloads a text file and the `bget` command downloads
@@ -493,6 +463,33 @@ The `dest` command can be reset by doing:
 ## dest
 
 See `get and bget` command for how the `dest` command works.
+
+## authority
+
+Specifies where the 'original', authorative exodep file of the downloaded exodep
+file being processed is located.  The remote, authorative version is downloaded
+and if it differs from the local version an error message is displayed.
+
+Example:
+
+    $owner codalogic
+    $project exodep
+    $strand apple
+    versions
+
+    authority exodep-exports/exodep.exodep
+
+## uses
+
+Specifies the name of an exodep file that this exodep file depends on.
+
+exodep will look for all the exodep files it can find and if it doesn't find
+the one named in the `uses` command it will report an error.
+
+For example, the following will report an error if `other.exodep` is not
+found in the `exodep-imports` sub-directory tree:
+
+    uses http://github.com/example/path/exodep-exports/other.exodep
 
 ## subst
 
@@ -786,6 +783,20 @@ Example:
 
     get LICENSE
     onlastchanged stop Oh dear! License changed! We might need to think about this
+
+## include
+
+A dependency may be dependent on other files specified in other exodep
+configuarion files.  These dependencies can be specified using the `include`
+command.  The same exodep configuration file can be `include`d in multiple
+configuration files.  Its contents are only processed the first time it is
+`include`d. Note that exodep file names beginning with `^` are not processed
+as part of globbing the `exodep-imports` sub-directory and can be used for
+holding common configuration.
+
+Example:
+
+    include ^other-library.exodep
 
 # Example
 
