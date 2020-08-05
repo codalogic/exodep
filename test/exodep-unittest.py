@@ -694,18 +694,23 @@ class MyTest(unittest.TestCase):
         self.assertTrue( filecmp.cmp(  'uses-test-out.txt', 'uses-test-out-reference.txt' ) )
 
     def test_text_filecmp(self):
-        self.assertTrue( exodep.text_filecmp(  'file-cmp-text-crlf.txt', 'file-cmp-text-crlf-same.txt' ) )
-        self.assertFalse( exodep.text_filecmp(  'file-cmp-text-crlf.txt', 'file-cmp-text-crlf-short.txt' ) )
-        self.assertFalse( exodep.text_filecmp(  'file-cmp-text-crlf-short.txt', 'file-cmp-text-crlf.txt' ) )
-        self.assertTrue( exodep.text_filecmp(  'file-cmp-text-lf.txt', 'file-cmp-text-crlf.txt' ) )
-        self.assertTrue( exodep.text_filecmp(  'file-cmp-text-crlf.txt', 'file-cmp-text-lf.txt' ) )
-        self.assertFalse( exodep.text_filecmp(  'file-cmp-text-crlf.txt', 'non-existant-file.txt' ) )
-        self.assertFalse( exodep.text_filecmp(  'non-existant-file.txt', 'file-cmp-text-crlf.txt' ) )
+        self.assertTrue( exodep.text_filecmp( 'file-cmp-text-crlf.txt', 'file-cmp-text-crlf-same.txt' ) )
+        self.assertFalse( exodep.text_filecmp( 'file-cmp-text-crlf.txt', 'file-cmp-text-crlf-short.txt' ) )
+        self.assertFalse( exodep.text_filecmp( 'file-cmp-text-crlf-short.txt', 'file-cmp-text-crlf.txt' ) )
+        self.assertTrue( exodep.text_filecmp( 'file-cmp-text-lf.txt', 'file-cmp-text-crlf.txt' ) )
+        self.assertTrue( exodep.text_filecmp( 'file-cmp-text-crlf.txt', 'file-cmp-text-lf.txt' ) )
+        self.assertFalse( exodep.text_filecmp( 'file-cmp-text-crlf.txt', 'non-existant-file.txt' ) )
+        self.assertFalse( exodep.text_filecmp( 'non-existant-file.txt', 'file-cmp-text-crlf.txt' ) )
 
     def test_no_strip_comments_on_var_set(self):
         pd = make_ProcessDeps( '$v v1 # not a comment' )
         self.assertTrue( 'v' in pd.vars )
         self.assertEqual( pd.vars['v'], 'v1 # not a comment' )
+
+    def test_primary(self):
+        pd = make_ProcessDeps( 'primary main ' )
+        self.assertTrue( 'strand' in pd.vars )
+        self.assertEqual( pd.vars['strand'], 'main' )
         
     # def test_error_visually(self):
     #     make_ProcessDeps( '# blank line\n\ninclude woops' )

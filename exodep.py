@@ -123,6 +123,7 @@ class ProcessDeps:
         self.line_num = 0
         self.uritemplate = host_templates['github']
         self.set_vars( vars )
+        self.primary_branch = 'master'
         self.versions = {}  # Each entry is <string of space separated strand names> : <string to use as strand in uri template>
         self.sought_condition = True
         self.default_dest = None
@@ -184,6 +185,7 @@ class ProcessDeps:
                 self.consider_showvars( command, arguments ) or
                 self.consider_lcvars( command, arguments ) or
                 self.consider_autovars( command, arguments ) or
+                self.consider_primary( command, arguments ) or
                 self.consider_dest( command, arguments ) or
                 self.consider_get( command, arguments ) or
                 self.consider_bget( command, arguments ) or
@@ -347,7 +349,7 @@ class ProcessDeps:
                 return True
             project = self.vars['project']
             safe_project = project.replace( '-', '_' )
-            if 'strand' in self.vars and self.vars['strand'] != 'master':
+            if 'strand' in self.vars and self.vars['strand'] != self.primary_branch:
                 self.process_line( 'versions' )
 
             self.process_line( 'default $ext_home' )
@@ -401,6 +403,15 @@ class ProcessDeps:
                 self.process_line( 'default $' + lc_safe_project + '_bin_dst        ${bin_dst}${lcproject}/' )
                 self.process_line( 'default $' + lc_safe_project + '_scripts_dst    ${scripts_dst}${lcproject}/' )
 
+            return True
+        return False
+
+    def consider_primary( self, command, arguments ):
+        if command == 'primary':
+            new_primary = arguments.strip()
+            if self.vars['strand'] == self.primary_branch:
+                self.vars['strand'] = new_primary
+            self.primary_branch = new_primary
             return True
         return False
 
@@ -488,7 +499,7 @@ class ProcessDeps:
 
     def make_master_strand_uri( self, file_name ):
         # Override ${master} and ${path} variable
-        uri = re.compile( '\$\{strand\}' ).sub( 'master', self.uritemplate )
+        uri = re.compile( '\$\{strand\}' ).sub( self.primary_branch, self.uritemplate )
         uri = re.compile( '\$\{path\}' ).sub( '', uri )
         return self.make_uri( file_name, uri )
 

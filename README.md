@@ -405,6 +405,21 @@ Example:
 
     versions
 
+## primary
+
+Github is in the process of changing the primary branch name from `master`
+to `main`.  The `primary` command allows the name of the primary branch to
+be set to a name different to the legacy default of `master`.  The format of
+the command is:
+
+    primary <new-primary-branch-name>
+
+
+To set the name of the primary branch to `main`, use the following before any
+`get` commands:
+
+    primary main
+
 ## get and bget
 
 The `get` command downloads a text file and the `bget` command downloads
